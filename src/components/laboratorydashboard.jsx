@@ -21,7 +21,7 @@ import {
   Breadcrumbs,
   Link,
   useTheme,
-  alpha
+  alpha,
 } from "@mui/material";
 import {
   Search as SearchIcon,
@@ -34,7 +34,7 @@ import {
   Refresh as RefreshIcon,
   Dashboard as DashboardIcon,
   Science as ScienceIcon,
-  TrendingUp as TrendingUpIcon
+  TrendingUp as TrendingUpIcon,
 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import LabDetails from "./labDetails"; // Import the LabDetails component
@@ -64,12 +64,16 @@ export default function LaboratoryDashboard() {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [favorites, setFavorites] = useState([]);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
   const [selectedLab, setSelectedLab] = useState(null); // State for selected lab
   const [stats, setStats] = useState({
     total: 0,
     active: 0,
-    locations: new Set()
+    locations: new Set(),
   });
 
   // Fetch labs with error handling and retry logic
@@ -78,20 +82,21 @@ export default function LaboratoryDashboard() {
     try {
       const res = await axios.get(
         `${process.env.REACT_APP_API_BASE_URL}/LabMaster`,
-        { timeout: 10000 }
+        { timeout: 10000 },
       );
       const labData = res.data || [];
       setLabs(labData);
       setFilteredLabs(labData);
-      
+
       // Calculate statistics
-      const locations = new Set(labData.map(lab => lab.MLM_LAB_LOCATION).filter(Boolean));
+      const locations = new Set(
+        labData.map((lab) => lab.MLM_LAB_LOCATION).filter(Boolean),
+      );
       setStats({
         total: labData.length,
-        active: labData.filter(lab => lab.MLM_IS_ACTIVE !== false).length,
-        locations: locations
+        active: labData.filter((lab) => lab.MLM_IS_ACTIVE !== false).length,
+        locations: locations,
       });
-      
     } catch (err) {
       console.error("Error fetching labs:", err);
       if (retryCount < 3) {
@@ -100,7 +105,7 @@ export default function LaboratoryDashboard() {
         setSnackbar({
           open: true,
           message: "Failed to load laboratory data. Please refresh the page.",
-          severity: "error"
+          severity: "error",
         });
         setLabs([]);
         setFilteredLabs([]);
@@ -124,10 +129,13 @@ export default function LaboratoryDashboard() {
     if (searchTerm.trim() === "") {
       setFilteredLabs(labs);
     } else {
-      const filtered = labs.filter(lab =>
-        lab.MLM_LAB_NAME?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lab.MLM_LAB_LOCATION?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lab.MLM_LAB_PHONE?.includes(searchTerm)
+      const filtered = labs.filter(
+        (lab) =>
+          lab.MLM_LAB_NAME?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          lab.MLM_LAB_LOCATION?.toLowerCase().includes(
+            searchTerm.toLowerCase(),
+          ) ||
+          lab.MLM_LAB_PHONE?.includes(searchTerm),
       );
       setFilteredLabs(filtered);
     }
@@ -137,16 +145,18 @@ export default function LaboratoryDashboard() {
   const toggleFavorite = (labId, event) => {
     event.stopPropagation();
     const newFavorites = favorites.includes(labId)
-      ? favorites.filter(id => id !== labId)
+      ? favorites.filter((id) => id !== labId)
       : [...favorites, labId];
-    
+
     setFavorites(newFavorites);
     localStorage.setItem("labFavorites", JSON.stringify(newFavorites));
-    
+
     setSnackbar({
       open: true,
-      message: favorites.includes(labId) ? "Removed from favorites" : "Added to favorites",
-      severity: "success"
+      message: favorites.includes(labId)
+        ? "Removed from favorites"
+        : "Added to favorites",
+      severity: "success",
     });
   };
 
@@ -166,7 +176,7 @@ export default function LaboratoryDashboard() {
     setSnackbar({
       open: true,
       message: "Refreshing laboratory data...",
-      severity: "info"
+      severity: "info",
     });
   };
 
@@ -196,7 +206,13 @@ export default function LaboratoryDashboard() {
   // If a lab is selected, show LabDetails component
   if (selectedLab) {
     return (
-      <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: "background.default", minHeight: "100vh" }}>
+      <Box
+        sx={{
+          p: { xs: 2, md: 4 },
+          bgcolor: "background.default",
+          minHeight: "100vh",
+        }}
+      >
         <LabDetails lab={selectedLab} onBack={handleBack} />
       </Box>
     );
@@ -204,7 +220,13 @@ export default function LaboratoryDashboard() {
 
   // Otherwise show the dashboard
   return (
-    <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: "background.default", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        p: { xs: 2, md: 4 },
+        bgcolor: "background.default",
+        minHeight: "100vh",
+      }}
+    >
       {/* Header Section */}
       <Paper
         elevation={0}
@@ -213,16 +235,25 @@ export default function LaboratoryDashboard() {
           mb: 3,
           borderRadius: 3,
           background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
-          color: "white"
+          color: "white",
         }}
       >
-        <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap">
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          flexWrap="wrap"
+        >
           <Box>
             <Typography variant="h4" fontWeight="bold" gutterBottom>
               Laboratory Dashboard
             </Typography>
             <Breadcrumbs sx={{ color: alpha(theme.palette.common.white, 0.7) }}>
-              <Link color="inherit" href="/" sx={{ display: "flex", alignItems: "center" }}>
+              <Link
+                color="inherit"
+                href="/"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
                 <DashboardIcon sx={{ mr: 0.5 }} fontSize="small" />
                 Home
               </Link>
@@ -235,7 +266,7 @@ export default function LaboratoryDashboard() {
             onClick={handleRefresh}
             sx={{
               bgcolor: alpha(theme.palette.common.white, 0.2),
-              "&:hover": { bgcolor: alpha(theme.palette.common.white, 0.3) }
+              "&:hover": { bgcolor: alpha(theme.palette.common.white, 0.3) },
             }}
           >
             Refresh Data
@@ -292,19 +323,29 @@ export default function LaboratoryDashboard() {
                 </IconButton>
               </InputAdornment>
             ),
-            sx: { borderRadius: 2 }
+            sx: { borderRadius: 2 },
           }}
         />
       </Card>
 
       {/* Labs Grid */}
       {loading ? (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="400px"
+        >
           <CircularProgress size={60} thickness={4} />
         </Box>
       ) : (
         <>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={2}
+          >
             <Typography variant="body2" color="textSecondary">
               Showing {filteredLabs.length} of {labs.length} laboratories
             </Typography>
@@ -326,18 +367,27 @@ export default function LaboratoryDashboard() {
                   onClick={() => handleLabClick(lab)}
                 >
                   <CardContent sx={{ flex: 1, p: 3 }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="flex-start"
+                      mb={2}
+                    >
                       <Box display="flex" alignItems="center" gap={1}>
                         <Avatar
                           sx={{
                             bgcolor: alpha(theme.palette.primary.main, 0.1),
-                            color: theme.palette.primary.main
+                            color: theme.palette.primary.main,
                           }}
                         >
                           <ScienceIcon />
                         </Avatar>
                         <Box>
-                          <Typography variant="h6" fontWeight="bold" gutterBottom>
+                          <Typography
+                            variant="h6"
+                            fontWeight="bold"
+                            gutterBottom
+                          >
                             {lab.MLM_LAB_NAME}
                           </Typography>
                           {lab.MLM_LAB_CODE && (
@@ -347,38 +397,67 @@ export default function LaboratoryDashboard() {
                           )}
                         </Box>
                       </Box>
-                      <Tooltip title={favorites.includes(lab.MLM_LAB_ID) ? "Remove from favorites" : "Add to favorites"}>
+                      <Tooltip
+                        title={
+                          favorites.includes(lab.MLM_LAB_ID)
+                            ? "Remove from favorites"
+                            : "Add to favorites"
+                        }
+                      >
                         <IconButton
                           size="small"
                           onClick={(e) => toggleFavorite(lab.MLM_LAB_ID, e)}
-                          sx={{ color: favorites.includes(lab.MLM_LAB_ID) ? theme.palette.warning.main : "inherit" }}
+                          sx={{
+                            color: favorites.includes(lab.MLM_LAB_ID)
+                              ? theme.palette.warning.main
+                              : "inherit",
+                          }}
                         >
-                          {favorites.includes(lab.MLM_LAB_ID) ? <StarIcon /> : <StarBorderIcon />}
+                          {favorites.includes(lab.MLM_LAB_ID) ? (
+                            <StarIcon />
+                          ) : (
+                            <StarBorderIcon />
+                          )}
                         </IconButton>
                       </Tooltip>
                     </Box>
 
                     <Box mt={2}>
                       {lab.MLM_LAB_LOCATION && (
-                        <Box display="flex" alignItems="center" gap={1} mb={1.5}>
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          gap={1}
+                          mb={1.5}
+                        >
                           <LocationIcon fontSize="small" color="action" />
                           <Typography variant="body2" color="textSecondary">
                             {lab.MLM_LAB_LOCATION}
                           </Typography>
                         </Box>
                       )}
-                      
+
                       {lab.MLM_LAB_PHONE && (
-                        <Box display="flex" alignItems="center" gap={1} mb={1.5}>
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          gap={1}
+                          mb={1.5}
+                        >
                           <PhoneIcon fontSize="small" color="action" />
                           <Typography variant="body2" color="textSecondary">
                             {lab.MLM_LAB_PHONE}
                           </Typography>
                         </Box>
                       )}
-                      
+
                       {lab.MLM_LAB_EMAIL && (
-                        <Box display="flex" alignItems="center" gap={1} mb={1.5}>
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          gap={1}
+                          mb={1.5}
+                        >
                           <EmailIcon fontSize="small" color="action" />
                           <Typography variant="body2" color="textSecondary">
                             {lab.MLM_LAB_EMAIL}
@@ -426,10 +505,35 @@ export default function LaboratoryDashboard() {
         onClose={() => setSnackbar({ ...snackbar, open: false })}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
-        <Alert
+        {/* <Alert
           onClose={() => setSnackbar({ ...snackbar, open: false })}
           severity={snackbar.severity}
           sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert> */}
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{
+            width: "100%",
+            minWidth: "420px",
+            fontSize: "1.1rem",
+            fontWeight: 600,
+            py: 1.5,
+            px: 2,
+            borderRadius: "14px",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+            "& .MuiAlert-icon": {
+              fontSize: "32px",
+              alignItems: "center",
+            },
+            "& .MuiAlert-message": {
+              fontSize: "1.05rem",
+              fontWeight: 600,
+            },
+          }}
         >
           {snackbar.message}
         </Alert>

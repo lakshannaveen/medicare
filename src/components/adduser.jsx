@@ -352,7 +352,6 @@
 
 // export default Adduser;
 
-
 // import React, { useEffect, useState } from "react";
 // import axios from "axios";
 // import { useNavigate } from "react-router-dom";
@@ -1030,7 +1029,7 @@
 //                     }}
 //                   />
 //                 </Grid> */}
-                
+
 //                 <Grid item xs={12}>
 //                   <TextField
 //                     fullWidth
@@ -1214,9 +1213,6 @@
 
 // export default AddUser;
 
-
-
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -1277,7 +1273,8 @@ const AddUser = () => {
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
-  const [openSpecializationDialog, setOpenSpecializationDialog] = useState(false);
+  const [openSpecializationDialog, setOpenSpecializationDialog] =
+    useState(false);
   const [users, setUsers] = useState([]);
   const [specializations, setSpecializations] = useState([]);
   const [newSpecialization, setNewSpecialization] = useState("");
@@ -1313,7 +1310,7 @@ const AddUser = () => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/User`
+        `${process.env.REACT_APP_API_BASE_URL}/User`,
       );
       setUsers(response.data);
     } catch (error) {
@@ -1326,7 +1323,7 @@ const AddUser = () => {
     setLoadingSpecializations(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/User/specializations`
+        `${process.env.REACT_APP_API_BASE_URL}/User/specializations`,
       );
       // Assuming the response is an array of strings
       setSpecializations(response.data);
@@ -1353,9 +1350,9 @@ const AddUser = () => {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
-      
+
       showSnackbar("Specialization added successfully", "success");
       setNewSpecialization("");
       setOpenSpecializationDialog(false);
@@ -1420,7 +1417,7 @@ const AddUser = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
       showSnackbar("User registered successfully", "success");
       setUsers([...users, response.data]);
@@ -1428,7 +1425,9 @@ const AddUser = () => {
       setOpenDialog(false);
     } catch (error) {
       if (error.response?.data?.error === "Email already exists.") {
-        setEmailError("This email is already registered. Please use a different email.");
+        setEmailError(
+          "This email is already registered. Please use a different email.",
+        );
       } else if (error.response?.data?.error === "Username already exists.") {
         setUsernameError("Username already exists.");
       } else if (error.response?.data?.errors) {
@@ -1474,7 +1473,7 @@ const AddUser = () => {
       } catch (error) {
         console.error(
           "Error deleting user:",
-          error.response?.data || error.message
+          error.response?.data || error.message,
         );
         showSnackbar("Failed to delete user", "error");
       }
@@ -1518,7 +1517,7 @@ const AddUser = () => {
   const filteredUsers = users.filter(
     (user) =>
       user.MUD_FULL_NAME?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.MUD_USER_NAME?.toLowerCase().includes(searchQuery.toLowerCase())
+      user.MUD_USER_NAME?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const userCounts = filteredUsers.reduce((acc, user) => {
@@ -1837,7 +1836,7 @@ const AddUser = () => {
                     }}
                   />
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -1937,7 +1936,9 @@ const AddUser = () => {
                         minWidth: { md: "265px" },
                       }}
                     >
-                      <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                      <Box
+                        sx={{ display: "flex", gap: 1, alignItems: "center" }}
+                      >
                         <Select
                           name="MUD_SPECIALIZATION"
                           value={formData.MUD_SPECIALIZATION}
@@ -1966,12 +1967,12 @@ const AddUser = () => {
                           onClick={() => setOpenSpecializationDialog(true)}
                           title="Add New Specialization"
                           size="small"
-                          sx={{ 
+                          sx={{
                             bgcolor: theme.palette.primary.light,
-                            color: 'white',
-                            '&:hover': {
+                            color: "white",
+                            "&:hover": {
                               bgcolor: theme.palette.primary.main,
-                            }
+                            },
                           }}
                         >
                           <AddCircleIcon />
@@ -2083,10 +2084,35 @@ const AddUser = () => {
           onClose={handleSnackbarClose}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          <Alert
+          {/* <Alert
             onClose={handleSnackbarClose}
             severity={snackbarSeverity}
             sx={{ width: "100%" }}
+          >
+            {snackbarMessage}
+          </Alert> */}
+          <Alert
+            onClose={handleSnackbarClose}
+            severity={snackbarSeverity}
+            variant="filled"
+            sx={{
+              width: "100%",
+              minWidth: "420px",
+              fontSize: "1.1rem",
+              fontWeight: 600,
+              py: 1.5,
+              px: 2,
+              borderRadius: "14px",
+              boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+              "& .MuiAlert-icon": {
+                fontSize: "32px",
+                alignItems: "center",
+              },
+              "& .MuiAlert-message": {
+                fontSize: "1.05rem",
+                fontWeight: 600,
+              },
+            }}
           >
             {snackbarMessage}
           </Alert>

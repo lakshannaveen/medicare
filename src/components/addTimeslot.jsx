@@ -411,7 +411,7 @@ const Addtimeslot = () => {
     setLoading(true);
 
     const isValidDoctor = validDoctorNames.some(
-      (doctor) => doctor.UserName === formData.MT_DOCTOR
+      (doctor) => doctor.UserName === formData.MT_DOCTOR,
     );
 
     if (!isValidDoctor) {
@@ -432,7 +432,7 @@ const Addtimeslot = () => {
     try {
       await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/Timeslot`,
-        adjustedFormData
+        adjustedFormData,
       );
       showSnackbar("Timeslot added successfully!", "success");
       setFormData({
@@ -451,7 +451,7 @@ const Addtimeslot = () => {
     } catch (error) {
       console.error(
         "Failed to add timeslot",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       showSnackbar("Failed to add timeslot", "error");
     } finally {
@@ -466,7 +466,7 @@ const Addtimeslot = () => {
     if (searchValue.length > 2) {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/User/suggest?query=${searchValue}`
+          `${process.env.REACT_APP_API_BASE_URL}/User/suggest?query=${searchValue}`,
         );
         if (response.data.length === 0) {
           setSuggestions([]);
@@ -493,7 +493,7 @@ const Addtimeslot = () => {
   const fetchTimeslots = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/Timeslot/active-timeslots`
+        `${process.env.REACT_APP_API_BASE_URL}/Timeslot/active-timeslots`,
       );
       setTimeslotData(response.data.reverse());
       setFilteredTimeslots(response.data.reverse());
@@ -534,14 +534,14 @@ const Addtimeslot = () => {
     if (window.confirm("Are you sure you want to inactivate this timeslot?")) {
       try {
         await axios.put(
-          `${process.env.REACT_APP_API_BASE_URL}/Timeslot/update-status/${id}`
+          `${process.env.REACT_APP_API_BASE_URL}/Timeslot/update-status/${id}`,
         );
         showSnackbar("Timeslot inactivated successfully", "success");
         fetchTimeslots();
       } catch (error) {
         console.error(
           "Error deleting timeslot:",
-          error.response?.data || error.message
+          error.response?.data || error.message,
         );
         showSnackbar("Failed to inactivate timeslot", "error");
       }
@@ -746,7 +746,7 @@ const Addtimeslot = () => {
             </CardContent>
           </Grid>
 
-          <Grid item xs={12} md={6} sx={{ ml: -2 ,mt:-3}}>
+          <Grid item xs={12} md={6} sx={{ ml: -2, mt: -3 }}>
             <CardContent>
               <Typography
                 variant="h6"
@@ -757,7 +757,15 @@ const Addtimeslot = () => {
                 Available Timeslots
               </Typography>
 
-              <Box sx={{ display: 'flex', gap: 2, mb: 3, position: 'relative', width: '92%' }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 2,
+                  mb: 3,
+                  position: "relative",
+                  width: "92%",
+                }}
+              >
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -772,7 +780,7 @@ const Addtimeslot = () => {
                       <IconButton
                         onClick={clearSearch}
                         size="small"
-                        sx={{ visibility: searchTerm ? 'visible' : 'hidden' }}
+                        sx={{ visibility: searchTerm ? "visible" : "hidden" }}
                       >
                         <CloseIcon fontSize="small" />
                       </IconButton>
@@ -897,10 +905,35 @@ const Addtimeslot = () => {
           onClose={handleSnackbarClose}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          <Alert
+          {/* <Alert
             onClose={handleSnackbarClose}
             severity={snackbarSeverity}
             sx={{ width: "100%" }}
+          >
+            {snackbarMessage}
+          </Alert> */}
+          <Alert
+            onClose={handleSnackbarClose}
+            severity={snackbarSeverity}
+            variant="filled"
+            sx={{
+              width: "100%",
+              minWidth: "420px",
+              fontSize: "1.1rem",
+              fontWeight: 600,
+              py: 1.5,
+              px: 2,
+              borderRadius: "14px",
+              boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+              "& .MuiAlert-icon": {
+                fontSize: "32px",
+                alignItems: "center",
+              },
+              "& .MuiAlert-message": {
+                fontSize: "1.05rem",
+                fontWeight: 600,
+              },
+            }}
           >
             {snackbarMessage}
           </Alert>
