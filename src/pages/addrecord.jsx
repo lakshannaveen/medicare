@@ -1914,7 +1914,7 @@ const AddRecord = () => {
     }
     return null;
   };
-
+  const [originalPrescriptions, setOriginalPrescriptions] = useState([]);
   const [prescriptions, setPrescriptions] = useState([
     {
       MDD_MATERIAL_CODE: "",
@@ -2196,12 +2196,31 @@ const AddRecord = () => {
       if (resultsList.length === 0) {
         console.log(`No ${type} found for query:`, query);
       }
+      // } catch (error) {
+      //   console.error(`Error fetching data:`, error);
+      //   setSnackbarMessage(`Error searching. Please try again.`);
+      //   setSnackbarSeverity("error");
+      //   setSnackbarOpen(true);
+      //   setSearchResults([]);
+      // } finally {
+      //   setSearchLoading(false);
+      // }
     } catch (error) {
       console.error(`Error fetching data:`, error);
-      setSnackbarMessage(`Error searching. Please try again.`);
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
-      setSearchResults([]);
+
+      // If backend returns 404 / no matching results,
+      // show friendly message instead of error
+      if (error.response && error.response.status === 404) {
+        setSearchResults([]);
+        setSnackbarMessage(`No ${type} found.`);
+        setSnackbarSeverity("info");
+        setSnackbarOpen(true);
+      } else {
+        setSearchResults([]);
+        setSnackbarMessage(`Error searching. Please try again.`);
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      }
     } finally {
       setSearchLoading(false);
     }
@@ -2311,6 +2330,8 @@ const AddRecord = () => {
                   type: "drug",
                 }));
 
+              setOriginalPrescriptions(drugs);
+
               const servicesItems = itemsResponse.data
                 .filter((item) => item.MDD_TYPE === "service")
                 .map((item) => ({
@@ -2366,6 +2387,60 @@ const AddRecord = () => {
     fetchExistingData();
   }, [serialNumber, patientId]);
 
+  const updateDrugStock = async (oldDrugs = [], newDrugs = []) => {
+    const oldMap = new Map();
+
+    oldDrugs.forEach((drug) => {
+      const code = drug.MDD_MATERIAL_CODE;
+      const qty = parseFloat(drug.MDD_QUANTITY || 0);
+
+      if (!code) return;
+
+      oldMap.set(code, (oldMap.get(code) || 0) + qty);
+    });
+
+    const newMap = new Map();
+
+    newDrugs.forEach((drug) => {
+      const code = drug.MDD_MATERIAL_CODE;
+      const qty = parseFloat(drug.MDD_QUANTITY || 0);
+
+      if (!code) return;
+
+      newMap.set(code, (newMap.get(code) || 0) + qty);
+    });
+
+    const allCodes = new Set([...oldMap.keys(), ...newMap.keys()]);
+
+    const stockRequests = [];
+
+    for (const code of allCodes) {
+      const oldQty = oldMap.get(code) || 0;
+      const newQty = newMap.get(code) || 0;
+      const diff = newQty - oldQty;
+
+      if (diff > 0) {
+        // more drugs are being given now -> reduce stock
+        stockRequests.push(
+          axios.post(
+            `${process.env.REACT_APP_API_BASE_URL}/Material/stock-out?materialCode=${code}&quantity=${diff}`,
+          ),
+        );
+      } else if (diff < 0) {
+        // fewer drugs than before -> give stock back
+        stockRequests.push(
+          axios.post(
+            `${process.env.REACT_APP_API_BASE_URL}/Material/stock-in?materialCode=${code}&quantity=${Math.abs(diff)}`,
+          ),
+        );
+      }
+    }
+
+    if (stockRequests.length > 0) {
+      await Promise.all(stockRequests);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -2374,7 +2449,8 @@ const AddRecord = () => {
     const hasComplain = formData.MTD_COMPLAIN?.trim();
     const hasDiagnosis = formData.MTD_DIAGNOSTICS?.trim();
     const hasRemarks = formData.MTD_REMARKS?.trim();
-    const hasAmount = formData.MTD_AMOUNT?.trim();
+    // const hasAmount = formData.MTD_AMOUNT?.trim();
+    const hasAmount = String(formData.MTD_AMOUNT ?? "").trim();
 
     if (!hasComplain && !hasDiagnosis && !hasRemarks && !hasAmount) {
       setSnackbarMessage(
@@ -2419,9 +2495,88 @@ const AddRecord = () => {
 
     // Allow saving even if no drugs or services are present, as long as other fields are filled
     try {
+      // if (isEditMode) {
+      //   // Prepare drugs with MDD_TYPE "drug"
+      //   const preparedDrugs = validPrescriptions.map((prescription) => ({
+      //     MDD_MATERIAL_CODE: prescription.MDD_MATERIAL_CODE,
+      //     MDD_QUANTITY: parseInt(prescription.MDD_QUANTITY) || 0,
+      //     MDD_RATE: prescription.MMC_RATE || prescription.MDD_RATE || 0,
+      //     MDD_AMOUNT:
+      //       parseFloat(prescription.MMC_RATE || 0) *
+      //       (parseInt(prescription.MDD_QUANTITY) || 0),
+      //     MDD_DOSAGE: prescription.MDD_DOSAGE || "",
+      //     MDD_DAILY_DOSE: prescription.MDD_DAILY_DOSE,
+      //     MDD_DAYS: prescription.MDD_DAYS,
+      //     MDD_TAKES:
+      //       prescription.MDD_TAKES === "other"
+      //         ? prescription.MDD_TAKES_CUSTOM
+      //         : prescription.MDD_TAKES,
+      //     MDD_GIVEN_QUANTITY: 0,
+      //     MDD_STATUS: "A",
+      //     MDD_TYPE: "drug",
+      //   }));
+
+      //   // Prepare services with MDD_TYPE "service" - use service name as material code if serviceCode is empty
+      //   const preparedServices = validServices.map((service) => ({
+      //     // MDD_MATERIAL_CODE: service.serviceCode || service.serviceName, // Use serviceCode if available, otherwise use serviceName
+      //     MDD_MATERIAL_CODE: service.serviceCode,
+      //     MDD_QUANTITY: parseInt(service.quantity) || 1,
+      //     MDD_RATE: parseFloat(service.serviceRate) || 0,
+      //     MDD_AMOUNT:
+      //       (parseFloat(service.serviceRate) || 0) *
+      //       (parseInt(service.quantity) || 1),
+      //     MDD_DOSAGE: service.serviceDescription || "",
+      //     MDD_DAILY_DOSE: 0,
+      //     MDD_DAYS: 0,
+      //     MDD_TAKES: "",
+      //     MDD_GIVEN_QUANTITY: 0,
+      //     MDD_STATUS: "A",
+      //     MDD_TYPE: "service",
+      //   }));
+
+      //   const allItems = [...preparedDrugs, ...preparedServices];
+
+      //   console.log("All items being sent:", allItems);
+
+      //   const updatePayload = {
+      //     Treatment: {
+      //       MTD_DOCTOR: formData.MTD_DOCTOR,
+      //       MTD_TYPE: formData.MTD_TYPE,
+      //       MTD_COMPLAIN: formData.MTD_COMPLAIN,
+      //       MTD_DIAGNOSTICS: formData.MTD_DIAGNOSTICS,
+      //       MTD_REMARKS: formData.MTD_REMARKS,
+      //       MTD_AMOUNT: formData.MTD_AMOUNT,
+      //       MTD_UPDATED_BY: Name,
+      //       MTD_TREATMENT_STATUS: "C",
+      //     },
+      //     Drugs: allItems,
+      //   };
+
+      //   const response = await axios.post(
+      //     `${process.env.REACT_APP_API_BASE_URL}/Treatment/updatingtreatment/${patientId}/${serialNumber}`,
+      //     updatePayload,
+      //   );
+
+      //   if (response.status === 200) {
+      //     await updateDrugStock(originalPrescriptions, validPrescriptions);
+
+      //     setSnackbarMessage("Treatment updated successfully!");
+      //     setSnackbarSeverity("success");
+      //     setSnackbarOpen(true);
+      //     setTimeout(() => {
+      //       navigate(-1);
+      //     }, 1500);
+      //   } else {
+      //     setSnackbarMessage("Failed to update treatment.");
+      //     setSnackbarSeverity("error");
+      //     setSnackbarOpen(true);
+      //   }
+      // }
       if (isEditMode) {
         // Prepare drugs with MDD_TYPE "drug"
         const preparedDrugs = validPrescriptions.map((prescription) => ({
+          MDD_PATIENT_CODE: patientId,
+          MDD_SERIAL_NO: serialNumber,
           MDD_MATERIAL_CODE: prescription.MDD_MATERIAL_CODE,
           MDD_QUANTITY: parseInt(prescription.MDD_QUANTITY) || 0,
           MDD_RATE: prescription.MMC_RATE || prescription.MDD_RATE || 0,
@@ -2429,20 +2584,26 @@ const AddRecord = () => {
             parseFloat(prescription.MMC_RATE || 0) *
             (parseInt(prescription.MDD_QUANTITY) || 0),
           MDD_DOSAGE: prescription.MDD_DOSAGE || "",
-          MDD_DAILY_DOSE: prescription.MDD_DAILY_DOSE,
-          MDD_DAYS: prescription.MDD_DAYS,
+          MDD_DAILY_DOSE: parseFloat(prescription.MDD_DAILY_DOSE) || 0,
+          MDD_DAYS: parseInt(prescription.MDD_DAYS) || 0,
           MDD_TAKES:
             prescription.MDD_TAKES === "other"
               ? prescription.MDD_TAKES_CUSTOM
               : prescription.MDD_TAKES,
           MDD_GIVEN_QUANTITY: 0,
           MDD_STATUS: "A",
+          MDD_CREATED_BY: Name,
+          MDD_CREATED_DATE: new Date().toISOString(),
+          MDD_UPDATED_BY: "",
+          MDD_UPDATED_DATE: null,
           MDD_TYPE: "drug",
         }));
 
-        // Prepare services with MDD_TYPE "service" - use service name as material code if serviceCode is empty
+        // Prepare services
         const preparedServices = validServices.map((service) => ({
-          MDD_MATERIAL_CODE: service.serviceCode || service.serviceName, // Use serviceCode if available, otherwise use serviceName
+          MDD_PATIENT_CODE: patientId,
+          MDD_SERIAL_NO: serialNumber,
+          MDD_MATERIAL_CODE: service.serviceCode || service.serviceName,
           MDD_QUANTITY: parseInt(service.quantity) || 1,
           MDD_RATE: parseFloat(service.serviceRate) || 0,
           MDD_AMOUNT:
@@ -2454,12 +2615,14 @@ const AddRecord = () => {
           MDD_TAKES: "",
           MDD_GIVEN_QUANTITY: 0,
           MDD_STATUS: "A",
+          MDD_CREATED_BY: Name,
+          MDD_CREATED_DATE: new Date().toISOString(),
+          MDD_UPDATED_BY: "",
+          MDD_UPDATED_DATE: null,
           MDD_TYPE: "service",
         }));
 
         const allItems = [...preparedDrugs, ...preparedServices];
-
-        console.log("All items being sent:", allItems);
 
         const updatePayload = {
           Treatment: {
@@ -2472,7 +2635,7 @@ const AddRecord = () => {
             MTD_UPDATED_BY: Name,
             MTD_TREATMENT_STATUS: "C",
           },
-          Drugs: allItems,
+          Drugs: originalPrescriptions.length > 0 ? allItems : [],
         };
 
         const response = await axios.post(
@@ -2481,6 +2644,16 @@ const AddRecord = () => {
         );
 
         if (response.status === 200) {
+          // If this treatment had no existing drug rows, create them separately
+          if (originalPrescriptions.length === 0 && allItems.length > 0) {
+            const submitPromises = allItems.map((item) =>
+              axios.post(`${process.env.REACT_APP_API_BASE_URL}/Drug`, item),
+            );
+            await Promise.all(submitPromises);
+          }
+
+          await updateDrugStock(originalPrescriptions, validPrescriptions);
+
           setSnackbarMessage("Treatment updated successfully!");
           setSnackbarSeverity("success");
           setSnackbarOpen(true);
@@ -2537,7 +2710,8 @@ const AddRecord = () => {
         const preparedServices = validServices.map((service) => ({
           MDD_PATIENT_CODE: patientId,
           MDD_SERIAL_NO: serial_no,
-          MDD_MATERIAL_CODE: service.serviceCode || service.serviceName, // Use serviceCode if available, otherwise use serviceName
+          // MDD_MATERIAL_CODE: service.serviceCode || service.serviceName, // Use serviceCode if available, otherwise use serviceName
+          MDD_MATERIAL_CODE: service.serviceCode,
           MDD_QUANTITY: parseInt(service.quantity) || 1,
           MDD_RATE: parseFloat(service.serviceRate) || 0,
           MDD_AMOUNT:
@@ -2571,6 +2745,7 @@ const AddRecord = () => {
           });
 
           await Promise.all(submitPromises);
+          await updateDrugStock([], validPrescriptions);
         }
 
         navigate(`/dashboard/view-record/${patientId}/${serial_no}`);
