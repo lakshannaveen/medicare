@@ -556,6 +556,59 @@ const Addtimeslot = () => {
     });
   };
 
+  const formatDateLabel = (dateString) => {
+    const dateOnly = dateString.split("T")[0];
+    const date = new Date(dateOnly);
+    if (Number.isNaN(date.getTime())) return dateOnly;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const target = new Date(date);
+    target.setHours(0, 0, 0, 0);
+
+    const diffDays = Math.round(
+      (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Tomorrow";
+
+    return date.toLocaleDateString("en-LK", {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const getGroupedTimeslots = (slots) => {
+    if (!slots || slots.length === 0) return [];
+
+    const sorted = [...slots].sort((a, b) => {
+      const dateA = a.MT_SLOT_DATE.split("T")[0];
+      const dateB = b.MT_SLOT_DATE.split("T")[0];
+
+      if (dateA === dateB) {
+        return a.MT_START_TIME.localeCompare(b.MT_START_TIME);
+      }
+      return dateA.localeCompare(dateB);
+    });
+
+    const groups = [];
+    let currentGroup = null;
+
+    sorted.forEach((slot) => {
+      const dateKey = slot.MT_SLOT_DATE.split("T")[0];
+      if (!currentGroup || currentGroup.date !== dateKey) {
+        currentGroup = { date: dateKey, items: [] };
+        groups.push(currentGroup);
+      }
+      currentGroup.items.push(slot);
+    });
+
+    return groups;
+  };
+
   useEffect(() => {
     fetchTimeslots();
     const interval = setInterval(fetchTimeslots, 60000);
@@ -794,83 +847,106 @@ const Addtimeslot = () => {
               )}
 
               {filteredTimeslots.length > 0 ? (
-                <Grid container spacing={2}>
-                  {filteredTimeslots.map((timeslot) => (
-                    <Grid item xs={12} key={timeslot.MT_SLOT_ID}>
-                      <Card
-                        variant="outlined"
+                <Box>
+                  {getGroupedTimeslots(filteredTimeslots).map((group) => (
+                    <Box key={group.date} sx={{ mb: 3 }}>
+                      <Box
                         sx={{
-                          "&:hover": {
-                            boxShadow: 2,
-                            borderColor: theme.palette.primary.main,
-                          },
+                          display: "flex",
+                          alignItems: "center",
+                          mb: 1,
+                          gap: 1,
                         }}
                       >
-                        <CardContent>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "flex-start",
-                            }}
-                          >
-                            <Box>
-                              <Typography variant="subtitle1" gutterBottom>
-                                <TimeIcon
-                                  fontSize="small"
-                                  sx={{
-                                    mr: 1,
-                                    verticalAlign: "middle",
-                                    color: "primary.main",
-                                  }}
-                                />
-                                {formatTime(timeslot.MT_START_TIME)} -{" "}
-                                {formatTime(timeslot.MT_END_TIME)}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
-                                <CalendarIcon
-                                  fontSize="small"
-                                  sx={{
-                                    mr: 1,
-                                    verticalAlign: "middle",
-                                    color: "primary.main",
-                                  }}
-                                />
-                                {timeslot.MT_SLOT_DATE.split("T")[0]}
-                              </Typography>
-                              <Typography variant="body2" sx={{ mt: 1 }}>
-                                <PersonIcon
-                                  fontSize="small"
-                                  sx={{
-                                    mr: 1,
-                                    verticalAlign: "middle",
-                                    color: "primary.main",
-                                  }}
-                                />
-                                Dr. {timeslot.MT_DOCTOR}
-                              </Typography>
-                              <Chip
-                                label={`Max Patients: ${timeslot.MT_MAXIMUM_PATIENTS}`}
-                                size="small"
-                                sx={{ mt: 1 }}
-                              />
-                            </Box>
-                            <IconButton
-                              color="error"
-                              onClick={() => Deletetime(timeslot.MT_SLOT_ID)}
-                              aria-label="delete"
+                        <CalendarIcon
+                          fontSize="small"
+                          sx={{ color: "primary.main" }}
+                        />
+                        <Typography variant="subtitle1" fontWeight={600}>
+                          {group.date}
+                        </Typography>
+                        <Chip
+                          label={formatDateLabel(group.date)}
+                          size="small"
+                          color="primary"
+                          icon={<CheckCircleIcon fontSize="small" />}
+                        />
+                      </Box>
+
+                      <Grid container spacing={2}>
+                        {group.items.map((timeslot) => (
+                          <Grid item xs={12} key={timeslot.MT_SLOT_ID}>
+                            <Card
+                              variant="outlined"
+                              sx={{
+                                "&:hover": {
+                                  boxShadow: 2,
+                                  borderColor: theme.palette.primary.main,
+                                },
+                              }}
                             >
-                              <DeleteIcon />
-                            </IconButton>
-                          </Box>
-                        </CardContent>
-                      </Card>
-                    </Grid>
+                              <CardContent>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "flex-start",
+                                  }}
+                                >
+                                  <Box>
+                                    <Typography
+                                      variant="subtitle1"
+                                      gutterBottom
+                                    >
+                                      <TimeIcon
+                                        fontSize="small"
+                                        sx={{
+                                          mr: 1,
+                                          verticalAlign: "middle",
+                                          color: "primary.main",
+                                        }}
+                                      />
+                                      {formatTime(timeslot.MT_START_TIME)} -{" "}
+                                      {formatTime(timeslot.MT_END_TIME)}
+                                    </Typography>
+                                    <Typography
+                                      variant="body2"
+                                      color="text.secondary"
+                                    >
+                                      <PersonIcon
+                                        fontSize="small"
+                                        sx={{
+                                          mr: 1,
+                                          verticalAlign: "middle",
+                                          color: "primary.main",
+                                        }}
+                                      />
+                                      Dr. {timeslot.MT_DOCTOR}
+                                    </Typography>
+                                    <Chip
+                                      label={`Max Patients: ${timeslot.MT_MAXIMUM_PATIENTS}`}
+                                      size="small"
+                                      sx={{ mt: 1 }}
+                                    />
+                                  </Box>
+                                  <IconButton
+                                    color="error"
+                                    onClick={() =>
+                                      Deletetime(timeslot.MT_SLOT_ID)
+                                    }
+                                    aria-label="delete"
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
+                                </Box>
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </Box>
                   ))}
-                </Grid>
+                </Box>
               ) : (
                 <Paper
                   elevation={0}
