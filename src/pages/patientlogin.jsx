@@ -558,17 +558,6 @@ export default function Patientlogin() {
                           <AddIcon color="action" />
                         </InputAdornment>
                       ),
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={handleCancel}
-                            edge="end"
-                            size="small"
-                          >
-                            <CloseIcon fontSize="small" />
-                          </IconButton>
-                        </InputAdornment>
-                      ),
                     }}
                     sx={{ mb: 2 }}
                   />
