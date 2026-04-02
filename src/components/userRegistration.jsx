@@ -255,7 +255,7 @@
 // }
 
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import {
@@ -307,6 +307,37 @@ export default function UserRegistration() {
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const emptyForm = {
+    MPD_EMAIL: "",
+    MPD_NIC_NO: "",
+    MPD_MOBILE_NO: "",
+    MPD_ADDRESS: "",
+    MPD_PASSWORD: "",
+    MPD_PATIENT_NAME: "",
+    MPD_BIRTHDAY: "",
+  };
+
+  useEffect(() => {
+    // Reset internal form state on mount to avoid showing previous values
+    setFormData(emptyForm);
+
+    // Try to prevent browser autofill where possible
+    const formEl = document.getElementById("signup-form");
+    if (formEl) {
+      try {
+        formEl.reset();
+        const inputs = formEl.querySelectorAll("input");
+        inputs.forEach((i) => {
+          i.autocomplete = "off";
+          // clear any visual value that may be set by browser autofill
+          i.value = "";
+        });
+      } catch (err) {
+        // ignore
+      }
+    }
+  }, []);
 
   const validateEmail = (email) => {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -520,7 +551,7 @@ export default function UserRegistration() {
               Fill in your details to get started
             </Typography>
 
-            <form onSubmit={handleSubmit}>
+            <form id="signup-form" autoComplete="off" noValidate onSubmit={handleSubmit}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <TextField
@@ -536,6 +567,7 @@ export default function UserRegistration() {
                           <Person color="primary" />
                         </InputAdornment>
                       ),
+                      inputProps: { autoComplete: 'off' }
                     }}
                     variant="outlined"
                     sx={{ mb: 2 }}
@@ -558,7 +590,7 @@ export default function UserRegistration() {
                           <Phone color={formErrors.contact ? "error" : "primary"} />
                         </InputAdornment>
                       ),
-                      inputProps: { maxLength: 10 },
+                      inputProps: { maxLength: 10, autoComplete: 'off' },
                     }}
                     variant="outlined"
                     sx={{ mb: 2 }}
@@ -582,6 +614,7 @@ export default function UserRegistration() {
                           <Email color={formErrors.email ? "error" : "primary"} />
                         </InputAdornment>
                       ),
+                      inputProps: { autoComplete: 'off' },
                     }}
                     variant="outlined"
                     sx={{ mb: 2 }}
@@ -601,6 +634,7 @@ export default function UserRegistration() {
                           <Home color="primary" />
                         </InputAdornment>
                       ),
+                      inputProps: { autoComplete: 'off' },
                     }}
                     variant="outlined"
                     sx={{ mb: 2 }}
@@ -624,6 +658,7 @@ export default function UserRegistration() {
                           <Lock color={formErrors.password ? "error" : "primary"} />
                         </InputAdornment>
                       ),
+                      inputProps: { autoComplete: 'new-password' }
                     }}
                     variant="outlined"
                     sx={{ mb: 2 }}
@@ -645,6 +680,7 @@ export default function UserRegistration() {
                           <Badge color={formErrors.nic ? "error" : "primary"} />
                         </InputAdornment>
                       ),
+                      inputProps: { autoComplete: 'off' }
                     }}
                     variant="outlined"
                     sx={{ mb: 2 }}
@@ -687,7 +723,8 @@ export default function UserRegistration() {
                         </InputAdornment>
                       ),
                       inputProps: {
-                        max: new Date().toISOString().split('T')[0]
+                        max: new Date().toISOString().split('T')[0],
+                        autoComplete: 'off'
                       }
                     }}
                     variant="outlined"
