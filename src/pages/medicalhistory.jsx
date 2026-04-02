@@ -408,7 +408,7 @@ import {
 } from "@mui/icons-material";
 import Addpatient from "../components/addPatients";
 import AddVitalSigns from "../components/AddVitalSigns";
-import PatientAppointment from "../components/patientappoinment";
+import AdminAppointment from "../components/AdminAppointment";
 
 const API_BASE_URL = "https://testnew.dockyardsoftware.com/api";
 
@@ -1486,7 +1486,7 @@ export default function MedicalHistory() {
           </Box>
         </DialogTitle>
         <DialogContent dividers>
-          <PatientAppointment
+          <AdminAppointment
             patient={selectedPatient}
             onClose={() => {
               setOpenAppointmentDialog(false);
