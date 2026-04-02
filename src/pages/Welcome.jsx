@@ -334,9 +334,11 @@ const Welcome = () => {
     <Box
       sx={{
         position: "relative",
-        width: "100vw",
+        width: "100%",
         minHeight: "100vh",
-        overflow: "hidden",
+        overflowX: "hidden",
+        overflowY: "auto",
+        boxSizing: "border-box",
       }}
     >
       <Box
