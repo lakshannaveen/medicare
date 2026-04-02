@@ -3111,12 +3111,13 @@ const AddRecord = () => {
                       display: "grid",
                       gridTemplateColumns: {
                         xs: "1fr",
-                        sm: "minmax(200px, 2fr) minmax(200px, 1.5fr)",
-                        md: "minmax(200px, 2fr) minmax(200px, 1.5fr) minmax(100px, 0.8fr)",
-                        lg: "minmax(200px, 2fr) minmax(200px, 1.5fr) minmax(100px, 0.8fr) minmax(100px, 0.8fr) minmax(100px, 0.8fr) auto",
+                        sm: "repeat(auto-fit, minmax(150px, 1fr))",
+                        md: "repeat(auto-fit, minmax(160px, 1fr))",
+                        lg: "repeat(6, minmax(120px, 1fr))",
                       },
                       gap: 1.5,
-                      alignItems: "flex-start",
+                      alignItems: "center",
+                      overflow: "visible",
                     }}
                   >
                     {/* Search Medicine - Using Material API */}
@@ -3352,7 +3353,7 @@ const AddRecord = () => {
                     </Box>
 
                     {/* Add Button */}
-                    <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                    <Box sx={{ display: "flex", gap: 1, alignItems: "center", justifySelf: { xs: 'stretch', sm: 'end' }, minWidth: 0 }}>
                       <Button
                         variant="contained"
                         color="primary"
@@ -3621,12 +3622,13 @@ const AddRecord = () => {
                       display: "grid",
                       gridTemplateColumns: {
                         xs: "1fr",
-                        sm: "minmax(200px, 2fr) minmax(150px, 1fr)",
-                        md: "minmax(200px, 2fr) minmax(150px, 1fr) minmax(100px, 0.8fr)",
-                        lg: "minmax(200px, 2fr) minmax(150px, 1fr) minmax(100px, 0.8fr) auto",
+                        sm: "repeat(auto-fit, minmax(150px, 1fr))",
+                        md: "repeat(auto-fit, minmax(140px, 1fr))",
+                        lg: "repeat(4, minmax(120px, 1fr))",
                       },
                       gap: 1.5,
-                      alignItems: "flex-start",
+                      alignItems: "center",
+                      overflow: "visible",
                     }}
                   >
                     {/* Search Service - Using SAME Material API */}
@@ -3782,7 +3784,7 @@ const AddRecord = () => {
                     </Box>
 
                     {/* Add Button */}
-                    <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                    <Box sx={{ display: "flex", gap: 1, alignItems: "center", justifySelf: { xs: 'stretch', sm: 'end' }, minWidth: 0 }}>
                       <Button
                         variant="contained"
                         color="info"
