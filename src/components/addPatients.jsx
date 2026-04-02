@@ -399,6 +399,45 @@ const Addpatient = ({ patientCode, onSuccess, handleClose }) => {
   const theme = useTheme();
   const Name = localStorage.getItem("Name");
   const role = localStorage.getItem("Role");
+  const emptyForm = {
+    MPD_PATIENT_NAME: "",
+    MPD_MOBILE_NO: "",
+    MPD_NIC_NO: "",
+    MPD_PATIENT_REMARKS: "",
+    MPD_ADDRESS: "",
+    MPD_CITY: "",
+    MPD_REMARKS: "",
+    MPD_GUARDIAN: "",
+    MPD_GUARDIAN_CONTACT_NO: "",
+    MPD_PATIENT_CODE: "",
+    MPD_EMAIL: "",
+    MPD_PATIENT_TYPE: "",
+    MPD_STATUS: "",
+    MPD_CREATED_BY: Name,
+    MPD_UPDATED_BY: "",
+    MPD_BIRTHDAY: null,
+    MPD_GENDER: "",
+    MPD_CREATED_DATE: new Date().toISOString(),
+    MPD_UPDATED_DATE: null,
+  };
+
+  useEffect(() => {
+    // Clear any auto-filled values when creating a new patient
+    if (!patientCode) {
+      setFormData(emptyForm);
+      const formEl = document.querySelector('form');
+      if (formEl) {
+        try {
+          formEl.reset();
+          const inputs = formEl.querySelectorAll('input');
+          inputs.forEach((i) => {
+            i.autocomplete = 'off';
+            i.value = '';
+          });
+        } catch (err) {}
+      }
+    }
+  }, [patientCode]);
   const [formData, setFormData] = useState({
     MPD_PATIENT_NAME: "",
     MPD_MOBILE_NO: "",
@@ -427,7 +466,10 @@ const Addpatient = ({ patientCode, onSuccess, handleClose }) => {
     contact: "",
     nic: "",
     guardianContact: "",
+    name: "",
+    guardianName: "",
   });
+  
   const [isLoading, setIsLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
@@ -474,32 +516,52 @@ const Addpatient = ({ patientCode, onSuccess, handleClose }) => {
     const { name, value } = e.target;
     let errors = { ...formErrors };
 
+    // Pre-process input to restrict characters as user types
+    let processedValue = value;
+    if (name === "MPD_PATIENT_NAME") {
+      // Allow letters and spaces only
+      processedValue = value.replace(/[^A-Za-z\s]/g, "");
+      errors.name = value !== processedValue ? "Only letters and spaces allowed" : "";
+    }
+    if (name === "MPD_GUARDIAN") {
+      processedValue = value.replace(/[^A-Za-z\s]/g, "");
+      errors.guardianName = value !== processedValue ? "Only letters and spaces allowed" : "";
+    }
+    if (name === "MPD_MOBILE_NO" || name === "MPD_GUARDIAN_CONTACT_NO") {
+      // Allow digits only and limit to 10 chars
+      processedValue = value.replace(/\D/g, "").slice(0, 10);
+    }
+    if (name === "MPD_NIC_NO") {
+      // Allow digits and V/v/X/x characters, limit to 12
+      processedValue = value.replace(/[^0-9VvXx]/g, "").slice(0, 12);
+    }
+
     if (name === "MPD_EMAIL") {
       errors.email =
-        value.trim() === "" || validateEmail(value)
+        processedValue.trim() === "" || validateEmail(processedValue)
           ? ""
           : "Invalid email format";
     }
     if (name === "MPD_MOBILE_NO") {
       errors.contact =
-        value.trim() === "" || validateContactNumber(value)
+        processedValue.trim() === "" || validateContactNumber(processedValue)
           ? ""
           : "Contact number should be 10 digits";
     }
     if (name === "MPD_GUARDIAN_CONTACT_NO") {
       errors.guardianContact =
-        value.trim() === "" || validateContactNumber(value)
+        processedValue.trim() === "" || validateContactNumber(processedValue)
           ? ""
           : "Guardian contact number should be 10 digits";
     }
     if (name === "MPD_NIC_NO") {
       errors.nic =
-        value.trim() === "" || validateNIC(value) ? "" : "Invalid NIC format";
+        processedValue.trim() === "" || validateNIC(processedValue) ? "" : "Invalid NIC format";
     }
 
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: processedValue,
     });
     setFormErrors(errors);
   };
@@ -519,7 +581,14 @@ const Addpatient = ({ patientCode, onSuccess, handleClose }) => {
     e.preventDefault();
     setErrorMessage("");
 
-    if (formErrors.email || formErrors.contact || formErrors.nic) {
+    if (
+      formErrors.email ||
+      formErrors.contact ||
+      formErrors.nic ||
+      formErrors.guardianContact ||
+      formErrors.name ||
+      formErrors.guardianName
+    ) {
       setErrorMessage("Please correct the errors before submitting the form.");
       return;
     }
@@ -655,6 +724,7 @@ const Addpatient = ({ patientCode, onSuccess, handleClose }) => {
                     startAdornment: (
                       <PersonIcon sx={{ mr: 1, color: "primary.main" }} />
                     ),
+                    inputProps: { autoComplete: 'off' }
                   }}
                 />
               </Grid>
@@ -672,6 +742,7 @@ const Addpatient = ({ patientCode, onSuccess, handleClose }) => {
                     startAdornment: (
                       <BadgeIcon sx={{ mr: 1, color: "primary.main" }} />
                     ),
+                    inputProps: { autoComplete: 'off' }
                   }}
                 />
               </Grid>
@@ -709,6 +780,7 @@ const Addpatient = ({ patientCode, onSuccess, handleClose }) => {
                     startAdornment: (
                       <CakeIcon sx={{ mr: 1, color: "primary.main" }} />
                     ),
+                    inputProps: { autoComplete: 'off' }
                   }}
                 />
               </Grid>
@@ -742,6 +814,7 @@ const Addpatient = ({ patientCode, onSuccess, handleClose }) => {
                     startAdornment: (
                       <PhoneIcon sx={{ mr: 1, color: "primary.main" }} />
                     ),
+                    inputProps: { inputMode: 'numeric', pattern: '[0-9]*', autoComplete: 'off' }
                   }}
                 />
               </Grid>
@@ -790,6 +863,7 @@ const Addpatient = ({ patientCode, onSuccess, handleClose }) => {
                     startAdornment: (
                       <LocationCityIcon sx={{ mr: 1, color: "primary.main" }} />
                     ),
+                    inputProps: { autoComplete: 'off' }
                   }}
                 />
               </Grid>
@@ -820,6 +894,7 @@ const Addpatient = ({ patientCode, onSuccess, handleClose }) => {
                     startAdornment: (
                       <PersonIcon sx={{ mr: 1, color: "primary.main" }} />
                     ),
+                    inputProps: { autoComplete: 'off' }
                   }}
                 />
               </Grid>
@@ -837,6 +912,7 @@ const Addpatient = ({ patientCode, onSuccess, handleClose }) => {
                     startAdornment: (
                       <PhoneIcon sx={{ mr: 1, color: "primary.main" }} />
                     ),
+                    inputProps: { inputMode: 'numeric', pattern: '[0-9]*', autoComplete: 'off' }
                   }}
                 />
               </Grid>
