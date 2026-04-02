@@ -156,7 +156,10 @@ export default function Appointment() {
                   type="text"
                   placeholder="Enter your contact details"
                   value={contact}
-                  onChange={(e) => setContact(e.target.value)}
+                  maxLength={10}
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  onChange={(e) => setContact(e.target.value.replace(/\D/g, ''))}
                 />
               </div>
 
