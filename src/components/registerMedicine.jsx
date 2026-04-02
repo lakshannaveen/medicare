@@ -1574,10 +1574,14 @@ export default function RegisterMedicine() {
             />
 
             <Box
+              className="search-add-container"
               sx={{
                 display: "flex",
                 gap: 2,
                 width: isMobile ? "100%" : "auto",
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: isMobile ? "flex-end" : "flex-start",
               }}
             >
               {lowStockItems.length > 0 && (
@@ -1596,6 +1600,7 @@ export default function RegisterMedicine() {
                 startIcon={<AddIcon />}
                 onClick={toggleDialog}
                 fullWidth={isMobile}
+                sx={{ minWidth: 110 }}
               >
                 Add Item
               </Button>
@@ -1607,6 +1612,7 @@ export default function RegisterMedicine() {
                 onClick={refreshMedicines}
                 disabled={loading}
                 fullWidth={isMobile}
+                sx={{ minWidth: 110 }}
               >
                 Refresh
               </Button>

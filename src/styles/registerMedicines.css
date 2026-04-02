@@ -74,6 +74,20 @@
   margin-top: -10px;
 }
 
+/* Ensure action buttons in the search area don't overlap the container
+   and wrap properly on small screens */
+.search-add-container {
+  position: relative;
+  overflow: visible;
+}
+
+.search-add-container .MuiButton-root {
+  position: relative;
+  z-index: 5;
+  flex-shrink: 0;
+  min-width: 110px;
+}
+
 @media (min-width: 600px) {
   .search-add-container {
     flex-direction: row; /* Row layout for larger screens */
