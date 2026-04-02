@@ -680,7 +680,7 @@ export default function DailyAppointment() {
       </Box>
 
       {/* Main Content */}
-      <Box sx={{ p: { xs: 2, sm: 3 } }}>
+      <Box sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
         {/* Summary Cards */}
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={6} sm={3}>
@@ -1355,6 +1355,8 @@ export default function DailyAppointment() {
                       key={slot.MT_SLOT_ID}
                       elevation={0}
                       sx={{
+                        width: "100%",
+                        boxSizing: "border-box",
                         border: `1px solid ${isExpanded ? BRAND.main : BRAND.bg}`,
                         borderRadius: "16px",
                         overflow: "hidden",
@@ -1381,8 +1383,8 @@ export default function DailyAppointment() {
                       >
                         <Avatar
                           sx={{
-                            width: 56,
-                            height: 56,
+                            width: { xs: 40, sm: 56 },
+                            height: { xs: 40, sm: 56 },
                             bgcolor: isExpanded ? BRAND.main : BRAND.bg,
                             color: isExpanded ? "#fff" : BRAND.main,
                             fontWeight: 800,
