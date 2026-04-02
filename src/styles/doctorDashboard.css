@@ -183,6 +183,11 @@ body {
     }
 }
 
+/* Hide hamburger menu icon by default (desktop/tablet) */
+.menu-icon {
+    display: none;
+}
+
 @media (max-width: 600px) {
     .sidebar {
         position: fixed;
@@ -207,6 +212,7 @@ body {
     }
 
     .menu-icon {
+        display: block;
         position: fixed;
         top: 20px;
         left: 20px;
