@@ -1084,18 +1084,33 @@ export default function DailyAppointment() {
             <Chip
               icon={<HourglassIcon />}
               label={`${totalPending} Pending`}
-              sx={{ bgcolor: alpha('#fff', 0.2), color: '#fff', fontWeight: 600 }}
+              sx={{
+                bgcolor: alpha('#fff', 0.2),
+                color: '#fff',
+                fontWeight: 600,
+                pointerEvents: "none", // purely visual indicator
+              }}
             />
             <Chip
               icon={<CheckCircleIcon />}
               label={`${totalCompleted} Completed`}
-              sx={{ bgcolor: alpha('#fff', 0.2), color: '#fff', fontWeight: 600 }}
+              sx={{
+                bgcolor: alpha('#fff', 0.2),
+                color: '#fff',
+                fontWeight: 600,
+                pointerEvents: "none", // purely visual indicator
+              }}
             />
             {totalCancelled > 0 && (
               <Chip
                 icon={<PersonOffIcon />}
                 label={`${totalCancelled} Cancelled`}
-                sx={{ bgcolor: alpha('#fff', 0.2), color: '#fff', fontWeight: 600 }}
+                sx={{
+                  bgcolor: alpha('#fff', 0.2),
+                  color: '#fff',
+                  fontWeight: 600,
+                  pointerEvents: "none", // purely visual indicator
+                }}
               />
             )}
           </Box>
@@ -1221,14 +1236,24 @@ export default function DailyAppointment() {
                                 <Chip
                                   size="small"
                                   label={`${stats.pending} Pending`}
-                                  sx={{ bgcolor: "#fef3c7", color: "#b45309", fontWeight: 600 }}
+                                  sx={{
+                                    bgcolor: "#fef3c7",
+                                    color: "#b45309",
+                                    fontWeight: 600,
+                                    pointerEvents: "none", // purely visual indicator
+                                  }}
                                 />
                               )}
                               {stats.completed > 0 && (
                                 <Chip
                                   size="small"
                                   label={`${stats.completed} Completed`}
-                                  sx={{ bgcolor: "#dcfce7", color: "#15803d", fontWeight: 600 }}
+                                  sx={{
+                                    bgcolor: "#dcfce7",
+                                    color: "#15803d",
+                                    fontWeight: 600,
+                                    pointerEvents: "none", // purely visual indicator
+                                  }}
                                 />
                               )}
                             </Box>
@@ -1466,18 +1491,30 @@ export default function DailyAppointment() {
                                       <Chip
                                         size="small"
                                         label={`${stats.pending} Pending`}
-                                        sx={{ bgcolor: "#fef3c7", color: "#b45309" }}
+                                        sx={{
+                                          bgcolor: "#fef3c7",
+                                          color: "#b45309",
+                                          pointerEvents: "none", // purely visual indicator
+                                        }}
                                       />
                                       <Chip
                                         size="small"
                                         label={`${stats.completed} Completed`}
-                                        sx={{ bgcolor: "#dcfce7", color: "#15803d" }}
+                                        sx={{
+                                          bgcolor: "#dcfce7",
+                                          color: "#15803d",
+                                          pointerEvents: "none", // purely visual indicator
+                                        }}
                                       />
                                       {stats.cancelled > 0 && (
                                         <Chip
                                           size="small"
                                           label={`${stats.cancelled} Cancelled`}
-                                          sx={{ bgcolor: "#fee2e2", color: "#b91c1c" }}
+                                          sx={{
+                                            bgcolor: "#fee2e2",
+                                            color: "#b91c1c",
+                                            pointerEvents: "none", // purely visual indicator
+                                          }}
                                         />
                                       )}
                                     </Box>
