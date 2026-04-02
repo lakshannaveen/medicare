@@ -647,7 +647,7 @@ const SpecializationChip = styled(Chip)(({ theme }) => ({
 
 const steps = ["Login", "Find Doctor", "Select Time", "Confirm"];
 
-export default function PatientAppointment({ onClose }) {
+export default function PatientAppointment({ onClose, patient }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [query, setQuery] = useState("");
@@ -671,12 +671,22 @@ export default function PatientAppointment({ onClose }) {
   const [activeStep, setActiveStep] = useState(0);
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
-    if (isLoggedIn) {
+    if (patient) {
+      setFullName(patient.MPD_PATIENT_NAME);
+      setContact(patient.MPD_MOBILE_NO);
+      localStorage.setItem("PatientCode", patient.MPD_PATIENT_CODE);
+      localStorage.setItem("Name", patient.MPD_PATIENT_NAME);
+      localStorage.setItem("Contact", patient.MPD_MOBILE_NO);
       setCurrentScreen(1);
       setActiveStep(1);
+    } else {
+      const isLoggedIn = localStorage.getItem("isLoggedIn");
+      if (isLoggedIn) {
+        setCurrentScreen(1);
+        setActiveStep(1);
+      }
     }
-  }, []);
+  }, [patient]);
 
   const name = localStorage.getItem("Name");
   const contact = localStorage.getItem("Contact");

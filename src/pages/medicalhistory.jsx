@@ -404,9 +404,11 @@ import {
   Height as HeightIcon,
   LineWeight as LineWeightIcon,
   Timeline as TimelineIcon,
+  Event as EventIcon,
 } from "@mui/icons-material";
 import Addpatient from "../components/addPatients";
 import AddVitalSigns from "../components/AddVitalSigns";
+import PatientAppointment from "../components/patientappoinment";
 
 const API_BASE_URL = "https://testnew.dockyardsoftware.com/api";
 
@@ -421,6 +423,7 @@ export default function MedicalHistory() {
   const [openTreatmentDialog, setOpenTreatmentDialog] = useState(false);
   const [openVitalSignsDialog, setOpenVitalSignsDialog] = useState(false);
   const [openAddVitalSignsDialog, setOpenAddVitalSignsDialog] = useState(false);
+  const [openAppointmentDialog, setOpenAppointmentDialog] = useState(false);
   const [treatments, setTreatments] = useState([]);
   const [vitalSigns, setVitalSigns] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -895,6 +898,19 @@ export default function MedicalHistory() {
                             onClick={() => handleViewVitalSigns(patient)}
                           >
                             <MonitorHeartIcon />
+                          </IconButton>
+                        </Tooltip>
+
+                        {/* Book Appointment Button */}
+                        <Tooltip title="Book Appointment">
+                          <IconButton
+                            color="success"
+                            onClick={() => {
+                              setSelectedPatient(patient);
+                              setOpenAppointmentDialog(true);
+                            }}
+                          >
+                            <EventIcon />
                           </IconButton>
                         </Tooltip>
                       </Box>
@@ -1445,6 +1461,39 @@ export default function MedicalHistory() {
             Close
           </Button>
         </DialogActions>
+      </Dialog>
+
+      {/* Book Appointment Dialog */}
+      <Dialog
+        open={openAppointmentDialog}
+        onClose={() => setOpenAppointmentDialog(false)}
+        fullWidth
+        maxWidth="lg"
+      >
+        <DialogTitle>
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Typography variant="h6">
+              Book Appointment for {selectedPatient?.MPD_PATIENT_NAME}
+            </Typography>
+            <IconButton 
+              onClick={() => {
+                setOpenAppointmentDialog(false);
+                setSelectedPatient(null);
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent dividers>
+          <PatientAppointment
+            patient={selectedPatient}
+            onClose={() => {
+              setOpenAppointmentDialog(false);
+              setSelectedPatient(null);
+            }}
+          />
+        </DialogContent>
       </Dialog>
 
       <Snackbar
