@@ -457,7 +457,7 @@ export default function UserRegistration() {
   return (
     <>
       <CssBaseline />
-      <Grid container sx={{ height: "100vh", width: "100vw" }}>
+      <Grid container sx={{ height: "100vh", width: "100%", overflowX: 'hidden' }}>
         <Grid
           item
           xs={12}

@@ -747,7 +747,7 @@ const Addpatient = ({ patientCode, onSuccess, handleClose }) => {
                 />
               </Grid>
               <Grid item xs={12} sm={6} sx={{ minHeight: "80px" }}>
-                <Box sx={{ width: "200%" }}>
+                <Box sx={{ width: "100%" }}>
                   <FormControl fullWidth size="small">
                     <InputLabel>Gender</InputLabel>
                     <Select
@@ -963,18 +963,20 @@ const Addpatient = ({ patientCode, onSuccess, handleClose }) => {
                   color="primary"
                   size="large"
                   disabled={isLoading || (role !== "Doc" && role !== "Admin")}
+                  fullWidth
                   sx={{
-                    minWidth: 700,
+                    width: { xs: '100%', sm: 420, md: 700 },
+                    maxWidth: 700,
                     py: 1.5,
-                    fontSize: "1rem",
-                    ...(role !== "Doc" &&
-                      role !== "Admin" && {
-                      cursor: "not-allowed",
-                      pointerEvents: "auto",
-                      "&:hover": {
-                        backgroundColor: theme.palette.primary.main,
-                      },
-                    }),
+                    fontSize: '1rem',
+                    ...(role !== 'Doc' &&
+                      role !== 'Admin' && {
+                        cursor: 'not-allowed',
+                        pointerEvents: 'auto',
+                        '&:hover': {
+                          backgroundColor: theme.palette.primary.main,
+                        },
+                      }),
                   }}
                   onClick={(e) => {
                     if (role !== "Doc" && role !== "Admin") {
