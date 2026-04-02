@@ -1,5 +1,3 @@
-
-
 // import React, { useState, useEffect } from "react";
 // import axios from "axios";
 // import { useNavigate } from "react-router-dom";
@@ -312,13 +310,34 @@
 //   );
 // }
 
-
-
 // src/components/Laboratory.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, CircularProgress, Snackbar, Alert, Box, Button, IconButton, MenuItem, useTheme } from "@mui/material";
-import { Search as SearchIcon, MedicalServices as MedicalServicesIcon, Visibility as VisibilityIcon } from "@mui/icons-material";
+import {
+  Container,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+  CircularProgress,
+  Snackbar,
+  Alert,
+  Box,
+  Button,
+  IconButton,
+  MenuItem,
+  useTheme,
+} from "@mui/material";
+import {
+  Search as SearchIcon,
+  MedicalServices as MedicalServicesIcon,
+  Visibility as VisibilityIcon,
+} from "@mui/icons-material";
 import ViewReport from "./ViewReport"; // Modal component
 import { useNavigate } from "react-router-dom";
 
@@ -354,7 +373,9 @@ export default function Laboratory() {
   const fetchAllPatients = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/Patient`);
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/Patient`,
+      );
       setPatients(res.data);
       setFilteredPatients(res.data);
     } catch {
@@ -368,7 +389,9 @@ export default function Laboratory() {
   // Fetch Labs
   const fetchLabs = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/LabMaster`);
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/LabMaster`,
+      );
       setLabList(res.data);
     } catch {
       setLabList([]);
@@ -385,7 +408,7 @@ export default function Laboratory() {
     const filtered = patients.filter(
       (p) =>
         p.MPD_PATIENT_NAME.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.MPD_MOBILE_NO.includes(searchTerm)
+        p.MPD_MOBILE_NO.includes(searchTerm),
     );
     setFilteredPatients(filtered);
   }, [searchTerm, patients]);
@@ -432,7 +455,10 @@ export default function Laboratory() {
     formData.append("MLT_REPORT_RESULT", "Requested");
 
     try {
-      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/LabTransaction/upload`, formData);
+      await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/LabTransaction/upload`,
+        formData,
+      );
       showMsg("Lab request saved successfully", "success");
       clearRow(code);
     } catch (err) {
@@ -455,7 +481,13 @@ export default function Laboratory() {
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Paper sx={{ p: 3 }}>
-        <Typography variant="h4" color="primary" fontWeight={600} align="center" mb={3}>
+        <Typography
+          variant="h4"
+          color="primary"
+          fontWeight={600}
+          align="center"
+          mb={3}
+        >
           Laboratory
         </Typography>
 
@@ -498,18 +530,32 @@ export default function Laboratory() {
 
                       <TableCell>
                         <Box display="flex" flexDirection="column" gap={1}>
-                          <TextField size="small" label="Doctor ID" value={doctorId} disabled />
+                          <TextField
+                            size="small"
+                            label="Doctor ID"
+                            value={doctorId}
+                            disabled
+                          />
 
                           <TextField
                             select
                             size="small"
                             label="Lab"
                             value={labInputs[code]?.MLT_LAB_ID || ""}
-                            onChange={(e) => handleLabChange(code, "MLT_LAB_ID", e.target.value)}
+                            onChange={(e) =>
+                              handleLabChange(
+                                code,
+                                "MLT_LAB_ID",
+                                e.target.value,
+                              )
+                            }
                           >
                             <MenuItem value="">Select Lab</MenuItem>
                             {labList.map((lab) => (
-                              <MenuItem key={lab.MLM_LAB_ID} value={lab.MLM_LAB_ID}>
+                              <MenuItem
+                                key={lab.MLM_LAB_ID}
+                                value={lab.MLM_LAB_ID}
+                              >
                                 {lab.MLM_LAB_NAME}
                               </MenuItem>
                             ))}
@@ -519,21 +565,39 @@ export default function Laboratory() {
                             size="small"
                             label="Test Name"
                             value={labInputs[code]?.MLT_TEST_NAME || ""}
-                            onChange={(e) => handleLabChange(code, "MLT_TEST_NAME", e.target.value)}
+                            onChange={(e) =>
+                              handleLabChange(
+                                code,
+                                "MLT_TEST_NAME",
+                                e.target.value,
+                              )
+                            }
                           />
 
-                          <Button variant="contained" size="small" onClick={() => handleLabSubmit(p)}>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            onClick={() => handleLabSubmit(p)}
+                          >
                             Save
                           </Button>
                         </Box>
                       </TableCell>
 
                       <TableCell>
-                        <IconButton color="primary" onClick={() => navigate(`/dashboard/addrecord/${code}`)}>
+                        <IconButton
+                          color="primary"
+                          onClick={() =>
+                            navigate(`/dashboard/addrecord/${code}`)
+                          }
+                        >
                           <MedicalServicesIcon />
                         </IconButton>
 
-                        <IconButton color="secondary" onClick={() => handleOpenReport(code)}>
+                        <IconButton
+                          color="secondary"
+                          onClick={() => handleOpenReport(code)}
+                        >
                           <VisibilityIcon />
                         </IconButton>
                       </TableCell>
@@ -551,11 +615,39 @@ export default function Laboratory() {
         autoHideDuration={4000}
         onClose={() => setSnackbarOpen(false)}
       >
-        <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert>
+        {/* <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert> */}
+        <Alert
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{
+            width: "100%",
+            minWidth: "420px",
+            fontSize: "1.1rem",
+            fontWeight: 600,
+            py: 1.5,
+            px: 2,
+            borderRadius: "14px",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+            "& .MuiAlert-icon": {
+              fontSize: "32px",
+              alignItems: "center",
+            },
+            "& .MuiAlert-message": {
+              fontSize: "1.05rem",
+              fontWeight: 600,
+            },
+          }}
+        >
+          {snackbarMessage}
+        </Alert>
       </Snackbar>
 
       {/* Report Modal */}
-      <ViewReport open={reportOpen} onClose={handleCloseReport} patientCode={selectedPatientCode} />
+      <ViewReport
+        open={reportOpen}
+        onClose={handleCloseReport}
+        patientCode={selectedPatientCode}
+      />
     </Container>
   );
 }

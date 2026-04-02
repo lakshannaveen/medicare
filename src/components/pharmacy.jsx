@@ -1181,7 +1181,7 @@ export default function Pharmacy() {
   const fetchPharmacyPatients = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/Treatment/preparationcomplete`
+        `${process.env.REACT_APP_API_BASE_URL}/Treatment/preparationcomplete`,
       );
       const sortedPatients = response.data.sort((a, b) => {
         return new Date(b.MTD_DATE) - new Date(a.MTD_DATE);
@@ -1241,12 +1241,12 @@ export default function Pharmacy() {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/Treatment/patient/record/${patientId}/${serialNo}`
+        `${process.env.REACT_APP_API_BASE_URL}/Treatment/patient/record/${patientId}/${serialNo}`,
       );
 
       const pendingDrugs = response.data.Drugs.filter(
         (drug) =>
-          drug.MDD_GIVEN_QUANTITY === null || drug.MDD_GIVEN_QUANTITY <= 0
+          drug.MDD_GIVEN_QUANTITY === null || drug.MDD_GIVEN_QUANTITY <= 0,
       );
 
       const updatedDrugs = pendingDrugs.map((drug) => ({
@@ -1413,13 +1413,13 @@ export default function Pharmacy() {
     }
 
     const outOfStockDrugs = selectedMedicines.filter(
-      (drug) => drug.MDD_GIVEN_QUANTITY > drug.Stock
+      (drug) => drug.MDD_GIVEN_QUANTITY > drug.Stock,
     );
 
     if (outOfStockDrugs.length > 0) {
       const drugNames = outOfStockDrugs.map((d) => d.DrugName).join(", ");
       setError(
-        `Cannot provide these medicines due to insufficient stock: ${drugNames}`
+        `Cannot provide these medicines due to insufficient stock: ${drugNames}`,
       );
       return;
     }
@@ -1435,7 +1435,7 @@ export default function Pharmacy() {
           MDD_MATERIAL_CODE: drug.MDD_MATERIAL_CODE,
           MDD_GIVEN_QUANTITY: drug.MDD_GIVEN_QUANTITY,
         })),
-        { headers: { "Content-Type": "application/json" } }
+        { headers: { "Content-Type": "application/json" } },
       );
 
       if (response.data.isCompleted) {
@@ -1443,11 +1443,11 @@ export default function Pharmacy() {
         fetchPharmacyPatients();
       } else {
         showSnackbar(
-          "Medicines processed successfully. Treatment still pending."
+          "Medicines processed successfully. Treatment still pending.",
         );
         fetchTreatmentDetails(
           selectedPatient.MPD_PATIENT_CODE,
-          selectedPatient.MTD_SERIAL_NO
+          selectedPatient.MTD_SERIAL_NO,
         );
       }
 
@@ -1459,7 +1459,7 @@ export default function Pharmacy() {
             totaldrugfee,
             updatedStocks: response.data.updatedDrugs,
           },
-        }
+        },
       );
     } catch (error) {
       console.error("Error updating treatment status:", error);
@@ -1484,15 +1484,15 @@ export default function Pharmacy() {
       (patient) =>
         patient.MPD_MOBILE_NO.includes(searchTerm) ||
         patient.MPD_PATIENT_NAME.toLowerCase().includes(
-          searchTerm.toLowerCase()
-        )
+          searchTerm.toLowerCase(),
+        ),
     )
     .sort((a, b) => new Date(b.MTD_DATE) - new Date(a.MTD_DATE));
 
   const calculateTotalDrugFee = (medicines) => {
     const totalFee = medicines.reduce(
       (total, drug) => total + (drug.MDD_GIVEN_QUANTITY || 0) * drug.MDD_RATE,
-      0
+      0,
     );
     setTotaldrugfee(totalFee);
   };
@@ -1504,14 +1504,14 @@ export default function Pharmacy() {
     if (event.target.checked) {
       if (
         !updatedMedicines.some(
-          (drug) => drug.MDD_MATERIAL_CODE === selectedDrug.MDD_MATERIAL_CODE
+          (drug) => drug.MDD_MATERIAL_CODE === selectedDrug.MDD_MATERIAL_CODE,
         )
       ) {
         updatedMedicines.push(selectedDrug);
       }
     } else {
       const index = updatedMedicines.findIndex(
-        (drug) => drug.MDD_MATERIAL_CODE === selectedDrug.MDD_MATERIAL_CODE
+        (drug) => drug.MDD_MATERIAL_CODE === selectedDrug.MDD_MATERIAL_CODE,
       );
       if (index > -1) {
         updatedMedicines.splice(index, 1);
@@ -1527,7 +1527,7 @@ export default function Pharmacy() {
 
     setTreatment((prevTreatment) => {
       const updatedDrugs = prevTreatment.Drugs.map((drug, i) =>
-        i === drugIndex ? { ...drug, MDD_GIVEN_QUANTITY: validQuantity } : drug
+        i === drugIndex ? { ...drug, MDD_GIVEN_QUANTITY: validQuantity } : drug,
       );
       return { ...prevTreatment, Drugs: updatedDrugs };
     });
@@ -1536,7 +1536,7 @@ export default function Pharmacy() {
       const updatedSelected = prevSelected.map((drug) =>
         drug.MDD_MATERIAL_CODE === treatments.Drugs[drugIndex].MDD_MATERIAL_CODE
           ? { ...drug, MDD_GIVEN_QUANTITY: validQuantity }
-          : drug
+          : drug,
       );
       calculateTotalDrugFee(updatedSelected);
       return updatedSelected;
@@ -1548,7 +1548,8 @@ export default function Pharmacy() {
   const isDrugSelected = (drugIndex) => {
     return selectedMedicines.some(
       (drug) =>
-        drug.MDD_MATERIAL_CODE === treatments.Drugs[drugIndex].MDD_MATERIAL_CODE
+        drug.MDD_MATERIAL_CODE ===
+        treatments.Drugs[drugIndex].MDD_MATERIAL_CODE,
     );
   };
 
@@ -1967,7 +1968,7 @@ export default function Pharmacy() {
                                   onChange={(e) =>
                                     handleQuantityChange(
                                       index,
-                                      Number(e.target.value)
+                                      Number(e.target.value),
                                     )
                                   }
                                   inputProps={{
@@ -2089,10 +2090,35 @@ export default function Pharmacy() {
           onClose={handleSnackbarClose}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          <Alert
+          {/* <Alert
             onClose={handleSnackbarClose}
             severity={snackbarSeverity}
             sx={{ width: "100%" }}
+          >
+            {snackbarMessage}
+          </Alert> */}
+          <Alert
+            onClose={handleSnackbarClose}
+            severity={snackbarSeverity}
+            variant="filled"
+            sx={{
+              width: "100%",
+              minWidth: "420px",
+              fontSize: "1.1rem",
+              fontWeight: 600,
+              py: 1.5,
+              px: 2,
+              borderRadius: "14px",
+              boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+              "& .MuiAlert-icon": {
+                fontSize: "32px",
+                alignItems: "center",
+              },
+              "& .MuiAlert-message": {
+                fontSize: "1.05rem",
+                fontWeight: 600,
+              },
+            }}
           >
             {snackbarMessage}
           </Alert>

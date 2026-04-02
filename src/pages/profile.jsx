@@ -339,7 +339,6 @@
 //   );
 // }
 
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -412,7 +411,7 @@ const StatusBadge = styled(Chip)(({ theme, status }) => ({
     status === "Completed"
       ? theme.palette.success.light
       : theme.palette.error.light,
-  color:"#fff",
+  color: "#fff",
   "& .MuiChip-icon": {
     color:
       status === "Completed"
@@ -502,7 +501,7 @@ export default function Profile() {
     if (email1) {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/Appointment/getappointment/patientcode?patientcode=${patientid}`
+          `${process.env.REACT_APP_API_BASE_URL}/Appointment/getappointment/patientcode?patientcode=${patientid}`,
         );
         setUserAppointments(response.data);
         setDisplayedAppointments(response.data.slice(0, 5));
@@ -519,7 +518,7 @@ export default function Profile() {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/Patient/patient/findbyid?patientcode=${patientid}`
+        `${process.env.REACT_APP_API_BASE_URL}/Patient/patient/findbyid?patientcode=${patientid}`,
       );
       setProfiledata(response.data);
       setUpdatedProfile(response.data);
@@ -604,7 +603,7 @@ export default function Profile() {
       await axios.put(
         `${process.env.REACT_APP_API_BASE_URL}/Patient/${updatedProfile.MPD_PATIENT_CODE}`,
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        { headers: { "Content-Type": "multipart/form-data" } },
       );
       setProfiledata(updatedProfile);
       setOriginalProfile(updatedProfile);
@@ -623,7 +622,7 @@ export default function Profile() {
     setImagePreview(
       originalProfile.MPD_PHOTO
         ? `data:image/jpeg;base64,${originalProfile.MPD_PHOTO}`
-        : null
+        : null,
     );
     setProfileImage(null);
     setEmailerror("");
@@ -675,7 +674,7 @@ export default function Profile() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              mb: 3, 
+              mb: 3,
             }}
           >
             <Typography
@@ -1063,10 +1062,35 @@ export default function Profile() {
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Alert
+        {/* <Alert
           onClose={handleSnackbarClose}
           severity={snackbarSeverity}
           sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert> */}
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{
+            width: "100%",
+            minWidth: "420px",
+            fontSize: "1.1rem",
+            fontWeight: 600,
+            py: 1.5,
+            px: 2,
+            borderRadius: "14px",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+            "& .MuiAlert-icon": {
+              fontSize: "32px",
+              alignItems: "center",
+            },
+            "& .MuiAlert-message": {
+              fontSize: "1.05rem",
+              fontWeight: 600,
+            },
+          }}
         >
           {snackbarMessage}
         </Alert>

@@ -160,7 +160,7 @@
 //         `${process.env.REACT_APP_API_BASE_URL}/Material/low-stock`
 //       );
 //       setLowStockItems(response.data);
-      
+
 //       // Show warning if there are low stock items
 //       if (response.data.length > 0) {
 //         showSnackbar(`${response.data.length} item(s) are low in stock`, "warning");
@@ -183,7 +183,7 @@
 //         // Use MMC_CURRENT_STOCK from the API response
 //         const sortedMedicines = response.data.sort((a, b) => b.isNew - a.isNew);
 //         setMedicines(sortedMedicines);
-        
+
 //         // Fetch low stock items after medicines are loaded
 //         await fetchLowStock();
 //       } catch (error) {
@@ -244,10 +244,10 @@
 //           ),
 //         }))
 //       );
-      
+
 //       // Refresh low stock data
 //       await fetchLowStock();
-      
+
 //       showSnackbar("Medicine list refreshed");
 //     } catch (error) {
 //       console.error("Error refreshing medicines:", error);
@@ -277,10 +277,10 @@
 //         if (medicine.MMC_MATERIAL_CODE === stockDialog.materialCode) {
 //           const currentStock = parseFloat(medicine.MMC_CURRENT_STOCK || 0);
 //           const quantity = parseFloat(stockDialog.quantity);
-//           const newStock = stockDialog.type === 'in' 
-//             ? currentStock + quantity 
+//           const newStock = stockDialog.type === 'in'
+//             ? currentStock + quantity
 //             : Math.max(0, currentStock - quantity);
-          
+
 //           return {
 //             ...medicine,
 //             MMC_CURRENT_STOCK: newStock
@@ -503,7 +503,7 @@
 //                   sx={{ fontWeight: "bold" }}
 //                 />
 //               )}
-              
+
 //               <Button
 //                 variant="contained"
 //                 color="primary"
@@ -602,7 +602,7 @@
 //                           backgroundColor: getRowBackgroundColor(medicine),
 //                           transition: "background-color 0.3s ease",
 //                           '&:hover': {
-//                             backgroundColor: isLowStock(medicine) 
+//                             backgroundColor: isLowStock(medicine)
 //                               ? theme.palette.error.light + '40'
 //                               : theme.palette.action.hover,
 //                           },
@@ -1021,59 +1021,59 @@ import {
   Outbound as StockOutIcon,
   Warning as WarningIcon,
 } from "@mui/icons-material";
-import { NumericFormat } from 'react-number-format';
+import { NumericFormat } from "react-number-format";
 
 // Unit mapping object to convert unit codes to display names
 const UNIT_MAP = {
-  "BOX": "Box",
-  "MGM": "Milligrams (mg)",
-  "MLT": "Millilitres (ml)",
-  "MCG": "Micro grams (mcg)",
-  "BTL": "Bottle (Solid Oral)",
-  "BLP": "Blister Pack",
-  "BLC": "Blister Card",
-  "STP": "Strip Pack",
-  "PCH": "Pouch",
-  "STB": "Stock Bottle",
-  "DSP": "Dispenser Pack",
-  "SCT": "Sachet",
-  "SOL": "Vial (Solid Oral)",
-  "AMB": "Bottle (Amber)",
-  "PLB": "Bottle (Plastic)",
-  "GLB": "Bottle (Glass)",
-  "LIQ": "Vial (Liquid Oral)",
-  "AMP": "Ampoule (Liquid Oral)",
-  "SLO": "Sachet (Liquid Oral)",
-  "STK": "Stick Pack",
-  "DRP": "Dropper Bottle",
-  "ALM": "Tube (Aluminum)",
-  "PLT": "Tube (Plastic)",
-  "JAR": "Jar",
-  "PMP": "Bottle (Pump)",
-  "SSS": "Sachet (Semi-Solid)",
-  "STC": "Stick",
-  "PEN": "Pen",
-  "VSD": "Vial (Single-Dose)",
-  "VMD": "Vial (Multi-Dose)",
-  "PFS": "Pre-filled Syringe",
-  "CRT": "Cartridge",
-  "IVB": "IV Bag (Flexible)",
-  "IVR": "IV Bottle (Rigid)",
-  "AIN": "Auto-injector",
-  "PTD": "Patch (Transdermal)",
-  "MDI": "Inhaler (Metered-Dose - MDI)",
-  "DPI": "Inhaler (Dry Powder - DPI)",
-  "ANB": "Ampoule (Nebulizer)",
-  "VNB": "Vial (Nebulizer)",
-  "DPB": "Bottle (Dropper)",
-  "VSO": "Vial (Single-Dose - Ophthalmic)",
-  "TOM": "Tube (Ointment)",
-  "NSP": "Nasal Spray Pump",
-  "SRV": "Strip Pack (Rectal/Vaginal)",
-  "APP": "Applicator",
-  "ENM": "Bottle (Enema)",
-  "FPC": "Pouch (Foil)",
-  "CYL": "Cylinder",
+  BOX: "Box",
+  MGM: "Milligrams (mg)",
+  MLT: "Millilitres (ml)",
+  MCG: "Micro grams (mcg)",
+  BTL: "Bottle (Solid Oral)",
+  BLP: "Blister Pack",
+  BLC: "Blister Card",
+  STP: "Strip Pack",
+  PCH: "Pouch",
+  STB: "Stock Bottle",
+  DSP: "Dispenser Pack",
+  SCT: "Sachet",
+  SOL: "Vial (Solid Oral)",
+  AMB: "Bottle (Amber)",
+  PLB: "Bottle (Plastic)",
+  GLB: "Bottle (Glass)",
+  LIQ: "Vial (Liquid Oral)",
+  AMP: "Ampoule (Liquid Oral)",
+  SLO: "Sachet (Liquid Oral)",
+  STK: "Stick Pack",
+  DRP: "Dropper Bottle",
+  ALM: "Tube (Aluminum)",
+  PLT: "Tube (Plastic)",
+  JAR: "Jar",
+  PMP: "Bottle (Pump)",
+  SSS: "Sachet (Semi-Solid)",
+  STC: "Stick",
+  PEN: "Pen",
+  VSD: "Vial (Single-Dose)",
+  VMD: "Vial (Multi-Dose)",
+  PFS: "Pre-filled Syringe",
+  CRT: "Cartridge",
+  IVB: "IV Bag (Flexible)",
+  IVR: "IV Bottle (Rigid)",
+  AIN: "Auto-injector",
+  PTD: "Patch (Transdermal)",
+  MDI: "Inhaler (Metered-Dose - MDI)",
+  DPI: "Inhaler (Dry Powder - DPI)",
+  ANB: "Ampoule (Nebulizer)",
+  VNB: "Vial (Nebulizer)",
+  DPB: "Bottle (Dropper)",
+  VSO: "Vial (Single-Dose - Ophthalmic)",
+  TOM: "Tube (Ointment)",
+  NSP: "Nasal Spray Pump",
+  SRV: "Strip Pack (Rectal/Vaginal)",
+  APP: "Applicator",
+  ENM: "Bottle (Enema)",
+  FPC: "Pouch (Foil)",
+  CYL: "Cylinder",
 };
 
 // Helper function to get unit display name
@@ -1138,13 +1138,16 @@ export default function RegisterMedicine() {
     setLowStockLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/Material/low-stock`
+        `${process.env.REACT_APP_API_BASE_URL}/Material/low-stock`,
       );
       setLowStockItems(response.data);
-      
+
       // Show warning if there are low stock items
       if (response.data.length > 0) {
-        showSnackbar(`${response.data.length} item(s) are low in stock`, "warning");
+        showSnackbar(
+          `${response.data.length} item(s) are low in stock`,
+          "warning",
+        );
       }
     } catch (error) {
       console.error("Error fetching low stock items:", error);
@@ -1159,12 +1162,12 @@ export default function RegisterMedicine() {
       setLoading(true);
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/Material`
+          `${process.env.REACT_APP_API_BASE_URL}/Material`,
         );
         // Use MMC_CURRENT_STOCK from the API response
         const sortedMedicines = response.data.sort((a, b) => b.isNew - a.isNew);
         setMedicines(sortedMedicines);
-        
+
         // Fetch low stock items after medicines are loaded
         await fetchLowStock();
       } catch (error) {
@@ -1180,8 +1183,11 @@ export default function RegisterMedicine() {
 
   // Check if a medicine is low in stock
   const isLowStock = (medicine) => {
-    return medicine.MMC_TYPE === "DRUG" && lowStockItems.some(
-      (item) => item.MMC_MATERIAL_CODE === medicine.MMC_MATERIAL_CODE
+    return (
+      medicine.MMC_TYPE === "DRUG" &&
+      lowStockItems.some(
+        (item) => item.MMC_MATERIAL_CODE === medicine.MMC_MATERIAL_CODE,
+      )
     );
   };
 
@@ -1218,8 +1224,8 @@ export default function RegisterMedicine() {
         prev.map((medicine) =>
           medicine.MMC_MATERIAL_CODE === materialCode
             ? { ...medicine, isNew: false }
-            : medicine
-        )
+            : medicine,
+        ),
       );
     }, timeoutDuration);
   };
@@ -1228,20 +1234,21 @@ export default function RegisterMedicine() {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/Material`
+        `${process.env.REACT_APP_API_BASE_URL}/Material`,
       );
       setMedicines((prev) =>
         response.data.map((medicine) => ({
           ...medicine,
           isNew: prev.some(
-            (m) => m.MMC_MATERIAL_CODE === medicine.MMC_MATERIAL_CODE && m.isNew
+            (m) =>
+              m.MMC_MATERIAL_CODE === medicine.MMC_MATERIAL_CODE && m.isNew,
           ),
-        }))
+        })),
       );
-      
+
       // Refresh low stock data
       await fetchLowStock();
-      
+
       showSnackbar("Medicine list refreshed");
     } catch (error) {
       console.error("Error refreshing medicines:", error);
@@ -1259,29 +1266,34 @@ export default function RegisterMedicine() {
 
     setStockLoading(true);
     try {
-      const endpoint = stockDialog.type === 'in' ? 'stock-in' : 'stock-out';
+      const endpoint = stockDialog.type === "in" ? "stock-in" : "stock-out";
       await axios.post(
-        `${process.env.REACT_APP_API_BASE_URL}/Material/${endpoint}?materialCode=${stockDialog.materialCode}&quantity=${stockDialog.quantity}`
+        `${process.env.REACT_APP_API_BASE_URL}/Material/${endpoint}?materialCode=${stockDialog.materialCode}&quantity=${stockDialog.quantity}`,
       );
 
-      showSnackbar(`Stock ${stockDialog.type === 'in' ? 'added' : 'removed'} successfully`);
+      showSnackbar(
+        `Stock ${stockDialog.type === "in" ? "added" : "removed"} successfully`,
+      );
 
       // Update the stock quantity in the local state using MMC_CURRENT_STOCK
-      setMedicines(prev => prev.map(medicine => {
-        if (medicine.MMC_MATERIAL_CODE === stockDialog.materialCode) {
-          const currentStock = parseFloat(medicine.MMC_CURRENT_STOCK || 0);
-          const quantity = parseFloat(stockDialog.quantity);
-          const newStock = stockDialog.type === 'in' 
-            ? currentStock + quantity 
-            : Math.max(0, currentStock - quantity);
-          
-          return {
-            ...medicine,
-            MMC_CURRENT_STOCK: newStock
-          };
-        }
-        return medicine;
-      }));
+      setMedicines((prev) =>
+        prev.map((medicine) => {
+          if (medicine.MMC_MATERIAL_CODE === stockDialog.materialCode) {
+            const currentStock = parseFloat(medicine.MMC_CURRENT_STOCK || 0);
+            const quantity = parseFloat(stockDialog.quantity);
+            const newStock =
+              stockDialog.type === "in"
+                ? currentStock + quantity
+                : Math.max(0, currentStock - quantity);
+
+            return {
+              ...medicine,
+              MMC_CURRENT_STOCK: newStock,
+            };
+          }
+          return medicine;
+        }),
+      );
 
       // Refresh low stock data after stock update
       await fetchLowStock();
@@ -1289,7 +1301,10 @@ export default function RegisterMedicine() {
       handleCloseStockDialog();
     } catch (error) {
       console.error(`Error in stock ${stockDialog.type}:`, error);
-      showSnackbar(`Failed to ${stockDialog.type === 'in' ? 'add' : 'remove'} stock`, "error");
+      showSnackbar(
+        `Failed to ${stockDialog.type === "in" ? "add" : "remove"} stock`,
+        "error",
+      );
     } finally {
       setStockLoading(false);
     }
@@ -1301,7 +1316,7 @@ export default function RegisterMedicine() {
       showSnackbar("Stock operations are only available for drugs", "warning");
       return;
     }
-    
+
     setStockDialog({
       open: true,
       type: type,
@@ -1323,7 +1338,7 @@ export default function RegisterMedicine() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate based on item type
     if (itemType === "DRUG") {
       if (!form.MMC_UNIT) {
@@ -1331,7 +1346,7 @@ export default function RegisterMedicine() {
         showSnackbar("Please select a unit for the drug", "error");
         return;
       }
-      
+
       // Validate current stock for drugs (optional, but should be a valid number)
       if (form.MMC_CURRENT_STOCK && parseFloat(form.MMC_CURRENT_STOCK) < 0) {
         setError("Current stock cannot be negative");
@@ -1339,7 +1354,7 @@ export default function RegisterMedicine() {
         return;
       }
     }
-    
+
     // Prepare data for submission
     let data;
     if (itemType === "DRUG") {
@@ -1361,9 +1376,9 @@ export default function RegisterMedicine() {
         MMC_TYPE: "SERVICE",
         MMC_CURRENT_STOCK: 0, // Set stock to 0 for services
       };
-      
+
       // Clean up undefined fields
-      Object.keys(data).forEach(key => {
+      Object.keys(data).forEach((key) => {
         if (data[key] === undefined) {
           delete data[key];
         }
@@ -1376,24 +1391,28 @@ export default function RegisterMedicine() {
       if (editMode) {
         await axios.patch(
           `${process.env.REACT_APP_API_BASE_URL}/Material/${form.MMC_MATERIAL_CODE}`,
-          data
+          data,
         );
-        showSnackbar(`${itemType === "DRUG" ? "Medicine" : "Service"} updated successfully`);
+        showSnackbar(
+          `${itemType === "DRUG" ? "Medicine" : "Service"} updated successfully`,
+        );
 
         newMedicine = { ...form, isNew: true };
         setMedicines((prev) =>
           prev.map((medicine) =>
             medicine.MMC_MATERIAL_CODE === newMedicine.MMC_MATERIAL_CODE
               ? newMedicine
-              : medicine
-          )
+              : medicine,
+          ),
         );
       } else {
         const response = await axios.post(
           `${process.env.REACT_APP_API_BASE_URL}/Material`,
-          data
+          data,
         );
-        showSnackbar(`${itemType === "DRUG" ? "Medicine" : "Service"} registered successfully`);
+        showSnackbar(
+          `${itemType === "DRUG" ? "Medicine" : "Service"} registered successfully`,
+        );
 
         newMedicine = { ...response.data, isNew: true };
         setMedicines((prev) => [newMedicine, ...prev]);
@@ -1415,14 +1434,18 @@ export default function RegisterMedicine() {
         const errorMessage = Object.values(validationErrors).flat().join(", ");
         setError(errorMessage);
         showSnackbar(errorMessage, "error");
-      } else if (error.response && error.response.data && error.response.data.error) {
+      } else if (
+        error.response &&
+        error.response.data &&
+        error.response.data.error
+      ) {
         setError(error.response.data.error);
         showSnackbar(error.response.data.error, "error");
       } else {
         setError("An unexpected error occurred. Please try again.");
         showSnackbar(
           "An unexpected error occurred. Please try again.",
-          "error"
+          "error",
         );
       }
       console.error("Error submitting the form:", error);
@@ -1436,7 +1459,7 @@ export default function RegisterMedicine() {
       setLoading(true);
       try {
         await axios.put(
-          `${process.env.REACT_APP_API_BASE_URL}/Material/updatematerialstatus?materialcode=${id}`
+          `${process.env.REACT_APP_API_BASE_URL}/Material/updatematerialstatus?materialcode=${id}`,
         );
         showSnackbar("Item deactivated successfully");
         await refreshMedicines();
@@ -1481,7 +1504,7 @@ export default function RegisterMedicine() {
   };
 
   const filteredMedicines = medicines.filter((medicine) =>
-    medicine.MMC_DESCRIPTION.toLowerCase().includes(searchTerm.toLowerCase())
+    medicine.MMC_DESCRIPTION.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // Get row background color based on conditions
@@ -1493,7 +1516,7 @@ export default function RegisterMedicine() {
       return theme.palette.action.hover;
     }
     if (isLowStock(medicine)) {
-      return theme.palette.error.light + '20'; // Add transparency
+      return theme.palette.error.light + "20"; // Add transparency
     }
     return "inherit";
   };
@@ -1566,7 +1589,7 @@ export default function RegisterMedicine() {
                   sx={{ fontWeight: "bold" }}
                 />
               )}
-              
+
               <Button
                 variant="contained"
                 color="primary"
@@ -1612,45 +1635,81 @@ export default function RegisterMedicine() {
               <Table aria-label="items table" stickyHeader>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: theme.palette.primary.light }}>
+                    <TableCell
+                      sx={{
+                        color: "white",
+                        fontWeight: "bold",
+                        backgroundColor: theme.palette.primary.light,
+                      }}
+                    >
                       Type
                     </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold", backgroundColor: theme.palette.primary.light }}>
+                    <TableCell
+                      sx={{
+                        color: "white",
+                        fontWeight: "bold",
+                        backgroundColor: theme.palette.primary.light,
+                      }}
+                    >
                       Name
                     </TableCell>
                     <TableCell
                       align="center"
-                      sx={{ color: "white", fontWeight: "bold", backgroundColor: theme.palette.primary.light }}
+                      sx={{
+                        color: "white",
+                        fontWeight: "bold",
+                        backgroundColor: theme.palette.primary.light,
+                      }}
                     >
                       Unit
                     </TableCell>
                     <TableCell
                       align="center"
-                      sx={{ color: "white", fontWeight: "bold", backgroundColor: theme.palette.primary.light }}
+                      sx={{
+                        color: "white",
+                        fontWeight: "bold",
+                        backgroundColor: theme.palette.primary.light,
+                      }}
                     >
                       Current Stock
                     </TableCell>
                     <TableCell
                       align="center"
-                      sx={{ color: "white", fontWeight: "bold", backgroundColor: theme.palette.primary.light }}
+                      sx={{
+                        color: "white",
+                        fontWeight: "bold",
+                        backgroundColor: theme.palette.primary.light,
+                      }}
                     >
                       Reorder Level
                     </TableCell>
                     <TableCell
                       align="center"
-                      sx={{ color: "white", fontWeight: "bold", backgroundColor: theme.palette.primary.light }}
+                      sx={{
+                        color: "white",
+                        fontWeight: "bold",
+                        backgroundColor: theme.palette.primary.light,
+                      }}
                     >
                       Status
                     </TableCell>
                     <TableCell
                       align="center"
-                      sx={{ color: "white", fontWeight: "bold", backgroundColor: theme.palette.primary.light }}
+                      sx={{
+                        color: "white",
+                        fontWeight: "bold",
+                        backgroundColor: theme.palette.primary.light,
+                      }}
                     >
                       Rate (Rs)
                     </TableCell>
                     <TableCell
                       align="center"
-                      sx={{ color: "white", fontWeight: "bold", backgroundColor: theme.palette.primary.light }}
+                      sx={{
+                        color: "white",
+                        fontWeight: "bold",
+                        backgroundColor: theme.palette.primary.light,
+                      }}
                     >
                       Actions
                     </TableCell>
@@ -1667,9 +1726,9 @@ export default function RegisterMedicine() {
                         sx={{
                           backgroundColor: getRowBackgroundColor(medicine),
                           transition: "background-color 0.3s ease",
-                          '&:hover': {
-                            backgroundColor: isLowStock(medicine) 
-                              ? theme.palette.error.light + '40'
+                          "&:hover": {
+                            backgroundColor: isLowStock(medicine)
+                              ? theme.palette.error.light + "40"
                               : theme.palette.action.hover,
                           },
                         }}
@@ -1679,7 +1738,13 @@ export default function RegisterMedicine() {
                           {getItemTypeChip(medicine.MMC_TYPE)}
                         </TableCell>
                         <TableCell>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
                             {isLowStock(medicine) && (
                               <Tooltip title="Low Stock">
                                 <WarningIcon color="error" fontSize="small" />
@@ -1690,8 +1755,10 @@ export default function RegisterMedicine() {
                         </TableCell>
                         <TableCell align="center">
                           {medicine.MMC_TYPE === "DRUG" ? (
-                            <Tooltip title={`Code: ${medicine.MMC_UNIT || ''}`}>
-                              <span>{getUnitDisplayName(medicine.MMC_UNIT)}</span>
+                            <Tooltip title={`Code: ${medicine.MMC_UNIT || ""}`}>
+                              <span>
+                                {getUnitDisplayName(medicine.MMC_UNIT)}
+                              </span>
                             </Tooltip>
                           ) : (
                             ""
@@ -1700,11 +1767,18 @@ export default function RegisterMedicine() {
                         <TableCell align="center">
                           {medicine.MMC_TYPE === "DRUG" ? (
                             <Typography
-                              color={isLowStock(medicine) ? "error.main" : "success.main"}
+                              color={
+                                isLowStock(medicine)
+                                  ? "error.main"
+                                  : "success.main"
+                              }
                               fontWeight="bold"
                             >
-                              {medicine.MMC_CURRENT_STOCK !== undefined && medicine.MMC_CURRENT_STOCK !== null
-                                ? new Intl.NumberFormat('en-US').format(Number(medicine.MMC_CURRENT_STOCK))
+                              {medicine.MMC_CURRENT_STOCK !== undefined &&
+                              medicine.MMC_CURRENT_STOCK !== null
+                                ? new Intl.NumberFormat("en-US").format(
+                                    Number(medicine.MMC_CURRENT_STOCK),
+                                  )
                                 : "0"}
                             </Typography>
                           ) : (
@@ -1712,8 +1786,11 @@ export default function RegisterMedicine() {
                           )}
                         </TableCell>
                         <TableCell align="center">
-                          {medicine.MMC_TYPE === "DRUG" && medicine.MMC_REORDER_LEVEL
-                            ? new Intl.NumberFormat('en-US').format(Number(medicine.MMC_REORDER_LEVEL))
+                          {medicine.MMC_TYPE === "DRUG" &&
+                          medicine.MMC_REORDER_LEVEL
+                            ? new Intl.NumberFormat("en-US").format(
+                                Number(medicine.MMC_REORDER_LEVEL),
+                              )
                             : ""}
                         </TableCell>
                         <TableCell align="center">
@@ -1725,20 +1802,26 @@ export default function RegisterMedicine() {
                         </TableCell>
                         <TableCell align="center">
                           {medicine.MMC_RATE
-                            ? new Intl.NumberFormat('en-US', {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            }).format(Number(medicine.MMC_RATE))
+                            ? new Intl.NumberFormat("en-US", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }).format(Number(medicine.MMC_RATE))
                             : "0.00"}
                         </TableCell>
                         <TableCell align="center">
-                          <Stack direction="row" spacing={1} justifyContent="center">
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            justifyContent="center"
+                          >
                             {medicine.MMC_TYPE === "DRUG" && (
                               <>
                                 <Tooltip title="Stock In">
                                   <IconButton
                                     color="success"
-                                    onClick={() => handleOpenStockDialog(medicine, 'in')}
+                                    onClick={() =>
+                                      handleOpenStockDialog(medicine, "in")
+                                    }
                                     size="small"
                                   >
                                     <StockInIcon />
@@ -1747,7 +1830,9 @@ export default function RegisterMedicine() {
                                 <Tooltip title="Stock Out">
                                   <IconButton
                                     color="warning"
-                                    onClick={() => handleOpenStockDialog(medicine, 'out')}
+                                    onClick={() =>
+                                      handleOpenStockDialog(medicine, "out")
+                                    }
                                     size="small"
                                   >
                                     <StockOutIcon />
@@ -1805,7 +1890,11 @@ export default function RegisterMedicine() {
               position: "relative",
             })}
           >
-            <Typography variant="h4" fontWeight={600} sx={{ textAlign: "center" }}>
+            <Typography
+              variant="h4"
+              fontWeight={600}
+              sx={{ textAlign: "center" }}
+            >
               {editMode ? "Edit Item" : "Add New Item"}
             </Typography>
 
@@ -1836,15 +1925,15 @@ export default function RegisterMedicine() {
                     value={itemType}
                     onChange={handleItemTypeChange}
                   >
-                    <FormControlLabel 
-                      value="DRUG" 
-                      control={<Radio />} 
-                      label="Drug" 
+                    <FormControlLabel
+                      value="DRUG"
+                      control={<Radio />}
+                      label="Drug"
                     />
-                    <FormControlLabel 
-                      value="SERVICE" 
-                      control={<Radio />} 
-                      label="Service" 
+                    <FormControlLabel
+                      value="SERVICE"
+                      control={<Radio />}
+                      label="Service"
                     />
                   </RadioGroup>
                 </FormControl>
@@ -1857,7 +1946,11 @@ export default function RegisterMedicine() {
                   label="Name"
                   name="MMC_DESCRIPTION"
                   value={form.MMC_DESCRIPTION}
-                  placeholder={itemType === "DRUG" ? "Enter drug name" : "Enter service name"}
+                  placeholder={
+                    itemType === "DRUG"
+                      ? "Enter drug name"
+                      : "Enter service name"
+                  }
                   onChange={handleChange}
                   required
                 />
@@ -2018,12 +2111,19 @@ export default function RegisterMedicine() {
         >
           <DialogTitle
             sx={(theme) => ({
-              color: stockDialog.type === 'in' ? theme.palette.success.main : theme.palette.warning.main,
+              color:
+                stockDialog.type === "in"
+                  ? theme.palette.success.main
+                  : theme.palette.warning.main,
               position: "relative",
             })}
           >
-            <Typography variant="h5" fontWeight={600} sx={{ textAlign: "center" }}>
-              {stockDialog.type === 'in' ? 'Stock In' : 'Stock Out'}
+            <Typography
+              variant="h5"
+              fontWeight={600}
+              sx={{ textAlign: "center" }}
+            >
+              {stockDialog.type === "in" ? "Stock In" : "Stock Out"}
             </Typography>
 
             <IconButton
@@ -2053,11 +2153,11 @@ export default function RegisterMedicine() {
                 <NumericFormat
                   customInput={TextField}
                   fullWidth
-                  label={`Quantity to ${stockDialog.type === 'in' ? 'add' : 'remove'}`}
+                  label={`Quantity to ${stockDialog.type === "in" ? "add" : "remove"}`}
                   value={stockDialog.quantity}
                   onValueChange={(values) => {
                     const { value } = values;
-                    setStockDialog(prev => ({
+                    setStockDialog((prev) => ({
                       ...prev,
                       quantity: value,
                     }));
@@ -2078,13 +2178,13 @@ export default function RegisterMedicine() {
             <Button
               onClick={handleStockInOut}
               variant="contained"
-              color={stockDialog.type === 'in' ? 'success' : 'warning'}
+              color={stockDialog.type === "in" ? "success" : "warning"}
               disabled={stockLoading || !stockDialog.quantity}
             >
               {stockLoading ? (
                 <CircularProgress size={24} />
               ) : (
-                `Confirm ${stockDialog.type === 'in' ? 'Stock In' : 'Stock Out'}`
+                `Confirm ${stockDialog.type === "in" ? "Stock In" : "Stock Out"}`
               )}
             </Button>
           </DialogActions>
@@ -2096,10 +2196,35 @@ export default function RegisterMedicine() {
           onClose={handleSnackbarClose}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          <Alert
+          {/* <Alert
             onClose={handleSnackbarClose}
             severity={snackbarSeverity}
             sx={{ width: "100%" }}
+          >
+            {snackbarMessage}
+          </Alert> */}
+          <Alert
+            onClose={handleSnackbarClose}
+            severity={snackbarSeverity}
+            variant="filled"
+            sx={{
+              width: "100%",
+              minWidth: "420px",
+              fontSize: "1.1rem",
+              fontWeight: 600,
+              py: 1.5,
+              px: 2,
+              borderRadius: "14px",
+              boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+              "& .MuiAlert-icon": {
+                fontSize: "32px",
+                alignItems: "center",
+              },
+              "& .MuiAlert-message": {
+                fontSize: "1.05rem",
+                fontWeight: 600,
+              },
+            }}
           >
             {snackbarMessage}
           </Alert>

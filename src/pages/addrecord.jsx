@@ -138,7 +138,7 @@
 //     if (takesText === "other") {
 //       return parseFloat(customValue) || 0;
 //     }
-    
+
 //     switch (takesText) {
 //       case "Twice a Day before food":
 //       case "Twice a Day after food":
@@ -159,7 +159,7 @@
 //     );
 //     const dailyDose = parseFloat(prescription.MDD_DAILY_DOSE) || 0;
 //     const days = parseFloat(prescription.MDD_DAYS) || 0;
-    
+
 //     return (howToTakeValue * dailyDose * days).toString();
 //   };
 
@@ -168,7 +168,7 @@
 //     if (prescription.MMC_CURRENT_STOCK && prescription.MDD_QUANTITY) {
 //       const requiredQty = parseFloat(prescription.MDD_QUANTITY) || 0;
 //       const currentStock = parseFloat(prescription.MMC_CURRENT_STOCK) || 0;
-      
+
 //       if (requiredQty > currentStock) {
 //         return {
 //           isAvailable: false,
@@ -236,18 +236,18 @@
 //   // Fetch patient's treatment history
 //   const fetchTreatmentHistory = async () => {
 //     if (!patientId) return;
-    
+
 //     setHistoryLoading(true);
 //     try {
 //       const response = await axios.get(
 //         `${process.env.REACT_APP_API_BASE_URL}/Treatment/patient/${patientId}`
 //       );
-      
+
 //       if (Array.isArray(response.data)) {
 //         const sortedTreatments = response.data
 //           .filter(treatment => !serialNumber || treatment.MTD_SERIAL_NO !== parseInt(serialNumber))
 //           .sort((a, b) => new Date(b.MTD_CREATED_DATE || b.MTD_DATE) - new Date(a.MTD_CREATED_DATE || a.MTD_DATE));
-        
+
 //         setTreatmentHistory(sortedTreatments);
 //       } else {
 //         setTreatmentHistory([]);
@@ -293,13 +293,13 @@
 
 //     if (["MDD_TAKES", "MDD_TAKES_CUSTOM", "MDD_DAILY_DOSE", "MDD_DAYS"].includes(name)) {
 //       if (
-//         values[index].MDD_TAKES && 
-//         values[index].MDD_DAILY_DOSE && 
+//         values[index].MDD_TAKES &&
+//         values[index].MDD_DAILY_DOSE &&
 //         values[index].MDD_DAYS &&
 //         (values[index].MDD_TAKES !== "other" || values[index].MDD_TAKES_CUSTOM)
 //       ) {
 //         values[index].MDD_QUANTITY = calculateQuantity(values[index]);
-        
+
 //         const stockCheck = checkStockAvailability(values[index]);
 //         if (stockCheck && !stockCheck.isAvailable) {
 //           setStockWarning(stockCheck.message);
@@ -318,7 +318,7 @@
 //   const handleAddPrescription = () => {
 //     const currentIndex = prescriptions.length - 1;
 //     const currentPrescription = prescriptions[currentIndex];
-    
+
 //     const stockCheck = checkStockAvailability(currentPrescription);
 //     if (stockCheck && !stockCheck.isAvailable) {
 //       setSnackbarMessage(`Cannot add: ${stockCheck.message}`);
@@ -421,11 +421,11 @@
 //     try {
 //       // Use the SAME Material API for both drugs and services
 //       const endpoint = `${process.env.REACT_APP_API_BASE_URL}/Material/search?query=${encodeURIComponent(query)}`;
-      
+
 //       console.log(`Searching with query:`, query);
 //       const response = await axios.get(endpoint);
 //       console.log("Search response:", response.data);
-      
+
 //       // Handle different response structures
 //       let resultsList = [];
 //       if (Array.isArray(response.data)) {
@@ -435,11 +435,11 @@
 //       } else if (response.data.materials && Array.isArray(response.data.materials)) {
 //         resultsList = response.data.materials;
 //       }
-      
+
 //       // Filter results for services if needed (you can add logic here based on your data structure)
 //       // For now, we'll show all results for both
 //       setSearchResults(resultsList);
-      
+
 //       if (resultsList.length === 0) {
 //         console.log(`No ${type} found for query:`, query);
 //       }
@@ -460,7 +460,7 @@
 //     const values = [...prescriptions];
 //     values[index].MDD_MATERIAL_NAME = query;
 //     setPrescriptions(values);
-    
+
 //     setCurrentSearchType("drug");
 //     await handleUnifiedSearch(query, "drug");
 //   };
@@ -471,7 +471,7 @@
 //     const values = [...services];
 //     values[index].serviceName = query;
 //     setServices(values);
-    
+
 //     setCurrentSearchType("service");
 //     await handleUnifiedSearch(query, "service");
 //   };
@@ -486,7 +486,7 @@
 //     setSearchResults([]);
 //     setPrescriptions(values);
 //     setActivePrescriptionIndex(null);
-    
+
 //     setSnackbarMessage(`Drug "${materialName}" selected successfully!`);
 //     setSnackbarSeverity("success");
 //     setSnackbarOpen(true);
@@ -502,7 +502,7 @@
 //     setSearchResults([]);
 //     setServices(values);
 //     setActiveServiceIndex(null);
-    
+
 //     setSnackbarMessage(`Service "${serviceName}" selected successfully!`);
 //     setSnackbarSeverity("success");
 //     setSnackbarOpen(true);
@@ -511,9 +511,9 @@
 //   // Fetch patient details and treatment history
 //   useEffect(() => {
 //     window.scrollTo(0, 0);
-    
+
 //     fetchTreatmentHistory();
-    
+
 //     const fetchExistingData = async () => {
 //       if (serialNumber) {
 //         setIsEditMode(true);
@@ -541,7 +541,7 @@
 //                   ...item,
 //                   type: "drug"
 //                 }));
-              
+
 //               const servicesItems = itemsResponse.data
 //                 .filter(item => item.MDD_TYPE === "service")
 //                 .map(item => ({
@@ -552,7 +552,7 @@
 //                   quantity: item.MDD_QUANTITY,
 //                   type: "service"
 //                 }));
-              
+
 //               setPrescriptions([...drugs, {
 //                 MDD_MATERIAL_CODE: "",
 //                 MDD_MATERIAL_NAME: "",
@@ -566,7 +566,7 @@
 //                 MMC_CURRENT_STOCK: 0,
 //                 type: "drug",
 //               }]);
-              
+
 //               setServices([...servicesItems, {
 //                 serviceCode: "",
 //                 serviceName: "",
@@ -701,7 +701,7 @@
 //             MTD_TREATMENT_STATUS: "C"
 //           }
 //         );
-        
+
 //         const serial_no = treatmentResponse.data.MTD_SERIAL_NO || treatmentResponse.data.serialNo;
 
 //         // Prepare drugs with MDD_TYPE "drug"
@@ -796,14 +796,14 @@
 //   const currentService = services[services.length - 1];
 //   const currentStockCheck = currentPrescription ? checkStockAvailability(currentPrescription) : null;
 
-//   const totalDrugsAmount = completedPrescriptions.reduce((sum, drug) => 
+//   const totalDrugsAmount = completedPrescriptions.reduce((sum, drug) =>
 //     sum + (parseFloat(drug.MDD_QUANTITY || 0) * parseFloat(drug.MMC_RATE || 0)), 0
 //   );
-  
-//   const totalServicesAmount = completedServices.reduce((sum, service) => 
+
+//   const totalServicesAmount = completedServices.reduce((sum, service) =>
 //     sum + (parseFloat(service.serviceRate || 0) * parseFloat(service.quantity || 1)), 0
 //   );
-  
+
 //   const totalAmount = totalDrugsAmount + totalServicesAmount + (parseFloat(formData.MTD_AMOUNT) || 0);
 
 //   const formatDate = (dateString) => {
@@ -889,7 +889,7 @@
 //                               variant="outlined"
 //                             />
 //                           </Box>
-                          
+
 //                           <Grid container spacing={2}>
 //                             <Grid item xs={12} md={6}>
 //                               <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
@@ -1040,7 +1040,7 @@
 //                   Drug Prescriptions
 //                 </Typography>
 //               </SectionHeader>
-              
+
 //               {/* New Drug Entry Field */}
 //               <Box sx={{ mb: 3 }}>
 //                 <Typography variant="subtitle2" color="text.secondary" gutterBottom>
@@ -1130,7 +1130,7 @@
 //                             </List>
 //                           </Paper>
 //                         )}
-                      
+
 //                       {/* Display current stock if medicine selected */}
 //                       {currentPrescription?.MMC_CURRENT_STOCK > 0 && (
 //                         <Box sx={{ mt: 0.5, display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -1262,14 +1262,14 @@
 //                   </Box>
 
 //                   {/* Display simplified calculation with units and price */}
-//                   {currentPrescription?.MDD_TAKES && 
-//                    currentPrescription?.MDD_DAILY_DOSE && 
-//                    currentPrescription?.MDD_DAYS && 
+//                   {currentPrescription?.MDD_TAKES &&
+//                    currentPrescription?.MDD_DAILY_DOSE &&
+//                    currentPrescription?.MDD_DAYS &&
 //                    (currentPrescription.MDD_TAKES !== "other" || currentPrescription.MDD_TAKES_CUSTOM) && (
-//                     <Box sx={{ 
-//                       mt: 2, 
-//                       p: 1.5, 
-//                       bgcolor: currentStockCheck && !currentStockCheck.isAvailable ? 'warning.light' : 'primary.light', 
+//                     <Box sx={{
+//                       mt: 2,
+//                       p: 1.5,
+//                       bgcolor: currentStockCheck && !currentStockCheck.isAvailable ? 'warning.light' : 'primary.light',
 //                       borderRadius: 1,
 //                       display: 'flex',
 //                       alignItems: 'center',
@@ -1311,7 +1311,7 @@
 //                   </Typography>
 //                   {completedPrescriptions.map((prescription, index) => {
 //                     const stockCheck = checkStockAvailability(prescription);
-                    
+
 //                     return (
 //                       <PrescriptionCard key={index}>
 //                         <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
@@ -1321,26 +1321,26 @@
 //                                 <Typography variant="subtitle1" fontWeight={600} color="primary">
 //                                   {prescription.MDD_MATERIAL_NAME}
 //                                 </Typography>
-//                                 <Chip 
-//                                   label={`Daily: ${prescription.MDD_DAILY_DOSE}`} 
-//                                   size="small" 
+//                                 <Chip
+//                                   label={`Daily: ${prescription.MDD_DAILY_DOSE}`}
+//                                   size="small"
 //                                   variant="outlined"
 //                                 />
-//                                 <Chip 
-//                                   label={`Days: ${prescription.MDD_DAYS}`} 
-//                                   size="small" 
+//                                 <Chip
+//                                   label={`Days: ${prescription.MDD_DAYS}`}
+//                                   size="small"
 //                                   variant="outlined"
 //                                 />
-//                                 <Chip 
-//                                   label={`Total: ${prescription.MDD_QUANTITY} units`} 
-//                                   size="small" 
+//                                 <Chip
+//                                   label={`Total: ${prescription.MDD_QUANTITY} units`}
+//                                   size="small"
 //                                   color="primary"
 //                                   variant="outlined"
 //                                 />
 //                                 {prescription.MMC_RATE > 0 && (
-//                                   <Chip 
+//                                   <Chip
 //                                     label={`Rs. ${(parseFloat(prescription.MDD_QUANTITY || 0) * prescription.MMC_RATE).toFixed(2)}`}
-//                                     size="small" 
+//                                     size="small"
 //                                     color="secondary"
 //                                     variant="outlined"
 //                                   />
@@ -1379,7 +1379,7 @@
 //                       </PrescriptionCard>
 //                     );
 //                   })}
-                  
+
 //                   {/* Drugs Total */}
 //                   {totalDrugsAmount > 0 && (
 //                     <Box sx={{ mt: 2, textAlign: 'right' }}>
@@ -1400,7 +1400,7 @@
 //                   Services
 //                 </Typography>
 //               </SectionHeader>
-              
+
 //               {/* New Service Entry Field */}
 //               <Box sx={{ mb: 3 }}>
 //                 <Typography variant="subtitle2" color="text.secondary" gutterBottom>
@@ -1498,7 +1498,7 @@
 //                             </List>
 //                           </Paper>
 //                         )}
-                      
+
 //                       {/* Show no results message */}
 //                       {activeServiceIndex === services.length - 1 &&
 //                         currentService?.serviceName &&
@@ -1562,10 +1562,10 @@
 
 //                   {/* Display total for current service */}
 //                   {currentService?.serviceRate > 0 && currentService?.quantity > 0 && (
-//                     <Box sx={{ 
-//                       mt: 2, 
-//                       p: 1.5, 
-//                       bgcolor: 'info.light', 
+//                     <Box sx={{
+//                       mt: 2,
+//                       p: 1.5,
+//                       bgcolor: 'info.light',
 //                       borderRadius: 1,
 //                     }}>
 //                       <Typography variant="body2" color="white" fontWeight={500}>
@@ -1591,20 +1591,20 @@
 //                               <Typography variant="subtitle1" fontWeight={600} color="info.main">
 //                                 {service.serviceName}
 //                               </Typography>
-//                               <Chip 
-//                                 label={`Qty: ${service.quantity}`} 
-//                                 size="small" 
+//                               <Chip
+//                                 label={`Qty: ${service.quantity}`}
+//                                 size="small"
 //                                 variant="outlined"
 //                                 color="info"
 //                               />
-//                               <Chip 
-//                                 label={`Rate: Rs. ${service.serviceRate}`} 
-//                                 size="small" 
+//                               <Chip
+//                                 label={`Rate: Rs. ${service.serviceRate}`}
+//                                 size="small"
 //                                 variant="outlined"
 //                               />
-//                               <Chip 
-//                                 label={`Total: Rs. ${(service.serviceRate * service.quantity).toFixed(2)}`} 
-//                                 size="small" 
+//                               <Chip
+//                                 label={`Total: Rs. ${(service.serviceRate * service.quantity).toFixed(2)}`}
+//                                 size="small"
 //                                 color="info"
 //                               />
 //                             </Box>
@@ -1626,7 +1626,7 @@
 //                       </CardContent>
 //                     </ServiceCard>
 //                   ))}
-                  
+
 //                   {/* Services Total */}
 //                   {totalServicesAmount > 0 && (
 //                     <Box sx={{ mt: 2, textAlign: 'right' }}>
@@ -1730,7 +1730,6 @@
 
 // export default AddRecord;
 
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
@@ -1798,16 +1797,16 @@ const PrescriptionCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(2),
   backgroundColor: theme.palette.grey[50],
   border: `1px solid ${theme.palette.divider}`,
-  '&:hover': {
+  "&:hover": {
     borderColor: theme.palette.primary.main,
   },
 }));
 
 const ServiceCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(2),
-  backgroundColor: theme.palette.info.light + '20',
+  backgroundColor: theme.palette.info.light + "20",
   border: `1px solid ${theme.palette.info.main}`,
-  '&:hover': {
+  "&:hover": {
     borderColor: theme.palette.info.dark,
   },
 }));
@@ -1819,21 +1818,21 @@ const StockWarningChip = styled(Chip)(({ theme }) => ({
 }));
 
 const SectionHeader = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
+  display: "flex",
+  alignItems: "center",
   gap: theme.spacing(1),
   marginBottom: theme.spacing(2),
   padding: theme.spacing(1),
-  backgroundColor: theme.palette.primary.light + '20',
+  backgroundColor: theme.palette.primary.light + "20",
   borderRadius: theme.shape.borderRadius,
 }));
 
 const HistoryCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(2),
   borderLeft: `4px solid ${theme.palette.primary.main}`,
-  transition: 'all 0.3s ease',
-  '&:hover': {
-    transform: 'translateX(4px)',
+  transition: "all 0.3s ease",
+  "&:hover": {
+    transform: "translateX(4px)",
     boxShadow: theme.shadows[4],
   },
 }));
@@ -1871,7 +1870,7 @@ const AddRecord = () => {
     if (takesText === "other") {
       return parseFloat(customValue) || 0;
     }
-    
+
     switch (takesText) {
       case "Twice a Day before food":
       case "Twice a Day after food":
@@ -1888,11 +1887,11 @@ const AddRecord = () => {
   const calculateQuantity = (prescription) => {
     const howToTakeValue = getHowToTakeValue(
       prescription.MDD_TAKES,
-      prescription.MDD_TAKES_CUSTOM
+      prescription.MDD_TAKES_CUSTOM,
     );
     const dailyDose = parseFloat(prescription.MDD_DAILY_DOSE) || 0;
     const days = parseFloat(prescription.MDD_DAYS) || 0;
-    
+
     return (howToTakeValue * dailyDose * days).toString();
   };
 
@@ -1901,16 +1900,16 @@ const AddRecord = () => {
     if (prescription.MMC_CURRENT_STOCK && prescription.MDD_QUANTITY) {
       const requiredQty = parseFloat(prescription.MDD_QUANTITY) || 0;
       const currentStock = parseFloat(prescription.MMC_CURRENT_STOCK) || 0;
-      
+
       if (requiredQty > currentStock) {
         return {
           isAvailable: false,
-          message: `Insufficient stock! Available: ${currentStock} units, Required: ${requiredQty} units`
+          message: `Insufficient stock! Available: ${currentStock} units, Required: ${requiredQty} units`,
         };
       }
       return {
         isAvailable: true,
-        message: `Stock available: ${currentStock} units`
+        message: `Stock available: ${currentStock} units`,
       };
     }
     return null;
@@ -1969,18 +1968,26 @@ const AddRecord = () => {
   // Fetch patient's treatment history
   const fetchTreatmentHistory = async () => {
     if (!patientId) return;
-    
+
     setHistoryLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/Treatment/patient/${patientId}`
+        `${process.env.REACT_APP_API_BASE_URL}/Treatment/patient/${patientId}`,
       );
-      
+
       if (Array.isArray(response.data)) {
         const sortedTreatments = response.data
-          .filter(treatment => !serialNumber || treatment.MTD_SERIAL_NO !== parseInt(serialNumber))
-          .sort((a, b) => new Date(b.MTD_CREATED_DATE || b.MTD_DATE) - new Date(a.MTD_CREATED_DATE || a.MTD_DATE));
-        
+          .filter(
+            (treatment) =>
+              !serialNumber ||
+              treatment.MTD_SERIAL_NO !== parseInt(serialNumber),
+          )
+          .sort(
+            (a, b) =>
+              new Date(b.MTD_CREATED_DATE || b.MTD_DATE) -
+              new Date(a.MTD_CREATED_DATE || a.MTD_DATE),
+          );
+
         setTreatmentHistory(sortedTreatments);
       } else {
         setTreatmentHistory([]);
@@ -2024,15 +2031,19 @@ const AddRecord = () => {
       values[index][name] = value;
     }
 
-    if (["MDD_TAKES", "MDD_TAKES_CUSTOM", "MDD_DAILY_DOSE", "MDD_DAYS"].includes(name)) {
+    if (
+      ["MDD_TAKES", "MDD_TAKES_CUSTOM", "MDD_DAILY_DOSE", "MDD_DAYS"].includes(
+        name,
+      )
+    ) {
       if (
-        values[index].MDD_TAKES && 
-        values[index].MDD_DAILY_DOSE && 
+        values[index].MDD_TAKES &&
+        values[index].MDD_DAILY_DOSE &&
         values[index].MDD_DAYS &&
         (values[index].MDD_TAKES !== "other" || values[index].MDD_TAKES_CUSTOM)
       ) {
         values[index].MDD_QUANTITY = calculateQuantity(values[index]);
-        
+
         const stockCheck = checkStockAvailability(values[index]);
         if (stockCheck && !stockCheck.isAvailable) {
           setStockWarning(stockCheck.message);
@@ -2051,7 +2062,7 @@ const AddRecord = () => {
   const handleAddPrescription = () => {
     const currentIndex = prescriptions.length - 1;
     const currentPrescription = prescriptions[currentIndex];
-    
+
     const stockCheck = checkStockAvailability(currentPrescription);
     if (stockCheck && !stockCheck.isAvailable) {
       setSnackbarMessage(`Cannot add: ${stockCheck.message}`);
@@ -2063,7 +2074,8 @@ const AddRecord = () => {
     if (
       currentPrescription.MDD_MATERIAL_NAME &&
       currentPrescription.MDD_TAKES &&
-      (currentPrescription.MDD_TAKES !== "other" || currentPrescription.MDD_TAKES_CUSTOM) &&
+      (currentPrescription.MDD_TAKES !== "other" ||
+        currentPrescription.MDD_TAKES_CUSTOM) &&
       currentPrescription.MDD_DAILY_DOSE &&
       currentPrescription.MDD_DAYS
     ) {
@@ -2088,7 +2100,9 @@ const AddRecord = () => {
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
     } else {
-      setSnackbarMessage("Please fill in all required fields for the current prescription");
+      setSnackbarMessage(
+        "Please fill in all required fields for the current prescription",
+      );
       setSnackbarSeverity("warning");
       setSnackbarOpen(true);
     }
@@ -2105,12 +2119,12 @@ const AddRecord = () => {
     const { name, value } = event.target;
     const values = [...services];
     values[index][name] = value;
-    
+
     // When manually typing service name, also set the service code to the same value
     if (name === "serviceName") {
       values[index].serviceCode = value;
     }
-    
+
     setServices(values);
   };
 
@@ -2118,10 +2132,7 @@ const AddRecord = () => {
     const currentIndex = services.length - 1;
     const currentService = services[currentIndex];
 
-    if (
-      currentService.serviceName &&
-      currentService.serviceRate > 0
-    ) {
+    if (currentService.serviceName && currentService.serviceRate > 0) {
       setServices([
         ...services,
         {
@@ -2160,25 +2171,28 @@ const AddRecord = () => {
     try {
       // Use the SAME Material API for both drugs and services
       const endpoint = `${process.env.REACT_APP_API_BASE_URL}/Material/search?query=${encodeURIComponent(query)}`;
-      
+
       console.log(`Searching with query:`, query);
       const response = await axios.get(endpoint);
       console.log("Search response:", response.data);
-      
+
       // Handle different response structures
       let resultsList = [];
       if (Array.isArray(response.data)) {
         resultsList = response.data;
       } else if (response.data.data && Array.isArray(response.data.data)) {
         resultsList = response.data.data;
-      } else if (response.data.materials && Array.isArray(response.data.materials)) {
+      } else if (
+        response.data.materials &&
+        Array.isArray(response.data.materials)
+      ) {
         resultsList = response.data.materials;
       }
-      
+
       // Filter results for services if needed (you can add logic here based on your data structure)
       // For now, we'll show all results for both
       setSearchResults(resultsList);
-      
+
       if (resultsList.length === 0) {
         console.log(`No ${type} found for query:`, query);
       }
@@ -2199,7 +2213,7 @@ const AddRecord = () => {
     const values = [...prescriptions];
     values[index].MDD_MATERIAL_NAME = query;
     setPrescriptions(values);
-    
+
     setCurrentSearchType("drug");
     await handleUnifiedSearch(query, "drug");
   };
@@ -2211,13 +2225,19 @@ const AddRecord = () => {
     values[index].serviceName = query;
     values[index].serviceCode = query; // Set service code to the same value as service name
     setServices(values);
-    
+
     setCurrentSearchType("service");
     await handleUnifiedSearch(query, "service");
   };
 
   // Handler for selecting medicine from search results
-  const handleSelectMedicine = (index, materialCode, materialName, rate, currentStock) => {
+  const handleSelectMedicine = (
+    index,
+    materialCode,
+    materialName,
+    rate,
+    currentStock,
+  ) => {
     const values = [...prescriptions];
     values[index].MDD_MATERIAL_CODE = materialCode;
     values[index].MDD_MATERIAL_NAME = materialName;
@@ -2226,14 +2246,20 @@ const AddRecord = () => {
     setSearchResults([]);
     setPrescriptions(values);
     setActivePrescriptionIndex(null);
-    
+
     setSnackbarMessage(`Drug "${materialName}" selected successfully!`);
     setSnackbarSeverity("success");
     setSnackbarOpen(true);
   };
 
   // Handler for selecting service from search results
-  const handleSelectService = (index, materialCode, serviceName, serviceDescription, serviceRate) => {
+  const handleSelectService = (
+    index,
+    materialCode,
+    serviceName,
+    serviceDescription,
+    serviceRate,
+  ) => {
     const values = [...services];
     values[index].serviceCode = materialCode; // Store the actual material code
     values[index].serviceName = serviceName;
@@ -2242,7 +2268,7 @@ const AddRecord = () => {
     setSearchResults([]);
     setServices(values);
     setActiveServiceIndex(null);
-    
+
     setSnackbarMessage(`Service "${serviceName}" selected successfully!`);
     setSnackbarSeverity("success");
     setSnackbarOpen(true);
@@ -2251,16 +2277,16 @@ const AddRecord = () => {
   // Fetch patient details and treatment history
   useEffect(() => {
     window.scrollTo(0, 0);
-    
+
     fetchTreatmentHistory();
-    
+
     const fetchExistingData = async () => {
       if (serialNumber) {
         setIsEditMode(true);
 
         try {
           const treatmentResponse = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/Treatment/patientdetail/treatmentdetail/${patientId}/${serialNumber}`
+            `${process.env.REACT_APP_API_BASE_URL}/Treatment/patientdetail/treatmentdetail/${patientId}/${serialNumber}`,
           );
           const treatmentData = treatmentResponse.data;
 
@@ -2272,49 +2298,58 @@ const AddRecord = () => {
 
           try {
             const itemsResponse = await axios.get(
-              `${process.env.REACT_APP_API_BASE_URL}/Drug/${serialNumber}`
+              `${process.env.REACT_APP_API_BASE_URL}/Drug/${serialNumber}`,
             );
-            if (Array.isArray(itemsResponse.data) && itemsResponse.data.length > 0) {
+            if (
+              Array.isArray(itemsResponse.data) &&
+              itemsResponse.data.length > 0
+            ) {
               const drugs = itemsResponse.data
-                .filter(item => item.MDD_TYPE === "drug")
-                .map(item => ({
+                .filter((item) => item.MDD_TYPE === "drug")
+                .map((item) => ({
                   ...item,
-                  type: "drug"
+                  type: "drug",
                 }));
-              
+
               const servicesItems = itemsResponse.data
-                .filter(item => item.MDD_TYPE === "service")
-                .map(item => ({
+                .filter((item) => item.MDD_TYPE === "service")
+                .map((item) => ({
                   serviceCode: item.MDD_MATERIAL_CODE,
                   serviceName: item.MDD_MATERIAL_CODE,
                   serviceDescription: item.MDD_DOSAGE,
                   serviceRate: item.MDD_RATE,
                   quantity: item.MDD_QUANTITY,
-                  type: "service"
+                  type: "service",
                 }));
-              
-              setPrescriptions([...drugs, {
-                MDD_MATERIAL_CODE: "",
-                MDD_MATERIAL_NAME: "",
-                MDD_DOSAGE: "",
-                MDD_DAILY_DOSE: "",
-                MDD_DAYS: "",
-                MDD_TAKES: "",
-                MDD_TAKES_CUSTOM: "",
-                MDD_QUANTITY: "",
-                MMC_RATE: 0,
-                MMC_CURRENT_STOCK: 0,
-                type: "drug",
-              }]);
-              
-              setServices([...servicesItems, {
-                serviceCode: "",
-                serviceName: "",
-                serviceDescription: "",
-                serviceRate: 0,
-                quantity: 1,
-                type: "service",
-              }]);
+
+              setPrescriptions([
+                ...drugs,
+                {
+                  MDD_MATERIAL_CODE: "",
+                  MDD_MATERIAL_NAME: "",
+                  MDD_DOSAGE: "",
+                  MDD_DAILY_DOSE: "",
+                  MDD_DAYS: "",
+                  MDD_TAKES: "",
+                  MDD_TAKES_CUSTOM: "",
+                  MDD_QUANTITY: "",
+                  MMC_RATE: 0,
+                  MMC_CURRENT_STOCK: 0,
+                  type: "drug",
+                },
+              ]);
+
+              setServices([
+                ...servicesItems,
+                {
+                  serviceCode: "",
+                  serviceName: "",
+                  serviceDescription: "",
+                  serviceRate: 0,
+                  quantity: 1,
+                  type: "service",
+                },
+              ]);
             }
           } catch (error) {
             console.log("No items found for this treatment");
@@ -2342,7 +2377,9 @@ const AddRecord = () => {
     const hasAmount = formData.MTD_AMOUNT?.trim();
 
     if (!hasComplain && !hasDiagnosis && !hasRemarks && !hasAmount) {
-      setSnackbarMessage("Please fill in at least one of: Complaint, Diagnosis, Remarks, or Amount");
+      setSnackbarMessage(
+        "Please fill in at least one of: Complaint, Diagnosis, Remarks, or Amount",
+      );
       setSnackbarSeverity("warning");
       setSnackbarOpen(true);
       setLoading(false);
@@ -2365,12 +2402,16 @@ const AddRecord = () => {
 
     // Filter out empty prescriptions (drugs) - only include if they have material code
     const validPrescriptions = prescriptions.filter(
-      (prescription) => prescription.MDD_MATERIAL_CODE && prescription.type === "drug"
+      (prescription) =>
+        prescription.MDD_MATERIAL_CODE && prescription.type === "drug",
     );
 
     // Filter out empty services - include if they have service name and rate
     const validServices = services.filter(
-      (service) => service.serviceName && service.serviceRate > 0 && service.type === "service"
+      (service) =>
+        service.serviceName &&
+        service.serviceRate > 0 &&
+        service.type === "service",
     );
 
     console.log("Valid Drugs:", validPrescriptions);
@@ -2384,16 +2425,19 @@ const AddRecord = () => {
           MDD_MATERIAL_CODE: prescription.MDD_MATERIAL_CODE,
           MDD_QUANTITY: parseInt(prescription.MDD_QUANTITY) || 0,
           MDD_RATE: prescription.MMC_RATE || prescription.MDD_RATE || 0,
-          MDD_AMOUNT: (parseFloat(prescription.MMC_RATE || 0) * (parseInt(prescription.MDD_QUANTITY) || 0)),
+          MDD_AMOUNT:
+            parseFloat(prescription.MMC_RATE || 0) *
+            (parseInt(prescription.MDD_QUANTITY) || 0),
           MDD_DOSAGE: prescription.MDD_DOSAGE || "",
           MDD_DAILY_DOSE: prescription.MDD_DAILY_DOSE,
           MDD_DAYS: prescription.MDD_DAYS,
-          MDD_TAKES: prescription.MDD_TAKES === "other"
-            ? prescription.MDD_TAKES_CUSTOM
-            : prescription.MDD_TAKES,
+          MDD_TAKES:
+            prescription.MDD_TAKES === "other"
+              ? prescription.MDD_TAKES_CUSTOM
+              : prescription.MDD_TAKES,
           MDD_GIVEN_QUANTITY: 0,
           MDD_STATUS: "A",
-          MDD_TYPE: "drug"
+          MDD_TYPE: "drug",
         }));
 
         // Prepare services with MDD_TYPE "service" - use service name as material code if serviceCode is empty
@@ -2401,14 +2445,16 @@ const AddRecord = () => {
           MDD_MATERIAL_CODE: service.serviceCode || service.serviceName, // Use serviceCode if available, otherwise use serviceName
           MDD_QUANTITY: parseInt(service.quantity) || 1,
           MDD_RATE: parseFloat(service.serviceRate) || 0,
-          MDD_AMOUNT: (parseFloat(service.serviceRate) || 0) * (parseInt(service.quantity) || 1),
+          MDD_AMOUNT:
+            (parseFloat(service.serviceRate) || 0) *
+            (parseInt(service.quantity) || 1),
           MDD_DOSAGE: service.serviceDescription || "",
           MDD_DAILY_DOSE: 0,
           MDD_DAYS: 0,
           MDD_TAKES: "",
           MDD_GIVEN_QUANTITY: 0,
           MDD_STATUS: "A",
-          MDD_TYPE: "service"
+          MDD_TYPE: "service",
         }));
 
         const allItems = [...preparedDrugs, ...preparedServices];
@@ -2431,7 +2477,7 @@ const AddRecord = () => {
 
         const response = await axios.post(
           `${process.env.REACT_APP_API_BASE_URL}/Treatment/updatingtreatment/${patientId}/${serialNumber}`,
-          updatePayload
+          updatePayload,
         );
 
         if (response.status === 200) {
@@ -2453,11 +2499,13 @@ const AddRecord = () => {
           {
             ...formData,
             MTD_APPOINMENT_ID: formData.MTD_APPOINMENT_ID || null,
-            MTD_TREATMENT_STATUS: "C"
-          }
+            MTD_TREATMENT_STATUS: "C",
+          },
         );
-        
-        const serial_no = treatmentResponse.data.MTD_SERIAL_NO || treatmentResponse.data.serialNo;
+
+        const serial_no =
+          treatmentResponse.data.MTD_SERIAL_NO ||
+          treatmentResponse.data.serialNo;
 
         // Prepare drugs with MDD_TYPE "drug"
         const preparedDrugs = validPrescriptions.map((prescription) => ({
@@ -2466,11 +2514,14 @@ const AddRecord = () => {
           MDD_MATERIAL_CODE: prescription.MDD_MATERIAL_CODE,
           MDD_QUANTITY: parseInt(prescription.MDD_QUANTITY) || 0,
           MDD_RATE: prescription.MMC_RATE || prescription.MDD_RATE || 0,
-          MDD_AMOUNT: (parseFloat(prescription.MMC_RATE || 0) * (parseInt(prescription.MDD_QUANTITY) || 0)),
+          MDD_AMOUNT:
+            parseFloat(prescription.MMC_RATE || 0) *
+            (parseInt(prescription.MDD_QUANTITY) || 0),
           MDD_DOSAGE: prescription.MDD_DOSAGE || "",
-          MDD_TAKES: prescription.MDD_TAKES === "other"
-            ? prescription.MDD_TAKES_CUSTOM
-            : prescription.MDD_TAKES,
+          MDD_TAKES:
+            prescription.MDD_TAKES === "other"
+              ? prescription.MDD_TAKES_CUSTOM
+              : prescription.MDD_TAKES,
           MDD_GIVEN_QUANTITY: 0,
           MDD_STATUS: "A",
           MDD_CREATED_BY: formData.MTD_CREATED_BY,
@@ -2479,7 +2530,7 @@ const AddRecord = () => {
           MDD_UPDATED_DATE: null,
           MDD_DAYS: parseInt(prescription.MDD_DAYS) || 0,
           MDD_DAILY_DOSE: parseFloat(prescription.MDD_DAILY_DOSE) || 0,
-          MDD_TYPE: "drug"
+          MDD_TYPE: "drug",
         }));
 
         // Prepare services with MDD_TYPE "service" - use service name as material code if serviceCode is empty
@@ -2489,7 +2540,9 @@ const AddRecord = () => {
           MDD_MATERIAL_CODE: service.serviceCode || service.serviceName, // Use serviceCode if available, otherwise use serviceName
           MDD_QUANTITY: parseInt(service.quantity) || 1,
           MDD_RATE: parseFloat(service.serviceRate) || 0,
-          MDD_AMOUNT: (parseFloat(service.serviceRate) || 0) * (parseInt(service.quantity) || 1),
+          MDD_AMOUNT:
+            (parseFloat(service.serviceRate) || 0) *
+            (parseInt(service.quantity) || 1),
           MDD_DOSAGE: service.serviceDescription || "",
           MDD_TAKES: "",
           MDD_GIVEN_QUANTITY: 0,
@@ -2500,7 +2553,7 @@ const AddRecord = () => {
           MDD_UPDATED_DATE: null,
           MDD_DAYS: 0,
           MDD_DAILY_DOSE: 0,
-          MDD_TYPE: "service"
+          MDD_TYPE: "service",
         }));
 
         const allItems = [...preparedDrugs, ...preparedServices];
@@ -2509,11 +2562,11 @@ const AddRecord = () => {
 
         // Submit all items (can be empty array if no drugs/services)
         if (allItems.length > 0) {
-          const submitPromises = allItems.map(item => {
+          const submitPromises = allItems.map((item) => {
             console.log(`Submitting ${item.MDD_TYPE}:`, item);
             return axios.post(
               `${process.env.REACT_APP_API_BASE_URL}/Drug`,
-              item
+              item,
             );
           });
 
@@ -2525,9 +2578,12 @@ const AddRecord = () => {
     } catch (error) {
       console.error(
         "Error submitting record:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
-      setSnackbarMessage(error.response?.data?.message || "Error submitting treatment and prescription details.");
+      setSnackbarMessage(
+        error.response?.data?.message ||
+          "Error submitting treatment and prescription details.",
+      );
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     } finally {
@@ -2550,28 +2606,38 @@ const AddRecord = () => {
   const currentPrescription = prescriptions[prescriptions.length - 1];
   const completedServices = services.slice(0, -1);
   const currentService = services[services.length - 1];
-  const currentStockCheck = currentPrescription ? checkStockAvailability(currentPrescription) : null;
+  const currentStockCheck = currentPrescription
+    ? checkStockAvailability(currentPrescription)
+    : null;
 
-  const totalDrugsAmount = completedPrescriptions.reduce((sum, drug) => 
-    sum + (parseFloat(drug.MDD_QUANTITY || 0) * parseFloat(drug.MMC_RATE || 0)), 0
+  const totalDrugsAmount = completedPrescriptions.reduce(
+    (sum, drug) =>
+      sum + parseFloat(drug.MDD_QUANTITY || 0) * parseFloat(drug.MMC_RATE || 0),
+    0,
   );
-  
-  const totalServicesAmount = completedServices.reduce((sum, service) => 
-    sum + (parseFloat(service.serviceRate || 0) * parseFloat(service.quantity || 1)), 0
+
+  const totalServicesAmount = completedServices.reduce(
+    (sum, service) =>
+      sum +
+      parseFloat(service.serviceRate || 0) * parseFloat(service.quantity || 1),
+    0,
   );
-  
-  const totalAmount = totalDrugsAmount + totalServicesAmount + (parseFloat(formData.MTD_AMOUNT) || 0);
+
+  const totalAmount =
+    totalDrugsAmount +
+    totalServicesAmount +
+    (parseFloat(formData.MTD_AMOUNT) || 0);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       });
     } catch (e) {
       return "Invalid Date";
@@ -2586,10 +2652,35 @@ const AddRecord = () => {
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Alert
+        {/* <Alert
           onClose={handleSnackbarClose}
           severity={snackbarSeverity}
           sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert> */}
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{
+            width: "100%",
+            minWidth: "420px",
+            fontSize: "1.1rem",
+            fontWeight: 600,
+            py: 1.5,
+            px: 2,
+            borderRadius: "14px",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+            "& .MuiAlert-icon": {
+              fontSize: "32px",
+              alignItems: "center",
+            },
+            "& .MuiAlert-message": {
+              fontSize: "1.05rem",
+              fontWeight: 600,
+            },
+          }}
         >
           {snackbarMessage}
         </Alert>
@@ -2622,7 +2713,7 @@ const AddRecord = () => {
             <Box>
               <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<ExpandMore />}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <MedicalServices color="primary" />
                     <Typography variant="subtitle1" fontWeight={600}>
                       Previous Treatments ({treatmentHistory.length})
@@ -2630,65 +2721,92 @@ const AddRecord = () => {
                   </Box>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Box sx={{ maxHeight: '400px', overflow: 'auto', pr: 1 }}>
+                  <Box sx={{ maxHeight: "400px", overflow: "auto", pr: 1 }}>
                     {treatmentHistory.map((treatment, index) => (
                       <HistoryCard key={treatment.MTD_SERIAL_NO || index}>
                         <CardContent>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                            <Typography variant="subtitle1" fontWeight={600} color="primary">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "flex-start",
+                              mb: 1,
+                            }}
+                          >
+                            <Typography
+                              variant="subtitle1"
+                              fontWeight={600}
+                              color="primary"
+                            >
                               Visit #{treatmentHistory.length - index}
                             </Typography>
                             <Chip
-                              label={formatDate(treatment.MTD_CREATED_DATE || treatment.MTD_DATE)}
+                              label={formatDate(
+                                treatment.MTD_CREATED_DATE ||
+                                  treatment.MTD_DATE,
+                              )}
                               size="small"
                               icon={<CalendarToday />}
                               variant="outlined"
                             />
                           </Box>
-                          
+
                           <Grid container spacing={2}>
                             <Grid item xs={12} md={6}>
-                              <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
+                              <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
                                 <Note color="action" fontSize="small" />
                                 <Typography variant="body2">
-                                  <strong>Complaint:</strong> {treatment.MTD_COMPLAIN || 'N/A'}
+                                  <strong>Complaint:</strong>{" "}
+                                  {treatment.MTD_COMPLAIN || "N/A"}
                                 </Typography>
                               </Box>
                             </Grid>
                             <Grid item xs={12} md={6}>
-                              <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
+                              <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
                                 <Info color="action" fontSize="small" />
                                 <Typography variant="body2">
-                                  <strong>Diagnosis:</strong> {treatment.MTD_DIAGNOSTICS || 'N/A'}
+                                  <strong>Diagnosis:</strong>{" "}
+                                  {treatment.MTD_DIAGNOSTICS || "N/A"}
                                 </Typography>
                               </Box>
                             </Grid>
                           </Grid>
 
-                          <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+                          <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
                             <Person color="action" fontSize="small" />
                             <Typography variant="body2" color="text.secondary">
-                              <strong>Doctor:</strong> {treatment.MTD_DOCTOR || 'N/A'}
+                              <strong>Doctor:</strong>{" "}
+                              {treatment.MTD_DOCTOR || "N/A"}
                             </Typography>
                           </Box>
 
                           {treatment.MTD_REMARKS && (
-                            <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+                            <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
                               <Description color="action" fontSize="small" />
-                              <Typography variant="body2" color="text.secondary">
-                                <strong>Remarks:</strong> {treatment.MTD_REMARKS}
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                <strong>Remarks:</strong>{" "}
+                                {treatment.MTD_REMARKS}
                               </Typography>
                             </Box>
                           )}
 
-                          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                          <Box
+                            sx={{
+                              mt: 2,
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
                             <Button
                               size="small"
                               variant="outlined"
                               onClick={() => {
                                 navigate(
                                   `/dashboard/view-record/${patientId}/${treatment.MTD_SERIAL_NO}`,
-                                  { state: { fromHistory: true } }
+                                  { state: { fromHistory: true } },
                                 );
                               }}
                             >
@@ -2703,7 +2821,7 @@ const AddRecord = () => {
               </Accordion>
             </Box>
           ) : (
-            <Box sx={{ textAlign: 'center', py: 3 }}>
+            <Box sx={{ textAlign: "center", py: 3 }}>
               <Typography variant="body1" color="text.secondary">
                 No previous treatment history available for this patient
               </Typography>
@@ -2794,15 +2912,24 @@ const AddRecord = () => {
                   Drug Prescriptions
                 </Typography>
               </SectionHeader>
-              
+
               {/* New Drug Entry Field */}
               <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                <Typography
+                  variant="subtitle2"
+                  color="text.secondary"
+                  gutterBottom
+                >
                   Add New Drug
                 </Typography>
                 <Paper
                   elevation={2}
-                  sx={{ p: 2, mb: 2, position: "relative", backgroundColor: 'background.paper' }}
+                  sx={{
+                    p: 2,
+                    mb: 2,
+                    position: "relative",
+                    backgroundColor: "background.paper",
+                  }}
                 >
                   <Box
                     sx={{
@@ -2825,15 +2952,21 @@ const AddRecord = () => {
                         label="Search Medicine"
                         name="MDD_MATERIAL_NAME"
                         value={currentPrescription?.MDD_MATERIAL_NAME || ""}
-                        onChange={(event) => handleDrugSearchChange(prescriptions.length - 1, event)}
+                        onChange={(event) =>
+                          handleDrugSearchChange(
+                            prescriptions.length - 1,
+                            event,
+                          )
+                        }
                         onFocus={() => {
                           setActivePrescriptionIndex(prescriptions.length - 1);
                           setCurrentSearchType("drug");
                         }}
                         InputProps={{
-                          endAdornment: searchLoading && currentSearchType === "drug" ? (
-                            <CircularProgress size={20} />
-                          ) : null,
+                          endAdornment:
+                            searchLoading && currentSearchType === "drug" ? (
+                              <CircularProgress size={20} />
+                            ) : null,
                         }}
                       />
                       {activePrescriptionIndex === prescriptions.length - 1 &&
@@ -2861,21 +2994,34 @@ const AddRecord = () => {
                                       medicine.MMC_MATERIAL_CODE,
                                       medicine.MMC_DESCRIPTION,
                                       medicine.MMC_RATE,
-                                      medicine.MMC_CURRENT_STOCK
+                                      medicine.MMC_CURRENT_STOCK,
                                     )
                                   }
-                                  sx={{ cursor: 'pointer' }}
+                                  sx={{ cursor: "pointer" }}
                                 >
                                   <ListItemText
                                     primary={medicine.MMC_DESCRIPTION}
                                     secondary={
                                       <>
-                                        <Typography component="span" variant="body2" color="text.primary">
+                                        <Typography
+                                          component="span"
+                                          variant="body2"
+                                          color="text.primary"
+                                        >
                                           Code: {medicine.MMC_MATERIAL_CODE}
                                         </Typography>
                                         <br />
-                                        <Typography component="span" variant="body2" color={medicine.MMC_CURRENT_STOCK > 0 ? "success.main" : "error.main"}>
-                                          Stock: {medicine.MMC_CURRENT_STOCK} units | Rate: Rs.{medicine.MMC_RATE}
+                                        <Typography
+                                          component="span"
+                                          variant="body2"
+                                          color={
+                                            medicine.MMC_CURRENT_STOCK > 0
+                                              ? "success.main"
+                                              : "error.main"
+                                          }
+                                        >
+                                          Stock: {medicine.MMC_CURRENT_STOCK}{" "}
+                                          units | Rate: Rs.{medicine.MMC_RATE}
                                         </Typography>
                                       </>
                                     }
@@ -2885,13 +3031,21 @@ const AddRecord = () => {
                             </List>
                           </Paper>
                         )}
-                      
+
                       {/* Display current stock if medicine selected */}
                       {currentPrescription?.MMC_CURRENT_STOCK > 0 && (
-                        <Box sx={{ mt: 0.5, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Box
+                          sx={{
+                            mt: 0.5,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.5,
+                          }}
+                        >
                           <Inventory fontSize="small" color="primary" />
                           <Typography variant="caption" color="primary">
-                            Current Stock: {currentPrescription.MMC_CURRENT_STOCK} units
+                            Current Stock:{" "}
+                            {currentPrescription.MMC_CURRENT_STOCK} units
                           </Typography>
                         </Box>
                       )}
@@ -2905,7 +3059,10 @@ const AddRecord = () => {
                           name="MDD_TAKES"
                           value={currentPrescription?.MDD_TAKES || ""}
                           onChange={(event) =>
-                            handlePrescriptionChange(prescriptions.length - 1, event)
+                            handlePrescriptionChange(
+                              prescriptions.length - 1,
+                              event,
+                            )
                           }
                           label="How to Take"
                         >
@@ -2940,7 +3097,10 @@ const AddRecord = () => {
                           label="Specify Times per Day"
                           value={currentPrescription?.MDD_TAKES_CUSTOM || ""}
                           onChange={(event) =>
-                            handlePrescriptionChange(prescriptions.length - 1, event)
+                            handlePrescriptionChange(
+                              prescriptions.length - 1,
+                              event,
+                            )
                           }
                           placeholder="Enter number (e.g., 2, 3, 4)"
                           inputProps={{ min: "1", step: "1" }}
@@ -2957,7 +3117,12 @@ const AddRecord = () => {
                         name="MDD_DAILY_DOSE"
                         label="Daily Dose"
                         value={currentPrescription?.MDD_DAILY_DOSE || ""}
-                        onChange={(event) => handlePrescriptionChange(prescriptions.length - 1, event)}
+                        onChange={(event) =>
+                          handlePrescriptionChange(
+                            prescriptions.length - 1,
+                            event,
+                          )
+                        }
                         inputProps={{ min: "0.5", step: "0.5" }}
                       />
                     </Box>
@@ -2971,7 +3136,12 @@ const AddRecord = () => {
                         name="MDD_DAYS"
                         label="Days"
                         value={currentPrescription?.MDD_DAYS || ""}
-                        onChange={(event) => handlePrescriptionChange(prescriptions.length - 1, event)}
+                        onChange={(event) =>
+                          handlePrescriptionChange(
+                            prescriptions.length - 1,
+                            event,
+                          )
+                        }
                         inputProps={{ min: "1" }}
                       />
                     </Box>
@@ -2987,12 +3157,21 @@ const AddRecord = () => {
                           label="Qty"
                           value={currentPrescription?.MDD_QUANTITY || ""}
                           onChange={(event) =>
-                            handlePrescriptionChange(prescriptions.length - 1, event)
+                            handlePrescriptionChange(
+                              prescriptions.length - 1,
+                              event,
+                            )
                           }
                           inputProps={{ min: "1" }}
                           disabled
-                          error={currentStockCheck && !currentStockCheck.isAvailable}
-                          color={currentStockCheck?.isAvailable ? "success" : "primary"}
+                          error={
+                            currentStockCheck && !currentStockCheck.isAvailable
+                          }
+                          color={
+                            currentStockCheck?.isAvailable
+                              ? "success"
+                              : "primary"
+                          }
                         />
                       </Tooltip>
                     </Box>
@@ -3006,7 +3185,9 @@ const AddRecord = () => {
                         startIcon={<Add />}
                         size="small"
                         sx={{ height: 40 }}
-                        disabled={currentStockCheck && !currentStockCheck.isAvailable}
+                        disabled={
+                          currentStockCheck && !currentStockCheck.isAvailable
+                        }
                       >
                         Add Drug
                       </Button>
@@ -3014,98 +3195,183 @@ const AddRecord = () => {
                   </Box>
 
                   {/* Display simplified calculation with units and price */}
-                  {currentPrescription?.MDD_TAKES && 
-                   currentPrescription?.MDD_DAILY_DOSE && 
-                   currentPrescription?.MDD_DAYS && 
-                   (currentPrescription.MDD_TAKES !== "other" || currentPrescription.MDD_TAKES_CUSTOM) && (
-                    <Box sx={{ 
-                      mt: 2, 
-                      p: 1.5, 
-                      bgcolor: currentStockCheck && !currentStockCheck.isAvailable ? 'warning.light' : 'primary.light', 
-                      borderRadius: 1,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
-                    }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Typography variant="body2" color="white" fontWeight={500}>
-                          Total Units: {currentPrescription.MDD_QUANTITY}
-                        </Typography>
-                        {currentPrescription.MMC_RATE > 0 && (
-                          <>
-                            <Typography variant="body2" color="white" fontWeight={500}>
-                              |
-                            </Typography>
-                            <Typography variant="body2" color="white" fontWeight={500}>
-                              Price: Rs. {(parseFloat(currentPrescription.MDD_QUANTITY || 0) * currentPrescription.MMC_RATE).toFixed(2)}
-                            </Typography>
-                          </>
-                        )}
-                      </Box>
-                      {currentStockCheck && !currentStockCheck.isAvailable && (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <Warning fontSize="small" sx={{ color: 'white' }} />
-                          <Typography variant="body2" color="white" fontWeight={500}>
-                            Insufficient Stock!
+                  {currentPrescription?.MDD_TAKES &&
+                    currentPrescription?.MDD_DAILY_DOSE &&
+                    currentPrescription?.MDD_DAYS &&
+                    (currentPrescription.MDD_TAKES !== "other" ||
+                      currentPrescription.MDD_TAKES_CUSTOM) && (
+                      <Box
+                        sx={{
+                          mt: 2,
+                          p: 1.5,
+                          bgcolor:
+                            currentStockCheck && !currentStockCheck.isAvailable
+                              ? "warning.light"
+                              : "primary.light",
+                          borderRadius: 1,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                        >
+                          <Typography
+                            variant="body2"
+                            color="white"
+                            fontWeight={500}
+                          >
+                            Total Units: {currentPrescription.MDD_QUANTITY}
                           </Typography>
+                          {currentPrescription.MMC_RATE > 0 && (
+                            <>
+                              <Typography
+                                variant="body2"
+                                color="white"
+                                fontWeight={500}
+                              >
+                                |
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="white"
+                                fontWeight={500}
+                              >
+                                Price: Rs.{" "}
+                                {(
+                                  parseFloat(
+                                    currentPrescription.MDD_QUANTITY || 0,
+                                  ) * currentPrescription.MMC_RATE
+                                ).toFixed(2)}
+                              </Typography>
+                            </>
+                          )}
                         </Box>
-                      )}
-                    </Box>
-                  )}
+                        {currentStockCheck &&
+                          !currentStockCheck.isAvailable && (
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 0.5,
+                              }}
+                            >
+                              <Warning
+                                fontSize="small"
+                                sx={{ color: "white" }}
+                              />
+                              <Typography
+                                variant="body2"
+                                color="white"
+                                fontWeight={500}
+                              >
+                                Insufficient Stock!
+                              </Typography>
+                            </Box>
+                          )}
+                      </Box>
+                    )}
                 </Paper>
               </Box>
 
               {/* Display Completed Drugs */}
               {completedPrescriptions.length > 0 && (
                 <Box sx={{ mt: 3 }}>
-                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
                     Added Drugs ({completedPrescriptions.length})
                   </Typography>
                   {completedPrescriptions.map((prescription, index) => {
                     const stockCheck = checkStockAvailability(prescription);
-                    
+
                     return (
                       <PrescriptionCard key={index}>
-                        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "flex-start",
+                            }}
+                          >
                             <Box sx={{ flex: 1 }}>
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                                <Typography variant="subtitle1" fontWeight={600} color="primary">
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 2,
+                                  flexWrap: "wrap",
+                                }}
+                              >
+                                <Typography
+                                  variant="subtitle1"
+                                  fontWeight={600}
+                                  color="primary"
+                                >
                                   {prescription.MDD_MATERIAL_NAME}
                                 </Typography>
-                                <Chip 
-                                  label={`Daily: ${prescription.MDD_DAILY_DOSE}`} 
-                                  size="small" 
+                                <Chip
+                                  label={`Daily: ${prescription.MDD_DAILY_DOSE}`}
+                                  size="small"
                                   variant="outlined"
                                 />
-                                <Chip 
-                                  label={`Days: ${prescription.MDD_DAYS}`} 
-                                  size="small" 
+                                <Chip
+                                  label={`Days: ${prescription.MDD_DAYS}`}
+                                  size="small"
                                   variant="outlined"
                                 />
-                                <Chip 
-                                  label={`Total: ${prescription.MDD_QUANTITY} units`} 
-                                  size="small" 
+                                <Chip
+                                  label={`Total: ${prescription.MDD_QUANTITY} units`}
+                                  size="small"
                                   color="primary"
                                   variant="outlined"
                                 />
                                 {prescription.MMC_RATE > 0 && (
-                                  <Chip 
+                                  <Chip
                                     label={`Rs. ${(parseFloat(prescription.MDD_QUANTITY || 0) * prescription.MMC_RATE).toFixed(2)}`}
-                                    size="small" 
+                                    size="small"
                                     color="secondary"
                                     variant="outlined"
                                   />
                                 )}
                               </Box>
-                              <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                                <Typography variant="body2" color="text.secondary">
-                                  <strong>How to take:</strong> {prescription.MDD_TAKES === "other" ? `${prescription.MDD_TAKES_CUSTOM} times per day` : prescription.MDD_TAKES}
+                              <Box
+                                sx={{
+                                  mt: 1,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 2,
+                                  flexWrap: "wrap",
+                                }}
+                              >
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                >
+                                  <strong>How to take:</strong>{" "}
+                                  {prescription.MDD_TAKES === "other"
+                                    ? `${prescription.MDD_TAKES_CUSTOM} times per day`
+                                    : prescription.MDD_TAKES}
                                 </Typography>
                                 {prescription.MMC_CURRENT_STOCK > 0 && (
-                                  <Typography variant="body2" color={stockCheck?.isAvailable ? "success.main" : "error.main"}>
-                                    <Inventory fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />
-                                    Stock: {prescription.MMC_CURRENT_STOCK} units
+                                  <Typography
+                                    variant="body2"
+                                    color={
+                                      stockCheck?.isAvailable
+                                        ? "success.main"
+                                        : "error.main"
+                                    }
+                                  >
+                                    <Inventory
+                                      fontSize="small"
+                                      sx={{ verticalAlign: "middle", mr: 0.5 }}
+                                    />
+                                    Stock: {prescription.MMC_CURRENT_STOCK}{" "}
+                                    units
                                   </Typography>
                                 )}
                               </Box>
@@ -3131,11 +3397,15 @@ const AddRecord = () => {
                       </PrescriptionCard>
                     );
                   })}
-                  
+
                   {/* Drugs Total */}
                   {totalDrugsAmount > 0 && (
-                    <Box sx={{ mt: 2, textAlign: 'right' }}>
-                      <Typography variant="subtitle1" color="primary.main" fontWeight={600}>
+                    <Box sx={{ mt: 2, textAlign: "right" }}>
+                      <Typography
+                        variant="subtitle1"
+                        color="primary.main"
+                        fontWeight={600}
+                      >
                         Drugs Total: Rs. {totalDrugsAmount.toFixed(2)}
                       </Typography>
                     </Box>
@@ -3152,15 +3422,24 @@ const AddRecord = () => {
                   Services
                 </Typography>
               </SectionHeader>
-              
+
               {/* New Service Entry Field */}
               <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                <Typography
+                  variant="subtitle2"
+                  color="text.secondary"
+                  gutterBottom
+                >
                   Add New Service
                 </Typography>
                 <Paper
                   elevation={2}
-                  sx={{ p: 2, mb: 2, position: "relative", backgroundColor: 'background.paper' }}
+                  sx={{
+                    p: 2,
+                    mb: 2,
+                    position: "relative",
+                    backgroundColor: "background.paper",
+                  }}
                 >
                   <Box
                     sx={{
@@ -3183,15 +3462,18 @@ const AddRecord = () => {
                         label="Search Service"
                         name="serviceName"
                         value={currentService?.serviceName || ""}
-                        onChange={(event) => handleServiceSearchChange(services.length - 1, event)}
+                        onChange={(event) =>
+                          handleServiceSearchChange(services.length - 1, event)
+                        }
                         onFocus={() => {
                           setActiveServiceIndex(services.length - 1);
                           setCurrentSearchType("service");
                         }}
                         InputProps={{
-                          endAdornment: searchLoading && currentSearchType === "service" ? (
-                            <CircularProgress size={20} />
-                          ) : null,
+                          endAdornment:
+                            searchLoading && currentSearchType === "service" ? (
+                              <CircularProgress size={20} />
+                            ) : null,
                         }}
                       />
                       {activeServiceIndex === services.length - 1 &&
@@ -3219,27 +3501,48 @@ const AddRecord = () => {
                                       item.MMC_MATERIAL_CODE,
                                       item.MMC_DESCRIPTION,
                                       item.MMC_DOSAGE || "",
-                                      item.MMC_RATE
+                                      item.MMC_RATE,
                                     )
                                   }
-                                  sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
+                                  sx={{
+                                    cursor: "pointer",
+                                    "&:hover": { bgcolor: "action.hover" },
+                                  }}
                                 >
                                   <ListItemText
                                     primary={item.MMC_DESCRIPTION}
                                     secondary={
                                       <>
-                                        <Typography component="span" variant="body2" color="text.primary">
+                                        <Typography
+                                          component="span"
+                                          variant="body2"
+                                          color="text.primary"
+                                        >
                                           Code: {item.MMC_MATERIAL_CODE}
                                         </Typography>
                                         <br />
-                                        <Typography component="span" variant="body2" color="success.main">
+                                        <Typography
+                                          component="span"
+                                          variant="body2"
+                                          color="success.main"
+                                        >
                                           Rate: Rs.{item.MMC_RATE}
                                         </Typography>
-                                        {item.MMC_CURRENT_STOCK !== undefined && (
+                                        {item.MMC_CURRENT_STOCK !==
+                                          undefined && (
                                           <>
                                             <br />
-                                            <Typography component="span" variant="body2" color={item.MMC_CURRENT_STOCK > 0 ? "success.main" : "error.main"}>
-                                              Stock: {item.MMC_CURRENT_STOCK} units
+                                            <Typography
+                                              component="span"
+                                              variant="body2"
+                                              color={
+                                                item.MMC_CURRENT_STOCK > 0
+                                                  ? "success.main"
+                                                  : "error.main"
+                                              }
+                                            >
+                                              Stock: {item.MMC_CURRENT_STOCK}{" "}
+                                              units
                                             </Typography>
                                           </>
                                         )}
@@ -3251,7 +3554,7 @@ const AddRecord = () => {
                             </List>
                           </Paper>
                         )}
-                      
+
                       {/* Show no results message */}
                       {activeServiceIndex === services.length - 1 &&
                         currentService?.serviceName &&
@@ -3260,8 +3563,12 @@ const AddRecord = () => {
                         !searchLoading &&
                         currentSearchType === "service" && (
                           <Box sx={{ mt: 1 }}>
-                            <Typography variant="caption" color="text.secondary">
-                              No services found. You can still add manually by typing the name and rate.
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              No services found. You can still add manually by
+                              typing the name and rate.
                             </Typography>
                           </Box>
                         )}
@@ -3276,7 +3583,9 @@ const AddRecord = () => {
                         name="serviceRate"
                         label="Rate (Rs.)"
                         value={currentService?.serviceRate || ""}
-                        onChange={(event) => handleServiceChange(services.length - 1, event)}
+                        onChange={(event) =>
+                          handleServiceChange(services.length - 1, event)
+                        }
                         inputProps={{ min: "0", step: "0.01" }}
                       />
                     </Box>
@@ -3290,7 +3599,9 @@ const AddRecord = () => {
                         name="quantity"
                         label="Quantity"
                         value={currentService?.quantity || 1}
-                        onChange={(event) => handleServiceChange(services.length - 1, event)}
+                        onChange={(event) =>
+                          handleServiceChange(services.length - 1, event)
+                        }
                         inputProps={{ min: "1" }}
                       />
                     </Box>
@@ -3304,7 +3615,10 @@ const AddRecord = () => {
                         startIcon={<Add />}
                         size="small"
                         sx={{ height: 40 }}
-                        disabled={!currentService?.serviceName || !currentService?.serviceRate}
+                        disabled={
+                          !currentService?.serviceName ||
+                          !currentService?.serviceRate
+                        }
                       >
                         Add Service
                       </Button>
@@ -3312,56 +3626,92 @@ const AddRecord = () => {
                   </Box>
 
                   {/* Display total for current service */}
-                  {currentService?.serviceRate > 0 && currentService?.quantity > 0 && (
-                    <Box sx={{ 
-                      mt: 2, 
-                      p: 1.5, 
-                      bgcolor: 'info.light', 
-                      borderRadius: 1,
-                    }}>
-                      <Typography variant="body2" color="white" fontWeight={500}>
-                        Total: Rs. {(currentService.serviceRate * currentService.quantity).toFixed(2)}
-                      </Typography>
-                    </Box>
-                  )}
+                  {currentService?.serviceRate > 0 &&
+                    currentService?.quantity > 0 && (
+                      <Box
+                        sx={{
+                          mt: 2,
+                          p: 1.5,
+                          bgcolor: "info.light",
+                          borderRadius: 1,
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          color="white"
+                          fontWeight={500}
+                        >
+                          Total: Rs.{" "}
+                          {(
+                            currentService.serviceRate * currentService.quantity
+                          ).toFixed(2)}
+                        </Typography>
+                      </Box>
+                    )}
                 </Paper>
               </Box>
 
               {/* Display Completed Services */}
               {completedServices.length > 0 && (
                 <Box sx={{ mt: 3 }}>
-                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
                     Added Services ({completedServices.length})
                   </Typography>
                   {completedServices.map((service, index) => (
                     <ServiceCard key={index}>
-                      <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "flex-start",
+                          }}
+                        >
                           <Box sx={{ flex: 1 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                              <Typography variant="subtitle1" fontWeight={600} color="info.main">
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 2,
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              <Typography
+                                variant="subtitle1"
+                                fontWeight={600}
+                                color="info.main"
+                              >
                                 {service.serviceName}
                               </Typography>
-                              <Chip 
-                                label={`Qty: ${service.quantity}`} 
-                                size="small" 
+                              <Chip
+                                label={`Qty: ${service.quantity}`}
+                                size="small"
                                 variant="outlined"
                                 color="info"
                               />
-                              <Chip 
-                                label={`Rate: Rs. ${service.serviceRate}`} 
-                                size="small" 
+                              <Chip
+                                label={`Rate: Rs. ${service.serviceRate}`}
+                                size="small"
                                 variant="outlined"
                               />
-                              <Chip 
-                                label={`Total: Rs. ${(service.serviceRate * service.quantity).toFixed(2)}`} 
-                                size="small" 
+                              <Chip
+                                label={`Total: Rs. ${(service.serviceRate * service.quantity).toFixed(2)}`}
+                                size="small"
                                 color="info"
                               />
                             </Box>
                             {service.serviceDescription && (
-                              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                                <strong>Description:</strong> {service.serviceDescription}
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ mt: 1 }}
+                              >
+                                <strong>Description:</strong>{" "}
+                                {service.serviceDescription}
                               </Typography>
                             )}
                           </Box>
@@ -3377,11 +3727,15 @@ const AddRecord = () => {
                       </CardContent>
                     </ServiceCard>
                   ))}
-                  
+
                   {/* Services Total */}
                   {totalServicesAmount > 0 && (
-                    <Box sx={{ mt: 2, textAlign: 'right' }}>
-                      <Typography variant="subtitle1" color="info.main" fontWeight={600}>
+                    <Box sx={{ mt: 2, textAlign: "right" }}>
+                      <Typography
+                        variant="subtitle1"
+                        color="info.main"
+                        fontWeight={600}
+                      >
                         Services Total: Rs. {totalServicesAmount.toFixed(2)}
                       </Typography>
                     </Box>
@@ -3424,15 +3778,25 @@ const AddRecord = () => {
                 inputProps={{ min: "1" }}
                 InputProps={{
                   startAdornment: (
-                    <MonetizationOn color="action" sx={{ mr: 1, color: "primary.main" }} />
+                    <MonetizationOn
+                      color="action"
+                      sx={{ mr: 1, color: "primary.main" }}
+                    />
                   ),
                 }}
               />
             </Box>
 
             {/* Grand Total */}
-            <Box sx={{ mb: 4, p: 2, bgcolor: 'success.light', borderRadius: 2 }}>
-              <Typography variant="h5" color="white" fontWeight={600} align="right">
+            <Box
+              sx={{ mb: 4, p: 2, bgcolor: "success.light", borderRadius: 2 }}
+            >
+              <Typography
+                variant="h5"
+                color="white"
+                fontWeight={600}
+                align="right"
+              >
                 Grand Total: Rs. {totalAmount.toFixed(2)}
               </Typography>
             </Box>

@@ -436,9 +436,7 @@ export default function MedicalHistory() {
   const fetchAllPatients = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/Patient`
-      );
+      const response = await axios.get(`${API_BASE_URL}/Patient`);
       setPatients(response.data);
       setFilteredPatients(response.data);
       setErrorMessage("");
@@ -460,15 +458,15 @@ export default function MedicalHistory() {
       const filtered = patients.filter(
         (patient) =>
           patient.MPD_MOBILE_NO?.toLowerCase().includes(
-            searchTerm.toLowerCase()
+            searchTerm.toLowerCase(),
           ) ||
           patient.MPD_PATIENT_NAME?.toLowerCase().includes(
-            searchTerm.toLowerCase()
-          )
+            searchTerm.toLowerCase(),
+          ),
       );
       setFilteredPatients(filtered);
       setErrorMessage(
-        filtered.length === 0 ? "No matching patients found." : ""
+        filtered.length === 0 ? "No matching patients found." : "",
       );
     } else {
       setFilteredPatients(patients);
@@ -485,7 +483,7 @@ export default function MedicalHistory() {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/Patient/SearchBy/${searchTerm}`
+        `${API_BASE_URL}/Patient/SearchBy/${searchTerm}`,
       );
       setPatients(response.data);
       setErrorMessage("");
@@ -518,7 +516,7 @@ export default function MedicalHistory() {
     try {
       setErrorMessage("");
       const response = await axios.get(
-        `${API_BASE_URL}/Treatment/patient/${patient.MPD_PATIENT_CODE}`
+        `${API_BASE_URL}/Treatment/patient/${patient.MPD_PATIENT_CODE}`,
       );
       setTreatments(response.data);
       setOpenTreatmentDialog(true);
@@ -536,11 +534,11 @@ export default function MedicalHistory() {
       setIsLoading(true);
       setErrorMessage("");
       const response = await axios.get(
-        `${API_BASE_URL}/PatientVitalSigns/patient/${patient.MPD_PATIENT_CODE}`
+        `${API_BASE_URL}/PatientVitalSigns/patient/${patient.MPD_PATIENT_CODE}`,
       );
-      
+
       // Transform the API response to match your component's expected format
-      const transformedVitalSigns = response.data.map(vital => ({
+      const transformedVitalSigns = response.data.map((vital) => ({
         id: vital.MPVS_ID,
         patientCode: vital.MPVS_PATIENT_CODE,
         bloodPressureSystolic: vital.MPVS_SYSTOLIC_BP,
@@ -556,9 +554,9 @@ export default function MedicalHistory() {
         recordedDate: vital.MPVS_RECORDED_AT || new Date().toISOString(),
         recordedBy: vital.MPVS_CREATED_BY || "System",
         lastUpdated: vital.MPVS_UPDATED_DATE || vital.MPVS_CREATED_DATE,
-        status: vital.MPVS_STATUS
+        status: vital.MPVS_STATUS,
       }));
-      
+
       setVitalSigns(transformedVitalSigns);
       setOpenVitalSignsDialog(true);
     } catch (error) {
@@ -579,9 +577,7 @@ export default function MedicalHistory() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete the patient?")) {
       try {
-        const response = await axios.get(
-          `${API_BASE_URL}/Patient/${id}`
-        );
+        const response = await axios.get(`${API_BASE_URL}/Patient/${id}`);
 
         if (response.data && response.data.length > 0) {
           setSnackbarMessage("Cannot delete patient with treatments");
@@ -590,9 +586,7 @@ export default function MedicalHistory() {
           return;
         }
 
-        await axios.delete(
-          `${API_BASE_URL}/Patient/${id}`
-        );
+        await axios.delete(`${API_BASE_URL}/Patient/${id}`);
         setSnackbarMessage("Patient deleted successfully");
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
@@ -600,7 +594,7 @@ export default function MedicalHistory() {
       } catch (error) {
         console.error("Error deleting patient:", error);
         setSnackbarMessage(
-          error.response?.data?.message || "Failed to delete patient"
+          error.response?.data?.message || "Failed to delete patient",
         );
         setSnackbarSeverity("error");
         setSnackbarOpen(true);
@@ -625,7 +619,7 @@ export default function MedicalHistory() {
 
   const viewPatient = (patientCode) => {
     setSelectedPatient(
-      patients.find((p) => p.MPD_PATIENT_CODE === patientCode)
+      patients.find((p) => p.MPD_PATIENT_CODE === patientCode),
     );
     setOpenAddPatient(true);
   };
@@ -637,7 +631,7 @@ export default function MedicalHistory() {
   // Format vital signs for display
   const formatVitalSign = (value, unit, decimals = 1) => {
     if (value === null || value === undefined) return "N/A";
-    if (typeof value === 'number') {
+    if (typeof value === "number") {
       return `${value.toFixed(decimals)} ${unit}`;
     }
     return `${value} ${unit}`;
@@ -703,7 +697,7 @@ export default function MedicalHistory() {
             }}
             onKeyPress={(e) => e.key === "Enter" && handleSearch()}
           />
-          
+
           {/* Add New Patient Button with Role-based Access */}
           <Tooltip
             title={
@@ -811,7 +805,7 @@ export default function MedicalHistory() {
                             <InfoIcon />
                           </IconButton>
                         </Tooltip>
-                        
+
                         {/* Add Treatment Button with Role-based Access */}
                         <Tooltip
                           title={
@@ -827,7 +821,7 @@ export default function MedicalHistory() {
                                 if (role === "Phuser") {
                                   e.preventDefault();
                                   setErrorMessage(
-                                    "Sorry, you don't have permission to add treatments."
+                                    "Sorry, you don't have permission to add treatments.",
                                   );
                                 } else {
                                   handleAddRecord(patient.MPD_PATIENT_CODE);
@@ -862,7 +856,7 @@ export default function MedicalHistory() {
                                 if (role === "Phuser") {
                                   e.preventDefault();
                                   setErrorMessage(
-                                    "Sorry, you don't have permission to add vital signs."
+                                    "Sorry, you don't have permission to add vital signs.",
                                   );
                                 } else {
                                   handleAddVitalSigns(patient);
@@ -949,7 +943,7 @@ export default function MedicalHistory() {
               setSnackbarMessage(
                 selectedPatient
                   ? "Patient updated successfully"
-                  : "Patient added successfully"
+                  : "Patient added successfully",
               );
               setSnackbarSeverity("success");
               setSnackbarOpen(true);
@@ -973,11 +967,15 @@ export default function MedicalHistory() {
         maxWidth="md"
       >
         <DialogTitle>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Typography variant="h6">
               Add Vital Signs - {selectedPatient?.MPD_PATIENT_NAME}
             </Typography>
-            <IconButton 
+            <IconButton
               onClick={() => {
                 setOpenAddVitalSignsDialog(false);
                 setSelectedPatient(null);
@@ -1038,7 +1036,7 @@ export default function MedicalHistory() {
               [...treatments]
                 .sort(
                   (a, b) =>
-                    new Date(b.MTD_CREATED_DATE) - new Date(a.MTD_CREATED_DATE)
+                    new Date(b.MTD_CREATED_DATE) - new Date(a.MTD_CREATED_DATE),
                 )
                 .map((treatment, index) => (
                   <Paper key={index} sx={{ p: 2, mb: 2 }}>
@@ -1052,7 +1050,7 @@ export default function MedicalHistory() {
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
                         {new Date(
-                          treatment.MTD_CREATED_DATE
+                          treatment.MTD_CREATED_DATE,
                         ).toLocaleDateString()}
                       </Typography>
                     </Box>
@@ -1067,7 +1065,7 @@ export default function MedicalHistory() {
                           `/dashboard/view-record/${selectedPatient.MPD_PATIENT_CODE}/${treatment.MTD_SERIAL_NO}`,
                           {
                             state: { message: "Medical History" },
-                          }
+                          },
                         );
                       }}
                       startIcon={<VisibilityIcon />}
@@ -1125,14 +1123,13 @@ export default function MedicalHistory() {
             {vitalSigns.length > 0 ? (
               [...vitalSigns]
                 .sort(
-                  (a, b) =>
-                    new Date(b.recordedDate) - new Date(a.recordedDate)
+                  (a, b) => new Date(b.recordedDate) - new Date(a.recordedDate),
                 )
                 .map((vital, index) => {
                   const bmi = calculateBMI(vital.weight, vital.height);
                   const bmiCategory = getBMICategory(bmi);
                   const bmiColor = getBMIColor(bmi);
-                  
+
                   return (
                     <Card key={index} sx={{ mb: 3 }}>
                       <CardContent>
@@ -1150,7 +1147,9 @@ export default function MedicalHistory() {
                           </Box>
                           <Chip
                             icon={<TimelineIcon />}
-                            label={new Date(vital.recordedDate).toLocaleString()}
+                            label={new Date(
+                              vital.recordedDate,
+                            ).toLocaleString()}
                             variant="outlined"
                             size="small"
                           />
@@ -1169,30 +1168,52 @@ export default function MedicalHistory() {
                                 borderRadius: 2,
                               }}
                             >
-                              <Box display="flex" alignItems="center" gap={1} mb={1}>
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                gap={1}
+                                mb={1}
+                              >
                                 <OpacityIcon color="error" />
-                                <Typography variant="subtitle2" color="text.secondary">
+                                <Typography
+                                  variant="subtitle2"
+                                  color="text.secondary"
+                                >
                                   Blood Pressure
                                 </Typography>
                               </Box>
                               <Typography variant="h6">
-                                {vital.bloodPressureSystolic && vital.bloodPressureDiastolic
+                                {vital.bloodPressureSystolic &&
+                                vital.bloodPressureDiastolic
                                   ? `${vital.bloodPressureSystolic}/${vital.bloodPressureDiastolic} mmHg`
                                   : "N/A"}
                               </Typography>
-                              {vital.bloodPressureSystolic && vital.bloodPressureDiastolic && (
-                                <Box mt={1}>
-                                  <Chip
-                                    size="small"
-                                    label={vital.bloodPressureSystolic > 140 || vital.bloodPressureDiastolic > 90 
-                                      ? "High" : vital.bloodPressureSystolic < 90 || vital.bloodPressureDiastolic < 60 
-                                      ? "Low" : "Normal"}
-                                    color={vital.bloodPressureSystolic > 140 || vital.bloodPressureDiastolic > 90 
-                                      ? "error" : vital.bloodPressureSystolic < 90 || vital.bloodPressureDiastolic < 60 
-                                      ? "warning" : "success"}
-                                  />
-                                </Box>
-                              )}
+                              {vital.bloodPressureSystolic &&
+                                vital.bloodPressureDiastolic && (
+                                  <Box mt={1}>
+                                    <Chip
+                                      size="small"
+                                      label={
+                                        vital.bloodPressureSystolic > 140 ||
+                                        vital.bloodPressureDiastolic > 90
+                                          ? "High"
+                                          : vital.bloodPressureSystolic < 90 ||
+                                              vital.bloodPressureDiastolic < 60
+                                            ? "Low"
+                                            : "Normal"
+                                      }
+                                      color={
+                                        vital.bloodPressureSystolic > 140 ||
+                                        vital.bloodPressureDiastolic > 90
+                                          ? "error"
+                                          : vital.bloodPressureSystolic < 90 ||
+                                              vital.bloodPressureDiastolic < 60
+                                            ? "warning"
+                                            : "success"
+                                      }
+                                    />
+                                  </Box>
+                                )}
                             </Paper>
                           </Grid>
 
@@ -1206,21 +1227,41 @@ export default function MedicalHistory() {
                                 borderRadius: 2,
                               }}
                             >
-                              <Box display="flex" alignItems="center" gap={1} mb={1}>
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                gap={1}
+                                mb={1}
+                              >
                                 <FavoriteIcon color="error" />
-                                <Typography variant="subtitle2" color="text.secondary">
+                                <Typography
+                                  variant="subtitle2"
+                                  color="text.secondary"
+                                >
                                   Heart Rate
                                 </Typography>
                               </Box>
                               <Typography variant="h6">
-                                {formatVitalSign(vital.heartRate, 'bpm', 0)}
+                                {formatVitalSign(vital.heartRate, "bpm", 0)}
                               </Typography>
                               {vital.heartRate && (
                                 <Box mt={1}>
                                   <Chip
                                     size="small"
-                                    label={vital.heartRate > 100 ? "High" : vital.heartRate < 60 ? "Low" : "Normal"}
-                                    color={vital.heartRate > 100 ? "error" : vital.heartRate < 60 ? "warning" : "success"}
+                                    label={
+                                      vital.heartRate > 100
+                                        ? "High"
+                                        : vital.heartRate < 60
+                                          ? "Low"
+                                          : "Normal"
+                                    }
+                                    color={
+                                      vital.heartRate > 100
+                                        ? "error"
+                                        : vital.heartRate < 60
+                                          ? "warning"
+                                          : "success"
+                                    }
                                   />
                                 </Box>
                               )}
@@ -1237,21 +1278,41 @@ export default function MedicalHistory() {
                                 borderRadius: 2,
                               }}
                             >
-                              <Box display="flex" alignItems="center" gap={1} mb={1}>
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                gap={1}
+                                mb={1}
+                              >
                                 <BiotechIcon color="warning" />
-                                <Typography variant="subtitle2" color="text.secondary">
+                                <Typography
+                                  variant="subtitle2"
+                                  color="text.secondary"
+                                >
                                   Temperature
                                 </Typography>
                               </Box>
                               <Typography variant="h6">
-                                {formatVitalSign(vital.temperature, '°C')}
+                                {formatVitalSign(vital.temperature, "°C")}
                               </Typography>
                               {vital.temperature && (
                                 <Box mt={1}>
                                   <Chip
                                     size="small"
-                                    label={vital.temperature > 37.2 ? "Fever" : vital.temperature < 36.1 ? "Low" : "Normal"}
-                                    color={vital.temperature > 37.2 ? "error" : vital.temperature < 36.1 ? "warning" : "success"}
+                                    label={
+                                      vital.temperature > 37.2
+                                        ? "Fever"
+                                        : vital.temperature < 36.1
+                                          ? "Low"
+                                          : "Normal"
+                                    }
+                                    color={
+                                      vital.temperature > 37.2
+                                        ? "error"
+                                        : vital.temperature < 36.1
+                                          ? "warning"
+                                          : "success"
+                                    }
                                   />
                                 </Box>
                               )}
@@ -1268,14 +1329,26 @@ export default function MedicalHistory() {
                                 borderRadius: 2,
                               }}
                             >
-                              <Box display="flex" alignItems="center" gap={1} mb={1}>
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                gap={1}
+                                mb={1}
+                              >
                                 <AirIcon color="info" />
-                                <Typography variant="subtitle2" color="text.secondary">
+                                <Typography
+                                  variant="subtitle2"
+                                  color="text.secondary"
+                                >
                                   Respiratory Rate
                                 </Typography>
                               </Box>
                               <Typography variant="h6">
-                                {formatVitalSign(vital.respiratoryRate, '/min', 0)}
+                                {formatVitalSign(
+                                  vital.respiratoryRate,
+                                  "/min",
+                                  0,
+                                )}
                               </Typography>
                             </Paper>
                           </Grid>
@@ -1290,21 +1363,41 @@ export default function MedicalHistory() {
                                 borderRadius: 2,
                               }}
                             >
-                              <Box display="flex" alignItems="center" gap={1} mb={1}>
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                gap={1}
+                                mb={1}
+                              >
                                 <SpeedIcon color="primary" />
-                                <Typography variant="subtitle2" color="text.secondary">
+                                <Typography
+                                  variant="subtitle2"
+                                  color="text.secondary"
+                                >
                                   O2 Saturation
                                 </Typography>
                               </Box>
                               <Typography variant="h6">
-                                {formatVitalSign(vital.oxygenSaturation, '%', 0)}
+                                {formatVitalSign(
+                                  vital.oxygenSaturation,
+                                  "%",
+                                  0,
+                                )}
                               </Typography>
                               {vital.oxygenSaturation && (
                                 <Box mt={1}>
                                   <Chip
                                     size="small"
-                                    label={vital.oxygenSaturation < 95 ? "Low" : "Normal"}
-                                    color={vital.oxygenSaturation < 95 ? "error" : "success"}
+                                    label={
+                                      vital.oxygenSaturation < 95
+                                        ? "Low"
+                                        : "Normal"
+                                    }
+                                    color={
+                                      vital.oxygenSaturation < 95
+                                        ? "error"
+                                        : "success"
+                                    }
                                   />
                                 </Box>
                               )}
@@ -1321,14 +1414,22 @@ export default function MedicalHistory() {
                                 borderRadius: 2,
                               }}
                             >
-                              <Box display="flex" alignItems="center" gap={1} mb={1}>
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                gap={1}
+                                mb={1}
+                              >
                                 <HeightIcon color="action" />
-                                <Typography variant="subtitle2" color="text.secondary">
+                                <Typography
+                                  variant="subtitle2"
+                                  color="text.secondary"
+                                >
                                   Height
                                 </Typography>
                               </Box>
                               <Typography variant="h6">
-                                {formatVitalSign(vital.height, 'cm', 0)}
+                                {formatVitalSign(vital.height, "cm", 0)}
                               </Typography>
                             </Paper>
                           </Grid>
@@ -1343,14 +1444,22 @@ export default function MedicalHistory() {
                                 borderRadius: 2,
                               }}
                             >
-                              <Box display="flex" alignItems="center" gap={1} mb={1}>
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                gap={1}
+                                mb={1}
+                              >
                                 <LineWeightIcon color="action" />
-                                <Typography variant="subtitle2" color="text.secondary">
+                                <Typography
+                                  variant="subtitle2"
+                                  color="text.secondary"
+                                >
                                   Weight
                                 </Typography>
                               </Box>
                               <Typography variant="h6">
-                                {formatVitalSign(vital.weight, 'kg', 1)}
+                                {formatVitalSign(vital.weight, "kg", 1)}
                               </Typography>
                             </Paper>
                           </Grid>
@@ -1365,9 +1474,23 @@ export default function MedicalHistory() {
                                 borderRadius: 2,
                               }}
                             >
-                              <Box display="flex" alignItems="center" gap={1} mb={1}>
-                                <MonitorHeartIcon color={bmiColor === "success" ? "success" : "action"} />
-                                <Typography variant="subtitle2" color="text.secondary">
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                gap={1}
+                                mb={1}
+                              >
+                                <MonitorHeartIcon
+                                  color={
+                                    bmiColor === "success"
+                                      ? "success"
+                                      : "action"
+                                  }
+                                />
+                                <Typography
+                                  variant="subtitle2"
+                                  color="text.secondary"
+                                >
                                   BMI
                                 </Typography>
                               </Box>
@@ -1390,7 +1513,11 @@ export default function MedicalHistory() {
                         {/* Notes */}
                         {vital.notes && (
                           <Box mt={2}>
-                            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                            <Typography
+                              variant="subtitle2"
+                              color="text.secondary"
+                              gutterBottom
+                            >
                               Notes:
                             </Typography>
                             <Paper
@@ -1411,7 +1538,11 @@ export default function MedicalHistory() {
                         {/* Recorded By */}
                         <Box mt={2} display="flex" justifyContent="flex-end">
                           <Typography variant="caption" color="text.secondary">
-                            Recorded by: {vital.recordedBy || "Unknown"} • Last updated: {new Date(vital.lastUpdated || vital.recordedDate).toLocaleString()}
+                            Recorded by: {vital.recordedBy || "Unknown"} • Last
+                            updated:{" "}
+                            {new Date(
+                              vital.lastUpdated || vital.recordedDate,
+                            ).toLocaleString()}
                           </Typography>
                         </Box>
                       </CardContent>
@@ -1420,7 +1551,9 @@ export default function MedicalHistory() {
                 })
             ) : (
               <Box sx={{ textAlign: "center", py: 4 }}>
-                <MonitorHeartIcon sx={{ fontSize: 60, color: theme.palette.grey[400], mb: 2 }} />
+                <MonitorHeartIcon
+                  sx={{ fontSize: 60, color: theme.palette.grey[400], mb: 2 }}
+                />
                 <Typography variant="h6" color="text.secondary" gutterBottom>
                   No vital signs available for this patient
                 </Typography>
@@ -1502,10 +1635,35 @@ export default function MedicalHistory() {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Alert
+        {/* <Alert
           onClose={handleCloseSnackbar}
           severity={snackbarSeverity}
           sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert> */}
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{
+            width: "100%",
+            minWidth: "420px",
+            fontSize: "1.1rem",
+            fontWeight: 600,
+            py: 1.5,
+            px: 2,
+            borderRadius: "14px",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+            "& .MuiAlert-icon": {
+              fontSize: "32px",
+              alignItems: "center",
+            },
+            "& .MuiAlert-message": {
+              fontSize: "1.05rem",
+              fontWeight: 600,
+            },
+          }}
         >
           {snackbarMessage}
         </Alert>

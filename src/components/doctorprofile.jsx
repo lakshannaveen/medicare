@@ -307,7 +307,7 @@ import {
   Divider,
   useTheme,
   useMediaQuery,
-  Paper
+  Paper,
 } from "@mui/material";
 import {
   Edit as EditIcon,
@@ -361,7 +361,7 @@ export default function DoctorProfile() {
       setLoading(true);
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/User/${id}`
+          `${process.env.REACT_APP_API_BASE_URL}/User/${id}`,
         );
         const data = response.data;
 
@@ -480,7 +480,7 @@ export default function DoctorProfile() {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
       showSnackbar("Profile updated successfully!", "success");
     } catch (error) {
@@ -564,7 +564,10 @@ export default function DoctorProfile() {
                 color="textSecondary"
                 sx={{ display: "flex", alignItems: "center", mt: 1 }}
               >
-                <CategoryIcon fontSize="small" sx={{ mr: 1,color: "primary.main"  }} />
+                <CategoryIcon
+                  fontSize="small"
+                  sx={{ mr: 1, color: "primary.main" }}
+                />
                 {userDetails.MUD_USER_TYPE || "User"}
               </Typography>
               <Typography
@@ -572,7 +575,10 @@ export default function DoctorProfile() {
                 color="textSecondary"
                 sx={{ display: "flex", alignItems: "center", mt: 1 }}
               >
-                <CalendarIcon fontSize="small" sx={{ mr: 1,color: "primary.main"  }} />
+                <CalendarIcon
+                  fontSize="small"
+                  sx={{ mr: 1, color: "primary.main" }}
+                />
                 Member since: {formatDate(userDetails.MUD_CREATED_DATE)}
               </Typography>
             </Box>
@@ -591,7 +597,7 @@ export default function DoctorProfile() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <PersonIcon sx={{color: "primary.main" }}/>
+                      <PersonIcon sx={{ color: "primary.main" }} />
                     </InputAdornment>
                   ),
                 }}
@@ -610,7 +616,7 @@ export default function DoctorProfile() {
                   label="Password"
                   startAdornment={
                     <InputAdornment position="start">
-                      <LockIcon sx={{color: "primary.main" }}/>
+                      <LockIcon sx={{ color: "primary.main" }} />
                     </InputAdornment>
                   }
                 />
@@ -627,7 +633,7 @@ export default function DoctorProfile() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <PersonIcon sx={{color: "primary.main" }}/>
+                      <PersonIcon sx={{ color: "primary.main" }} />
                     </InputAdornment>
                   ),
                 }}
@@ -646,7 +652,7 @@ export default function DoctorProfile() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <BadgeIcon sx={{color: "primary.main" }}/>
+                      <BadgeIcon sx={{ color: "primary.main" }} />
                     </InputAdornment>
                   ),
                 }}
@@ -664,7 +670,7 @@ export default function DoctorProfile() {
                   readOnly: true,
                   startAdornment: (
                     <InputAdornment position="start">
-                      <CategoryIcon sx={{color: "primary.main" }}/>
+                      <CategoryIcon sx={{ color: "primary.main" }} />
                     </InputAdornment>
                   ),
                 }}
@@ -684,7 +690,7 @@ export default function DoctorProfile() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <EmailIcon sx={{color: "primary.main" }}/>
+                      <EmailIcon sx={{ color: "primary.main" }} />
                     </InputAdornment>
                   ),
                 }}
@@ -703,7 +709,7 @@ export default function DoctorProfile() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <PhoneIcon sx={{color: "primary.main" }}/>
+                      <PhoneIcon sx={{ color: "primary.main" }} />
                     </InputAdornment>
                   ),
                 }}
@@ -720,7 +726,7 @@ export default function DoctorProfile() {
                   readOnly: true,
                   startAdornment: (
                     <InputAdornment position="start">
-                      <CalendarIcon sx={{color: "primary.main" }}/>
+                      <CalendarIcon sx={{ color: "primary.main" }} />
                     </InputAdornment>
                   ),
                 }}
@@ -755,10 +761,35 @@ export default function DoctorProfile() {
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Alert
+        {/* <Alert
           onClose={handleSnackbarClose}
           severity={snackbarSeverity}
           sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert> */}
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{
+            width: "100%",
+            minWidth: "420px",
+            fontSize: "1.1rem",
+            fontWeight: 600,
+            py: 1.5,
+            px: 2,
+            borderRadius: "14px",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+            "& .MuiAlert-icon": {
+              fontSize: "32px",
+              alignItems: "center",
+            },
+            "& .MuiAlert-message": {
+              fontSize: "1.05rem",
+              fontWeight: 600,
+            },
+          }}
         >
           {snackbarMessage}
         </Alert>

@@ -285,7 +285,7 @@ const BRAND = {
 
 const toISO = (d) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate()
+    d.getDate(),
   ).padStart(2, "0")}`;
 
 const formatTime = (t) =>
@@ -296,8 +296,18 @@ const formatTime = (t) =>
   });
 
 const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 const getWeekDays = (date) => {
@@ -350,58 +360,57 @@ export default function DailyAppointment() {
       setSelectedSlot(null);
       setExpandedSlot(null);
       try {
-        let slotsResponse;
+        let slotsForStats = [];
 
         // Admin should see all doctors' timeslots for the selected date
         if (role === "Admin") {
-          slotsResponse = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/Timeslot`
+          const slotsResponse = await axios.get(
+            `${process.env.REACT_APP_API_BASE_URL}/Timeslot`,
           );
 
           const allSlots = slotsResponse.data || [];
           const filteredSlots = allSlots.filter(
             (slot) =>
               slot.MT_SLOT_DATE &&
-              slot.MT_SLOT_DATE.toString().substring(0, 10) === selectedDate
+              slot.MT_SLOT_DATE.toString().substring(0, 10) === selectedDate,
           );
           setTimeslots(filteredSlots);
+          slotsForStats = filteredSlots;
         } else {
-          slotsResponse = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/Timeslot/timeslotcard/${selectedDate}/${Name}`
+          const slotsResponse = await axios.get(
+            `${process.env.REACT_APP_API_BASE_URL}/Timeslot/timeslotcard/${selectedDate}/${Name}`,
           );
-          setTimeslots(slotsResponse.data);
+          const doctorSlots = slotsResponse.data || [];
+          setTimeslots(doctorSlots);
+          slotsForStats = doctorSlots;
         }
-        
+
         // Fetch appointments for each slot to get stats
         const stats = {};
-        const slotsForStats =
-          role === "Admin"
-            ? // for admin use the filtered slots we just computed
-              (role === "Admin" && slotsResponse.data
-                ? (slotsResponse.data || []).filter(
-                    (slot) =>
-                      slot.MT_SLOT_DATE &&
-                      slot.MT_SLOT_DATE.toString().substring(0, 10) ===
-                        selectedDate
-                  )
-                : [])
-            : slotsResponse.data || [];
 
         for (const slot of slotsForStats) {
           try {
             const apptRes = await axios.get(
-              `${process.env.REACT_APP_API_BASE_URL}/Appointment/appointments/${slot.MT_SLOT_ID}`
+              `${process.env.REACT_APP_API_BASE_URL}/Appointment/appointments/${slot.MT_SLOT_ID}`,
             );
             const appts = apptRes.data;
             stats[slot.MT_SLOT_ID] = {
               total: appts.length,
-              pending: appts.filter(a => a.MAD_STATUS !== "I" && !a.TreatmentStatus).length,
-              completed: appts.filter(a => a.TreatmentStatus === "C").length,
-              cancelled: appts.filter(a => a.MAD_STATUS === "I").length,
+              pending: appts.filter(
+                (a) => a.MAD_STATUS !== "I" && !a.TreatmentStatus,
+              ).length,
+              completed: appts.filter((a) => a.TreatmentStatus === "C").length,
+              cancelled: appts.filter((a) => a.MAD_STATUS === "I").length,
               appointments: appts,
             };
           } catch {
-            stats[slot.MT_SLOT_ID] = { total: 0, pending: 0, completed: 0, cancelled: 0, appointments: [] };
+            stats[slot.MT_SLOT_ID] = {
+              total: 0,
+              pending: 0,
+              completed: 0,
+              cancelled: 0,
+              appointments: [],
+            };
           }
         }
         setSlotStats(stats);
@@ -421,30 +430,30 @@ export default function DailyAppointment() {
       const month = currentDate.getMonth();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       const stats = {};
-
       // Admin: base stats on all timeslots across doctors
       if (role === "Admin") {
         try {
           const allSlotsResponse = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/Timeslot`
+            `${process.env.REACT_APP_API_BASE_URL}/Timeslot`,
           );
           const allSlots = allSlotsResponse.data || [];
 
           for (let day = 1; day <= daysInMonth; day++) {
-            const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day)
-              .padStart(2, "0")}`;
+            const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+              day,
+            ).padStart(2, "0")}`;
 
             const slotsForDate = allSlots.filter(
               (slot) =>
                 slot.MT_SLOT_DATE &&
-                slot.MT_SLOT_DATE.toString().substring(0, 10) === dateStr
+                slot.MT_SLOT_DATE.toString().substring(0, 10) === dateStr,
             );
 
             let totalBookings = 0;
             for (const slot of slotsForDate) {
               try {
                 const apptRes = await axios.get(
-                  `${process.env.REACT_APP_API_BASE_URL}/Appointment/appointments/${slot.MT_SLOT_ID}`
+                  `${process.env.REACT_APP_API_BASE_URL}/Appointment/appointments/${slot.MT_SLOT_ID}`,
                 );
                 totalBookings += apptRes.data.length;
               } catch {
@@ -459,25 +468,27 @@ export default function DailyAppointment() {
           }
         } catch {
           for (let day = 1; day <= daysInMonth; day++) {
-            const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day)
-              .padStart(2, "0")}`;
+            const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+              day,
+            ).padStart(2, "0")}`;
             stats[dateStr] = { slots: 0, bookings: 0 };
           }
         }
       } else {
-        // Doctor / Pharmacy user: stats per doctor as before
+        // Doctor / Pharmacy user: stats per doctor
         for (let day = 1; day <= daysInMonth; day++) {
-          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day)
-            .padStart(2, "0")}`;
+          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+            day,
+          ).padStart(2, "0")}`;
           try {
             const res = await axios.get(
-              `${process.env.REACT_APP_API_BASE_URL}/Timeslot/timeslotcard/${dateStr}/${Name}`
+              `${process.env.REACT_APP_API_BASE_URL}/Timeslot/timeslotcard/${dateStr}/${Name}`,
             );
             let totalBookings = 0;
             for (const slot of res.data) {
               try {
                 const apptRes = await axios.get(
-                  `${process.env.REACT_APP_API_BASE_URL}/Appointment/appointments/${slot.MT_SLOT_ID}`
+                  `${process.env.REACT_APP_API_BASE_URL}/Appointment/appointments/${slot.MT_SLOT_ID}`,
                 );
                 totalBookings += apptRes.data.length;
               } catch {
@@ -495,7 +506,7 @@ export default function DailyAppointment() {
       }
       setDateStats(stats);
     };
-    
+
     fetchDateStats();
   }, [currentDate, Name, role]);
 
@@ -513,7 +524,7 @@ export default function DailyAppointment() {
     setSearchTerm("");
     try {
       const res = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/Appointment/appointments/${slot.MT_SLOT_ID}`
+        `${process.env.REACT_APP_API_BASE_URL}/Appointment/appointments/${slot.MT_SLOT_ID}`,
       );
       setAppointments(res.data);
       setExpandedSlot(slot.MT_SLOT_ID);
@@ -528,14 +539,12 @@ export default function DailyAppointment() {
   const handleCancelAppointment = async (appointmentId) => {
     try {
       await axios.delete(
-        `${process.env.REACT_APP_API_BASE_URL}/Appointment/cancel-appointment/${appointmentId}`
+        `${process.env.REACT_APP_API_BASE_URL}/Appointment/cancel-appointment/${appointmentId}`,
       );
       setAppointments((prev) =>
         prev.map((a) =>
-          a.MAD_APPOINMENT_ID === appointmentId
-            ? { ...a, MAD_STATUS: "I" }
-            : a
-        )
+          a.MAD_APPOINMENT_ID === appointmentId ? { ...a, MAD_STATUS: "I" } : a,
+        ),
       );
       showSnack("Appointment cancelled successfully", "success");
     } catch {
@@ -559,7 +568,7 @@ export default function DailyAppointment() {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  
+
   for (let i = 1; i <= daysInMonth; i++) {
     monthDays.push(new Date(year, month, i));
   }
@@ -569,10 +578,22 @@ export default function DailyAppointment() {
 
   /* ── calculate totals for cards ── */
   const totalSlots = timeslots.length;
-  const totalBookings = Object.values(slotStats).reduce((sum, stat) => sum + stat.total, 0);
-  const totalPending = Object.values(slotStats).reduce((sum, stat) => sum + stat.pending, 0);
-  const totalCompleted = Object.values(slotStats).reduce((sum, stat) => sum + stat.completed, 0);
-  const totalCancelled = Object.values(slotStats).reduce((sum, stat) => sum + stat.cancelled, 0);
+  const totalBookings = Object.values(slotStats).reduce(
+    (sum, stat) => sum + stat.total,
+    0,
+  );
+  const totalPending = Object.values(slotStats).reduce(
+    (sum, stat) => sum + stat.pending,
+    0,
+  );
+  const totalCompleted = Object.values(slotStats).reduce(
+    (sum, stat) => sum + stat.completed,
+    0,
+  );
+  const totalCancelled = Object.values(slotStats).reduce(
+    (sum, stat) => sum + stat.cancelled,
+    0,
+  );
 
   /* ─────────────────────── RENDER ─────────────────────── */
   return (
@@ -589,17 +610,25 @@ export default function DailyAppointment() {
           background: grad,
           px: { xs: 2, sm: 3, md: 4 },
           py: 2.5,
-          borderBottom: `1px solid ${alpha('#fff', 0.1)}`,
+          borderBottom: `1px solid ${alpha("#fff", 0.1)}`,
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 2,
+          }}
+        >
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Avatar
               sx={{
                 width: 48,
                 height: 48,
-                bgcolor: alpha('#fff', 0.2),
-                color: '#fff',
+                bgcolor: alpha("#fff", 0.2),
+                color: "#fff",
               }}
             >
               <CalendarTodayIcon />
@@ -608,8 +637,9 @@ export default function DailyAppointment() {
               <Typography variant="h5" fontWeight={700} color="white">
                 Appointment Schedule
               </Typography>
-              <Typography variant="body2" sx={{ color: alpha('#fff', 0.8) }}>
-                Dr. {Name} · {MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}
+              <Typography variant="body2" sx={{ color: alpha("#fff", 0.8) }}>
+                Dr. {Name} · {MONTHS[currentDate.getMonth()]}{" "}
+                {currentDate.getFullYear()}
               </Typography>
             </Box>
           </Box>
@@ -620,11 +650,11 @@ export default function DailyAppointment() {
               onClick={() => setViewMode("week")}
               startIcon={<ViewWeekIcon />}
               sx={{
-                bgcolor: viewMode === "week" ? '#fff' : 'transparent',
-                color: viewMode === "week" ? BRAND.main : '#fff',
-                borderColor: alpha('#fff', 0.3),
-                '&:hover': {
-                  bgcolor: viewMode === "week" ? '#fff' : alpha('#fff', 0.1),
+                bgcolor: viewMode === "week" ? "#fff" : "transparent",
+                color: viewMode === "week" ? BRAND.main : "#fff",
+                borderColor: alpha("#fff", 0.3),
+                "&:hover": {
+                  bgcolor: viewMode === "week" ? "#fff" : alpha("#fff", 0.1),
                 },
               }}
             >
@@ -635,11 +665,11 @@ export default function DailyAppointment() {
               onClick={() => setViewMode("month")}
               startIcon={<ViewModuleIcon />}
               sx={{
-                bgcolor: viewMode === "month" ? '#fff' : 'transparent',
-                color: viewMode === "month" ? BRAND.main : '#fff',
-                borderColor: alpha('#fff', 0.3),
-                '&:hover': {
-                  bgcolor: viewMode === "month" ? '#fff' : alpha('#fff', 0.1),
+                bgcolor: viewMode === "month" ? "#fff" : "transparent",
+                color: viewMode === "month" ? BRAND.main : "#fff",
+                borderColor: alpha("#fff", 0.3),
+                "&:hover": {
+                  bgcolor: viewMode === "month" ? "#fff" : alpha("#fff", 0.1),
                 },
               }}
             >
@@ -663,7 +693,7 @@ export default function DailyAppointment() {
                   background: "#fff",
                   position: "relative",
                   overflow: "hidden",
-                  '&:hover': {
+                  "&:hover": {
                     boxShadow: `0 8px 24px ${alpha(BRAND.main, 0.15)}`,
                   },
                 }}
@@ -684,10 +714,18 @@ export default function DailyAppointment() {
                       <ScheduleIcon sx={{ color: BRAND.main, fontSize: 28 }} />
                     </Box>
                     <Box>
-                      <Typography variant="h4" fontWeight={800} color={BRAND.dark}>
+                      <Typography
+                        variant="h4"
+                        fontWeight={800}
+                        color={BRAND.dark}
+                      >
                         {totalSlots}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        fontWeight={500}
+                      >
                         Total Slots
                       </Typography>
                     </Box>
@@ -707,8 +745,8 @@ export default function DailyAppointment() {
                   background: "#fff",
                   position: "relative",
                   overflow: "hidden",
-                  '&:hover': {
-                    boxShadow: `0 8px 24px ${alpha('#f59e0b', 0.15)}`,
+                  "&:hover": {
+                    boxShadow: `0 8px 24px ${alpha(BRAND.main, 0.15)}`,
                   },
                 }}
               >
@@ -719,7 +757,60 @@ export default function DailyAppointment() {
                         width: 48,
                         height: 48,
                         borderRadius: "12px",
-                        background: "linear-gradient(135deg, #f59e0b20, #fbbf2410)",
+                        background: `linear-gradient(135deg, ${BRAND.main}20, ${BRAND.light}10)`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <PeopleIcon sx={{ color: BRAND.main, fontSize: 28 }} />
+                    </Box>
+                    <Box>
+                      <Typography
+                        variant="h4"
+                        fontWeight={800}
+                        color={BRAND.dark}
+                      >
+                        {totalBookings}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        fontWeight={500}
+                      >
+                        Total Bookings
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Zoom>
+          </Grid>
+
+          <Grid item xs={6} sm={3}>
+            <Zoom in={true} style={{ transitionDelay: "200ms" }}>
+              <Card
+                elevation={0}
+                sx={{
+                  borderRadius: "16px",
+                  border: `1px solid ${BRAND.bg}`,
+                  background: "#fff",
+                  position: "relative",
+                  overflow: "hidden",
+                  "&:hover": {
+                    boxShadow: `0 8px 24px ${alpha("#f59e0b", 0.15)}`,
+                  },
+                }}
+              >
+                <CardContent>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Box
+                      sx={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: "12px",
+                        background:
+                          "linear-gradient(135deg, #f59e0b20, #fbbf2410)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -731,7 +822,11 @@ export default function DailyAppointment() {
                       <Typography variant="h4" fontWeight={800} color="#f59e0b">
                         {totalPending}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        fontWeight={500}
+                      >
                         Pending
                       </Typography>
                     </Box>
@@ -751,8 +846,8 @@ export default function DailyAppointment() {
                   background: "#fff",
                   position: "relative",
                   overflow: "hidden",
-                  '&:hover': {
-                    boxShadow: `0 8px 24px ${alpha('#16a34a', 0.15)}`,
+                  "&:hover": {
+                    boxShadow: `0 8px 24px ${alpha("#16a34a", 0.15)}`,
                   },
                 }}
               >
@@ -763,19 +858,26 @@ export default function DailyAppointment() {
                         width: 48,
                         height: 48,
                         borderRadius: "12px",
-                        background: "linear-gradient(135deg, #16a34a20, #4ade8010)",
+                        background:
+                          "linear-gradient(135deg, #16a34a20, #4ade8010)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                       }}
                     >
-                      <CheckCircleIcon sx={{ color: "#16a34a", fontSize: 28 }} />
+                      <CheckCircleIcon
+                        sx={{ color: "#16a34a", fontSize: 28 }}
+                      />
                     </Box>
                     <Box>
                       <Typography variant="h4" fontWeight={800} color="#16a34a">
                         {totalCompleted}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        fontWeight={500}
+                      >
                         Completed
                       </Typography>
                     </Box>
@@ -795,8 +897,8 @@ export default function DailyAppointment() {
                   background: "#fff",
                   position: "relative",
                   overflow: "hidden",
-                  '&:hover': {
-                    boxShadow: `0 8px 24px ${alpha('#dc2626', 0.15)}`,
+                  "&:hover": {
+                    boxShadow: `0 8px 24px ${alpha("#dc2626", 0.15)}`,
                   },
                 }}
               >
@@ -807,7 +909,8 @@ export default function DailyAppointment() {
                         width: 48,
                         height: 48,
                         borderRadius: "12px",
-                        background: "linear-gradient(135deg, #dc262620, #ef444410)",
+                        background:
+                          "linear-gradient(135deg, #dc262620, #ef444410)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -819,7 +922,11 @@ export default function DailyAppointment() {
                       <Typography variant="h4" fontWeight={800} color="#dc2626">
                         {totalCancelled}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        fontWeight={500}
+                      >
                         Cancelled
                       </Typography>
                     </Box>
@@ -863,15 +970,14 @@ export default function DailyAppointment() {
                   }
                   setCurrentDate(newDate);
                 }}
-                sx={{ bgcolor: '#fff', '&:hover': { bgcolor: '#fff' } }}
+                sx={{ bgcolor: "#fff", "&:hover": { bgcolor: "#fff" } }}
               >
                 <ChevronLeftIcon />
               </IconButton>
               <Typography variant="h6" fontWeight={700} color={BRAND.dark}>
-                {viewMode === "week" 
+                {viewMode === "week"
                   ? `${weekDays[0].toLocaleDateString()} - ${weekDays[6].toLocaleDateString()}`
-                  : `${MONTHS[currentDate.getMonth()]} ${currentDate.getFullYear()}`
-                }
+                  : `${MONTHS[currentDate.getMonth()]} ${currentDate.getFullYear()}`}
               </Typography>
               <IconButton
                 onClick={() => {
@@ -883,7 +989,7 @@ export default function DailyAppointment() {
                   }
                   setCurrentDate(newDate);
                 }}
-                sx={{ bgcolor: '#fff', '&:hover': { bgcolor: '#fff' } }}
+                sx={{ bgcolor: "#fff", "&:hover": { bgcolor: "#fff" } }}
               >
                 <ChevronRightIcon />
               </IconButton>
@@ -894,7 +1000,7 @@ export default function DailyAppointment() {
               onClick={() => setCurrentDate(new Date())}
               sx={{
                 bgcolor: BRAND.main,
-                '&:hover': { bgcolor: BRAND.dark },
+                "&:hover": { bgcolor: BRAND.dark },
               }}
             >
               Today
@@ -911,7 +1017,7 @@ export default function DailyAppointment() {
                   const isToday = dateStr === toISO(new Date());
                   const isSelected = dateStr === selectedDate;
                   const stats = dateStats[dateStr] || { slots: 0, bookings: 0 };
-                  
+
                   return (
                     <Card
                       key={index}
@@ -920,39 +1026,68 @@ export default function DailyAppointment() {
                         minWidth: 140,
                         cursor: "pointer",
                         borderRadius: "16px",
-                        border: `2px solid ${isSelected ? BRAND.main : 'transparent'}`,
-                        bgcolor: isToday ? alpha(BRAND.main, 0.05) : '#fff',
+                        border: `2px solid ${isSelected ? BRAND.main : "transparent"}`,
+                        bgcolor: isToday ? alpha(BRAND.main, 0.05) : "#fff",
                         transition: "all 0.2s",
-                        '&:hover': {
+                        "&:hover": {
                           transform: "translateY(-4px)",
                           boxShadow: `0 8px 24px ${alpha(BRAND.main, 0.15)}`,
                         },
                       }}
                     >
                       <CardContent>
-                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                          {day.toLocaleDateString('en-US', { weekday: 'short' })}
+                        <Typography
+                          variant="subtitle2"
+                          color="text.secondary"
+                          gutterBottom
+                        >
+                          {day.toLocaleDateString("en-US", {
+                            weekday: "short",
+                          })}
                         </Typography>
-                        <Typography variant="h4" fontWeight={700} color={isSelected ? BRAND.main : BRAND.dark}>
+                        <Typography
+                          variant="h4"
+                          fontWeight={700}
+                          color={isSelected ? BRAND.main : BRAND.dark}
+                        >
                           {day.getDate()}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary" display="block">
-                          {day.toLocaleDateString('en-US', { month: 'short' })}
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          display="block"
+                        >
+                          {day.toLocaleDateString("en-US", { month: "short" })}
                         </Typography>
-                        
-                        <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
+
+                        <Box
+                          sx={{
+                            mt: 2,
+                            display: "flex",
+                            gap: 1,
+                            flexWrap: "wrap",
+                          }}
+                        >
                           {stats.slots > 0 && (
                             <Chip
                               size="small"
                               label={`${stats.slots} slots`}
-                              sx={{ bgcolor: BRAND.bg, color: BRAND.main, fontSize: '0.65rem' }}
+                              sx={{
+                                bgcolor: BRAND.bg,
+                                color: BRAND.main,
+                                fontSize: "0.65rem",
+                              }}
                             />
                           )}
                           {stats.bookings > 0 && (
                             <Chip
                               size="small"
                               label={`${stats.bookings} bookings`}
-                              sx={{ bgcolor: alpha(BRAND.main, 0.1), color: BRAND.main, fontSize: '0.65rem' }}
+                              sx={{
+                                bgcolor: alpha(BRAND.main, 0.1),
+                                color: BRAND.main,
+                                fontSize: "0.65rem",
+                              }}
                             />
                           )}
                         </Box>
@@ -966,29 +1101,41 @@ export default function DailyAppointment() {
               <Box>
                 {/* Weekday headers */}
                 <Grid container spacing={1} sx={{ mb: 1 }}>
-                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                    <Grid item xs key={day}>
-                      <Typography align="center" variant="subtitle2" fontWeight={600} color="text.secondary">
-                        {day}
-                      </Typography>
-                    </Grid>
-                  ))}
+                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+                    (day) => (
+                      <Grid item xs key={day}>
+                        <Typography
+                          align="center"
+                          variant="subtitle2"
+                          fontWeight={600}
+                          color="text.secondary"
+                        >
+                          {day}
+                        </Typography>
+                      </Grid>
+                    ),
+                  )}
                 </Grid>
-                
+
                 {/* Calendar days */}
                 <Grid container spacing={1}>
-                  {Array.from({ length: new Date(year, month, 1).getDay() }).map((_, i) => (
+                  {Array.from({
+                    length: new Date(year, month, 1).getDay(),
+                  }).map((_, i) => (
                     <Grid item xs key={`empty-${i}`}>
                       <Box sx={{ height: 100 }} />
                     </Grid>
                   ))}
-                  
+
                   {monthDays.map((day) => {
                     const dateStr = toISO(day);
                     const isToday = dateStr === toISO(new Date());
                     const isSelected = dateStr === selectedDate;
-                    const stats = dateStats[dateStr] || { slots: 0, bookings: 0 };
-                    
+                    const stats = dateStats[dateStr] || {
+                      slots: 0,
+                      bookings: 0,
+                    };
+
                     return (
                       <Grid item xs key={dateStr}>
                         <Paper
@@ -999,42 +1146,53 @@ export default function DailyAppointment() {
                             p: 1,
                             cursor: "pointer",
                             borderRadius: "12px",
-                            border: `2px solid ${isSelected ? BRAND.main : 'transparent'}`,
-                            bgcolor: isToday ? alpha(BRAND.main, 0.05) : '#fff',
+                            border: `2px solid ${isSelected ? BRAND.main : "transparent"}`,
+                            bgcolor: isToday ? alpha(BRAND.main, 0.05) : "#fff",
                             transition: "all 0.2s",
-                            '&:hover': {
+                            "&:hover": {
                               bgcolor: alpha(BRAND.main, 0.02),
                               transform: "scale(0.98)",
                             },
                           }}
                         >
-                          <Typography 
-                            variant="h6" 
+                          <Typography
+                            variant="h6"
                             fontWeight={isToday ? 700 : 500}
-                            color={isSelected ? BRAND.main : isToday ? BRAND.main : 'text.primary'}
+                            color={
+                              isSelected
+                                ? BRAND.main
+                                : isToday
+                                  ? BRAND.main
+                                  : "text.primary"
+                            }
                           >
                             {day.getDate()}
                           </Typography>
-                          
+
                           {stats.slots > 0 && (
                             <Box sx={{ mt: 1 }}>
                               <Chip
                                 size="small"
                                 label={`${stats.slots}`}
-                                sx={{ 
-                                  height: 20, 
-                                  fontSize: '0.6rem',
+                                sx={{
+                                  height: 20,
+                                  fontSize: "0.6rem",
                                   bgcolor: BRAND.main,
-                                  color: '#fff',
+                                  color: "#fff",
                                   fontWeight: 600,
                                 }}
                               />
                             </Box>
                           )}
-                          
+
                           {stats.bookings > 0 && (
-                            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-                              {stats.bookings} booking{stats.bookings !== 1 ? 's' : ''}
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              sx={{ mt: 0.5, display: "block" }}
+                            >
+                              {stats.bookings} booking
+                              {stats.bookings !== 1 ? "s" : ""}
                             </Typography>
                           )}
                         </Paper>
@@ -1055,7 +1213,7 @@ export default function DailyAppointment() {
             mb: 3,
             borderRadius: "16px",
             background: grad,
-            color: '#fff',
+            color: "#fff",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -1067,26 +1225,30 @@ export default function DailyAppointment() {
             <CalendarTodayIcon />
             <Box>
               <Typography variant="h6" fontWeight={700}>
-                {new Date(selectedDate + "T00:00:00").toLocaleDateString("en-LK", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                {new Date(selectedDate + "T00:00:00").toLocaleDateString(
+                  "en-LK",
+                  {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  },
+                )}
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                {totalSlots} timeslot{totalSlots !== 1 ? 's' : ''} available · {totalBookings} total booking{totalBookings !== 1 ? 's' : ''}
+                {totalSlots} timeslot{totalSlots !== 1 ? "s" : ""} available ·{" "}
+                {totalBookings} total booking{totalBookings !== 1 ? "s" : ""}
               </Typography>
             </Box>
           </Box>
-          
+
           <Box sx={{ display: "flex", gap: 2 }}>
             <Chip
               icon={<HourglassIcon />}
               label={`${totalPending} Pending`}
               sx={{
-                bgcolor: alpha('#fff', 0.2),
-                color: '#fff',
+                bgcolor: alpha("#fff", 0.2),
+                color: "#fff",
                 fontWeight: 600,
                 pointerEvents: "none", // purely visual indicator
               }}
@@ -1095,8 +1257,8 @@ export default function DailyAppointment() {
               icon={<CheckCircleIcon />}
               label={`${totalCompleted} Completed`}
               sx={{
-                bgcolor: alpha('#fff', 0.2),
-                color: '#fff',
+                bgcolor: alpha("#fff", 0.2),
+                color: "#fff",
                 fontWeight: 600,
                 pointerEvents: "none", // purely visual indicator
               }}
@@ -1106,8 +1268,8 @@ export default function DailyAppointment() {
                 icon={<PersonOffIcon />}
                 label={`${totalCancelled} Cancelled`}
                 sx={{
-                  bgcolor: alpha('#fff', 0.2),
-                  color: '#fff',
+                  bgcolor: alpha("#fff", 0.2),
+                  color: "#fff",
                   fontWeight: 600,
                   pointerEvents: "none", // purely visual indicator
                 }}
@@ -1135,7 +1297,7 @@ export default function DailyAppointment() {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              bgcolor: '#fafbfc',
+              bgcolor: "#fafbfc",
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
@@ -1145,7 +1307,8 @@ export default function DailyAppointment() {
               </Typography>
             </Box>
             <Typography variant="body2" color="text.secondary">
-              {timeslots.length} timeslot{timeslots.length !== 1 ? 's' : ''} available
+              {timeslots.length} timeslot{timeslots.length !== 1 ? "s" : ""}{" "}
+              available
             </Typography>
           </Box>
 
@@ -1166,7 +1329,9 @@ export default function DailyAppointment() {
                   gap: 2,
                 }}
               >
-                <EventBusyIcon sx={{ fontSize: 64, color: `${BRAND.main}30` }} />
+                <EventBusyIcon
+                  sx={{ fontSize: 64, color: `${BRAND.main}30` }}
+                />
                 <Typography variant="h6" sx={{ color: "#64748b" }}>
                   No Timeslots Available
                 </Typography>
@@ -1177,9 +1342,14 @@ export default function DailyAppointment() {
             ) : (
               <Stack spacing={2}>
                 {timeslots.map((slot) => {
-                  const stats = slotStats[slot.MT_SLOT_ID] || { total: 0, pending: 0, completed: 0, cancelled: 0 };
+                  const stats = slotStats[slot.MT_SLOT_ID] || {
+                    total: 0,
+                    pending: 0,
+                    completed: 0,
+                    cancelled: 0,
+                  };
                   const isExpanded = expandedSlot === slot.MT_SLOT_ID;
-                  
+
                   return (
                     <Paper
                       key={slot.MT_SLOT_ID}
@@ -1189,7 +1359,7 @@ export default function DailyAppointment() {
                         borderRadius: "16px",
                         overflow: "hidden",
                         transition: "all 0.3s ease",
-                        bgcolor: '#fff',
+                        bgcolor: "#fff",
                       }}
                     >
                       {/* Slot Header */}
@@ -1201,8 +1371,10 @@ export default function DailyAppointment() {
                           alignItems: "center",
                           gap: 2,
                           cursor: "pointer",
-                          bgcolor: isExpanded ? alpha(BRAND.main, 0.02) : '#fff',
-                          '&:hover': {
+                          bgcolor: isExpanded
+                            ? alpha(BRAND.main, 0.02)
+                            : "#fff",
+                          "&:hover": {
                             bgcolor: alpha(BRAND.main, 0.02),
                           },
                         }}
@@ -1212,7 +1384,7 @@ export default function DailyAppointment() {
                             width: 56,
                             height: 56,
                             bgcolor: isExpanded ? BRAND.main : BRAND.bg,
-                            color: isExpanded ? '#fff' : BRAND.main,
+                            color: isExpanded ? "#fff" : BRAND.main,
                             fontWeight: 800,
                           }}
                         >
@@ -1220,17 +1392,41 @@ export default function DailyAppointment() {
                         </Avatar>
 
                         <Box sx={{ flex: 1 }}>
-                          <Typography variant="h6" fontWeight={700} color="#1e293b">
+                          <Typography
+                            variant="h6"
+                            fontWeight={700}
+                            color="#1e293b"
+                          >
                             {slot.MT_DOCTOR}
                           </Typography>
-                          <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap", mt: 0.5 }}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                              <TimeIcon sx={{ fontSize: 16, color: BRAND.main }} />
-                              <Typography variant="body2" color="text.secondary">
-                                {formatTime(slot.MT_START_TIME)} - {formatTime(slot.MT_END_TIME)}
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 2,
+                              flexWrap: "wrap",
+                              mt: 0.5,
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 0.5,
+                              }}
+                            >
+                              <TimeIcon
+                                sx={{ fontSize: 16, color: BRAND.main }}
+                              />
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {formatTime(slot.MT_START_TIME)} -{" "}
+                                {formatTime(slot.MT_END_TIME)}
                               </Typography>
                             </Box>
-                            
+
                             <Box sx={{ display: "flex", gap: 1 }}>
                               {stats.pending > 0 && (
                                 <Chip
@@ -1266,7 +1462,7 @@ export default function DailyAppointment() {
                             py: 1,
                             borderRadius: "8px",
                             bgcolor: isExpanded ? BRAND.main : BRAND.bg,
-                            color: isExpanded ? '#fff' : BRAND.main,
+                            color: isExpanded ? "#fff" : BRAND.main,
                             fontWeight: 700,
                             display: "flex",
                             alignItems: "center",
@@ -1284,15 +1480,38 @@ export default function DailyAppointment() {
                       {/* Expanded Appointments */}
                       {isExpanded && (
                         <Fade in={true}>
-                          <Box sx={{ borderTop: `1px solid ${BRAND.bg}`, p: 2.5, bgcolor: "#fafbfc" }}>
+                          <Box
+                            sx={{
+                              borderTop: `1px solid ${BRAND.bg}`,
+                              p: 2.5,
+                              bgcolor: "#fafbfc",
+                            }}
+                          >
                             {loadingAppts ? (
-                              <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-                                <CircularProgress size={32} sx={{ color: BRAND.main }} />
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  py: 4,
+                                }}
+                              >
+                                <CircularProgress
+                                  size={32}
+                                  sx={{ color: BRAND.main }}
+                                />
                               </Box>
                             ) : appointments.length === 0 ? (
                               <Box sx={{ textAlign: "center", py: 4 }}>
-                                <EventAvailableIcon sx={{ fontSize: 48, color: `${BRAND.main}30`, mb: 1 }} />
-                                <Typography color="text.secondary">No appointments in this slot</Typography>
+                                <EventAvailableIcon
+                                  sx={{
+                                    fontSize: 48,
+                                    color: `${BRAND.main}30`,
+                                    mb: 1,
+                                  }}
+                                />
+                                <Typography color="text.secondary">
+                                  No appointments in this slot
+                                </Typography>
                               </Box>
                             ) : (
                               <>
@@ -1302,12 +1521,16 @@ export default function DailyAppointment() {
                                   fullWidth
                                   placeholder="Search patients..."
                                   value={searchTerm}
-                                  onChange={(e) => setSearchTerm(e.target.value)}
+                                  onChange={(e) =>
+                                    setSearchTerm(e.target.value)
+                                  }
                                   sx={{ mb: 2.5 }}
                                   InputProps={{
                                     startAdornment: (
                                       <InputAdornment position="start">
-                                        <SearchIcon sx={{ color: BRAND.main }} />
+                                        <SearchIcon
+                                          sx={{ color: BRAND.main }}
+                                        />
                                       </InputAdornment>
                                     ),
                                   }}
@@ -1318,71 +1541,164 @@ export default function DailyAppointment() {
                                   <Table size={isMobile ? "small" : "medium"}>
                                     <TableHead>
                                       <TableRow sx={{ bgcolor: BRAND.bg }}>
-                                        <TableCell sx={{ fontWeight: 700, color: BRAND.main }}>Patient</TableCell>
-                                        {!isMobile && <TableCell sx={{ fontWeight: 700, color: BRAND.main }}>Contact</TableCell>}
-                                        <TableCell sx={{ fontWeight: 700, color: BRAND.main }}>Time</TableCell>
-                                        <TableCell sx={{ fontWeight: 700, color: BRAND.main }}>No.</TableCell>
-                                        <TableCell sx={{ fontWeight: 700, color: BRAND.main }}>Status</TableCell>
-                                        <TableCell align="center" sx={{ fontWeight: 700, color: BRAND.main }}>Actions</TableCell>
+                                        <TableCell
+                                          sx={{
+                                            fontWeight: 700,
+                                            color: BRAND.main,
+                                          }}
+                                        >
+                                          Patient
+                                        </TableCell>
+                                        {!isMobile && (
+                                          <TableCell
+                                            sx={{
+                                              fontWeight: 700,
+                                              color: BRAND.main,
+                                            }}
+                                          >
+                                            Contact
+                                          </TableCell>
+                                        )}
+                                        <TableCell
+                                          sx={{
+                                            fontWeight: 700,
+                                            color: BRAND.main,
+                                          }}
+                                        >
+                                          Time
+                                        </TableCell>
+                                        <TableCell
+                                          sx={{
+                                            fontWeight: 700,
+                                            color: BRAND.main,
+                                          }}
+                                        >
+                                          No.
+                                        </TableCell>
+                                        <TableCell
+                                          sx={{
+                                            fontWeight: 700,
+                                            color: BRAND.main,
+                                          }}
+                                        >
+                                          Status
+                                        </TableCell>
+                                        <TableCell
+                                          align="center"
+                                          sx={{
+                                            fontWeight: 700,
+                                            color: BRAND.main,
+                                          }}
+                                        >
+                                          Actions
+                                        </TableCell>
                                       </TableRow>
                                     </TableHead>
                                     <TableBody>
                                       {appointments
-                                        .filter(a => 
-                                          searchTerm ? 
-                                          a.MAD_FULL_NAME.toLowerCase().includes(searchTerm.toLowerCase()) : 
-                                          true
+                                        .filter((a) =>
+                                          searchTerm
+                                            ? a.MAD_FULL_NAME.toLowerCase().includes(
+                                                searchTerm.toLowerCase(),
+                                              )
+                                            : true,
                                         )
                                         .map((appt) => {
-                                          const isCancelled = appt.MAD_STATUS === "I";
-                                          const isCompleted = appt.TreatmentStatus === "C";
-                                          const disabled = isCancelled || isCompleted;
+                                          const isCancelled =
+                                            appt.MAD_STATUS === "I";
+                                          const isCompleted =
+                                            appt.TreatmentStatus === "C";
+                                          const disabled =
+                                            isCancelled || isCompleted;
 
                                           return (
                                             <TableRow
                                               key={appt.MAD_APPOINMENT_ID}
                                               sx={{
                                                 opacity: isCancelled ? 0.65 : 1,
-                                                bgcolor: isCancelled ? "#fff5f5" : "inherit",
+                                                bgcolor: isCancelled
+                                                  ? "#fff5f5"
+                                                  : "inherit",
                                               }}
                                             >
                                               <TableCell>
-                                                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                                <Box
+                                                  sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: 1,
+                                                  }}
+                                                >
                                                   <Avatar
                                                     sx={{
                                                       width: 32,
                                                       height: 32,
-                                                      bgcolor: isCancelled ? "#fee2e2" : BRAND.bg,
-                                                      color: isCancelled ? "#dc2626" : BRAND.main,
+                                                      bgcolor: isCancelled
+                                                        ? "#fee2e2"
+                                                        : BRAND.bg,
+                                                      color: isCancelled
+                                                        ? "#dc2626"
+                                                        : BRAND.main,
                                                       fontSize: 14,
                                                     }}
                                                   >
-                                                    {appt.MAD_FULL_NAME.charAt(0)}
+                                                    {appt.MAD_FULL_NAME.charAt(
+                                                      0,
+                                                    )}
                                                   </Avatar>
-                                                  <Typography variant="body2" fontWeight={600}>
+                                                  <Typography
+                                                    variant="body2"
+                                                    fontWeight={600}
+                                                  >
                                                     {appt.MAD_FULL_NAME}
                                                   </Typography>
                                                 </Box>
                                               </TableCell>
-                                              
+
                                               {!isMobile && (
                                                 <TableCell>
-                                                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                                                    <PhoneIcon sx={{ fontSize: 14, color: BRAND.main }} />
-                                                    <Typography variant="body2">{appt.MAD_CONTACT}</Typography>
+                                                  <Box
+                                                    sx={{
+                                                      display: "flex",
+                                                      alignItems: "center",
+                                                      gap: 0.5,
+                                                    }}
+                                                  >
+                                                    <PhoneIcon
+                                                      sx={{
+                                                        fontSize: 14,
+                                                        color: BRAND.main,
+                                                      }}
+                                                    />
+                                                    <Typography variant="body2">
+                                                      {appt.MAD_CONTACT}
+                                                    </Typography>
                                                   </Box>
                                                 </TableCell>
                                               )}
-                                              
+
                                               <TableCell>
-                                                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                                                  <WatchLaterIcon sx={{ fontSize: 14, color: BRAND.main }} />
+                                                <Box
+                                                  sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: 0.5,
+                                                  }}
+                                                >
+                                                  <WatchLaterIcon
+                                                    sx={{
+                                                      fontSize: 14,
+                                                      color: BRAND.main,
+                                                    }}
+                                                  />
                                                   <Typography variant="body2">
-                                                    {formatTime(appt.MAD_ALLOCATED_TIME)}
+                                                    {formatTime(
+                                                      appt.MAD_ALLOCATED_TIME,
+                                                    )}
                                                   </Typography>
                                                 </Box>
                                               </TableCell>
-                                              
+
                                               <TableCell>
                                                 <Box
                                                   sx={{
@@ -1399,64 +1715,113 @@ export default function DailyAppointment() {
                                                   {appt.MAD_PATIENT_NO}
                                                 </Box>
                                               </TableCell>
-                                              
+
                                               <TableCell>
                                                 {appt.MAD_STATUS === "I" ? (
                                                   <Chip
                                                     label="Cancelled"
                                                     size="small"
-                                                    sx={{ bgcolor: "#fee2e2", color: "#b91c1c", fontWeight: 600 }}
+                                                    sx={{
+                                                      bgcolor: "#fee2e2",
+                                                      color: "#b91c1c",
+                                                      fontWeight: 600,
+                                                    }}
                                                   />
-                                                ) : appt.TreatmentStatus === "C" ? (
+                                                ) : appt.TreatmentStatus ===
+                                                  "C" ? (
                                                   <Chip
                                                     label="Completed"
                                                     size="small"
-                                                    sx={{ bgcolor: "#dcfce7", color: "#15803d", fontWeight: 600 }}
+                                                    sx={{
+                                                      bgcolor: "#dcfce7",
+                                                      color: "#15803d",
+                                                      fontWeight: 600,
+                                                    }}
                                                   />
                                                 ) : (
                                                   <Chip
                                                     label="Pending"
                                                     size="small"
-                                                    sx={{ bgcolor: "#fef3c7", color: "#b45309", fontWeight: 600 }}
+                                                    sx={{
+                                                      bgcolor: "#fef3c7",
+                                                      color: "#b45309",
+                                                      fontWeight: 600,
+                                                    }}
                                                   />
                                                 )}
                                               </TableCell>
-                                              
+
                                               <TableCell align="center">
-                                                <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
-                                                  <Tooltip title={disabled ? "Cannot add treatment" : "Add Treatment"}>
+                                                <Box
+                                                  sx={{
+                                                    display: "flex",
+                                                    gap: 1,
+                                                    justifyContent: "center",
+                                                  }}
+                                                >
+                                                  <Tooltip
+                                                    title={
+                                                      disabled
+                                                        ? "Cannot add treatment"
+                                                        : "Add Treatment"
+                                                    }
+                                                  >
                                                     <span>
                                                       <IconButton
                                                         size="small"
-                                                        onClick={() => handleAddRecord(
-                                                          appt.MAD_PATIENT_CODE,
-                                                          appt.MAD_APPOINMENT_ID,
-                                                          appt.MAD_PATIENT_NO
-                                                        )}
+                                                        onClick={() =>
+                                                          handleAddRecord(
+                                                            appt.MAD_PATIENT_CODE,
+                                                            appt.MAD_APPOINMENT_ID,
+                                                            appt.MAD_PATIENT_NO,
+                                                          )
+                                                        }
                                                         disabled={disabled}
                                                         sx={{
                                                           bgcolor: BRAND.bg,
                                                           color: BRAND.main,
-                                                          '&:hover': { bgcolor: BRAND.main, color: '#fff' },
-                                                          '&.Mui-disabled': { bgcolor: '#e2e8f0', color: '#94a3b8' },
+                                                          "&:hover": {
+                                                            bgcolor: BRAND.main,
+                                                            color: "#fff",
+                                                          },
+                                                          "&.Mui-disabled": {
+                                                            bgcolor: "#e2e8f0",
+                                                            color: "#94a3b8",
+                                                          },
                                                         }}
                                                       >
                                                         <AddIcon fontSize="small" />
                                                       </IconButton>
                                                     </span>
                                                   </Tooltip>
-                                                  
-                                                  <Tooltip title={disabled ? "Cannot cancel" : "Cancel"}>
+
+                                                  <Tooltip
+                                                    title={
+                                                      disabled
+                                                        ? "Cannot cancel"
+                                                        : "Cancel"
+                                                    }
+                                                  >
                                                     <span>
                                                       <IconButton
                                                         size="small"
-                                                        onClick={() => handleCancelAppointment(appt.MAD_APPOINMENT_ID)}
+                                                        onClick={() =>
+                                                          handleCancelAppointment(
+                                                            appt.MAD_APPOINMENT_ID,
+                                                          )
+                                                        }
                                                         disabled={disabled}
                                                         sx={{
                                                           bgcolor: "#fee2e2",
                                                           color: "#dc2626",
-                                                          '&:hover': { bgcolor: "#dc2626", color: '#fff' },
-                                                          '&.Mui-disabled': { bgcolor: '#e2e8f0', color: '#94a3b8' },
+                                                          "&:hover": {
+                                                            bgcolor: "#dc2626",
+                                                            color: "#fff",
+                                                          },
+                                                          "&.Mui-disabled": {
+                                                            bgcolor: "#e2e8f0",
+                                                            color: "#94a3b8",
+                                                          },
                                                         }}
                                                       >
                                                         <CloseIcon fontSize="small" />
@@ -1484,8 +1849,21 @@ export default function DailyAppointment() {
                                       alignItems: "center",
                                     }}
                                   >
-                                    <Typography variant="caption" color="text.secondary">
-                                      Showing {appointments.filter(a => searchTerm ? a.MAD_FULL_NAME.toLowerCase().includes(searchTerm.toLowerCase()) : true).length} of {appointments.length} appointments
+                                    <Typography
+                                      variant="caption"
+                                      color="text.secondary"
+                                    >
+                                      Showing{" "}
+                                      {
+                                        appointments.filter((a) =>
+                                          searchTerm
+                                            ? a.MAD_FULL_NAME.toLowerCase().includes(
+                                                searchTerm.toLowerCase(),
+                                              )
+                                            : true,
+                                        ).length
+                                      }{" "}
+                                      of {appointments.length} appointments
                                     </Typography>
                                     <Box sx={{ display: "flex", gap: 1 }}>
                                       <Chip
@@ -1541,10 +1919,35 @@ export default function DailyAppointment() {
         onClose={() => setSnack((s) => ({ ...s, open: false }))}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Alert
+        {/* <Alert
           onClose={() => setSnack((s) => ({ ...s, open: false }))}
           severity={snack.sev}
           sx={{ width: "100%" }}
+        >
+          {snack.msg}
+        </Alert> */}
+        <Alert
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          severity={snack.sev}
+          variant="filled"
+          sx={{
+            width: "100%",
+            minWidth: "420px",
+            fontSize: "1.1rem",
+            fontWeight: 600,
+            py: 1.5,
+            px: 2,
+            borderRadius: "14px",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+            "& .MuiAlert-icon": {
+              fontSize: "32px",
+              alignItems: "center",
+            },
+            "& .MuiAlert-message": {
+              fontSize: "1.05rem",
+              fontWeight: 600,
+            },
+          }}
         >
           {snack.msg}
         </Alert>
