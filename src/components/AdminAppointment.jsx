@@ -116,7 +116,7 @@ export default function AdminAppointment({ onClose, patient }) {
   const [suggestions, setSuggestions] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState("");
   const [selecteduserid, setSelectedUserid] = useState("");
-  const [doctor, setDoctor] = useState("");
+  const [doctor, setDoctor] = useState([]);
   const [specialization, setSpecialization] = useState("OPD");
   const [currentScreen, setCurrentScreen] = useState(1); // Start at Find Doctor
   const [appointmentDetails, setAppointmentDetails] = useState([]);
@@ -199,14 +199,20 @@ export default function AdminAppointment({ onClose, patient }) {
           }
         );
 
-        if (response.data.length > 0) {
-          setDoctor(response.data);
+        const filteredDoctors = (response.data || []).filter((doc) =>
+          (doc.MUD_SPECIALIZATION || "")
+            .toLowerCase()
+            .includes(specialization.toLowerCase())
+        );
+
+        if (filteredDoctors.length > 0) {
+          setDoctor(filteredDoctors);
           setCurrentScreen(2);
           setActiveStep(2);
           setErrorMessage("");
         } else {
           setDoctor([]);
-          setErrorMessage("No doctors found with the selected criteria.");
+          setErrorMessage("No doctors found with the selected specialization.");
         }
       } else {
         setErrorMessage("Please select a doctor or specialization");
