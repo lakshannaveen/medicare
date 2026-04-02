@@ -181,7 +181,7 @@
 
 import { useState, useEffect } from "react";
 import { Link as ScrollLink } from "react-scroll";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
     AppBar,
     Toolbar,
@@ -230,6 +230,8 @@ export default function Navbar() {
     const [initials, setInitials] = useState('');
     const [scrolled, setScrolled] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const isHome = location.pathname === '/home';
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [openSubMenu, setOpenSubMenu] = useState(false);
@@ -425,14 +427,14 @@ export default function Navbar() {
     return (
         <>
             <AppBar
-                position="fixed"
+                position={isHome ? 'fixed' : 'relative'}
                 sx={{
                     backgroundColor: scrolled ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
                     color: scrolled ? theme.palette.text.primary : '#fff',
                     boxShadow: scrolled ? theme.shadows[4] : 'none',
                     transition: 'all 0.3s ease',
                     backdropFilter: scrolled ? 'blur(10px)' : 'none',
-                    mt: 2,
+                    mt: isHome ? 0 : 2,
                     borderBottom: scrolled ? 'none' : '1px solid rgba(255, 255, 255, 0.1)'
                 }}
             >
