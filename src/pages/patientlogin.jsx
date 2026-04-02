@@ -502,8 +502,8 @@ export default function Patientlogin() {
               fullWidth
               margin="normal"
               value={contact}
-              inputProps={{ maxLength: 10 }}
-              onChange={(e) => setContact(e.target.value)}
+              inputProps={{ maxLength: 10, inputMode: 'numeric', pattern: '[0-9]*' }}
+              onChange={(e) => setContact(e.target.value.replace(/\D/g, ''))}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -551,7 +551,8 @@ export default function Patientlogin() {
                     fullWidth
                     margin="normal"
                     value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                    inputProps={{ maxLength: 6, inputMode: 'numeric', pattern: '[0-9]*' }}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
