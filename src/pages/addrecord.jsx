@@ -2809,7 +2809,9 @@ const AddRecord = () => {
                       display: "grid",
                       gridTemplateColumns: {
                         xs: "1fr",
-                        md: "minmax(200px, 2fr) minmax(200px, 1.5fr) minmax(100px, 0.8fr) minmax(100px, 0.8fr) minmax(100px, 0.8fr) auto",
+                        sm: "minmax(200px, 2fr) minmax(200px, 1.5fr)",
+                        md: "minmax(200px, 2fr) minmax(200px, 1.5fr) minmax(100px, 0.8fr)",
+                        lg: "minmax(200px, 2fr) minmax(200px, 1.5fr) minmax(100px, 0.8fr) minmax(100px, 0.8fr) minmax(100px, 0.8fr) auto",
                       },
                       gap: 1.5,
                       alignItems: "flex-start",
@@ -3165,7 +3167,9 @@ const AddRecord = () => {
                       display: "grid",
                       gridTemplateColumns: {
                         xs: "1fr",
-                        md: "minmax(200px, 2fr) minmax(150px, 1fr) minmax(100px, 0.8fr) auto",
+                        sm: "minmax(200px, 2fr) minmax(150px, 1fr)",
+                        md: "minmax(200px, 2fr) minmax(150px, 1fr) minmax(100px, 0.8fr)",
+                        lg: "minmax(200px, 2fr) minmax(150px, 1fr) minmax(100px, 0.8fr) auto",
                       },
                       gap: 1.5,
                       alignItems: "flex-start",

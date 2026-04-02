@@ -322,6 +322,7 @@ export default function DailyAppointment() {
 
   const navigate = useNavigate();
   const Name = localStorage.getItem("Name") || "Doctor";
+  const role = localStorage.getItem("Role");
 
   /* ── state ── */
   const [viewMode, setViewMode] = useState("week"); // "week" or "month"
@@ -349,14 +350,44 @@ export default function DailyAppointment() {
       setSelectedSlot(null);
       setExpandedSlot(null);
       try {
-        const res = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/Timeslot/timeslotcard/${selectedDate}/${Name}`
-        );
-        setTimeslots(res.data);
+        let slotsResponse;
+
+        // Admin should see all doctors' timeslots for the selected date
+        if (role === "Admin") {
+          slotsResponse = await axios.get(
+            `${process.env.REACT_APP_API_BASE_URL}/Timeslot`
+          );
+
+          const allSlots = slotsResponse.data || [];
+          const filteredSlots = allSlots.filter(
+            (slot) =>
+              slot.MT_SLOT_DATE &&
+              slot.MT_SLOT_DATE.toString().substring(0, 10) === selectedDate
+          );
+          setTimeslots(filteredSlots);
+        } else {
+          slotsResponse = await axios.get(
+            `${process.env.REACT_APP_API_BASE_URL}/Timeslot/timeslotcard/${selectedDate}/${Name}`
+          );
+          setTimeslots(slotsResponse.data);
+        }
         
         // Fetch appointments for each slot to get stats
         const stats = {};
-        for (const slot of res.data) {
+        const slotsForStats =
+          role === "Admin"
+            ? // for admin use the filtered slots we just computed
+              (role === "Admin" && slotsResponse.data
+                ? (slotsResponse.data || []).filter(
+                    (slot) =>
+                      slot.MT_SLOT_DATE &&
+                      slot.MT_SLOT_DATE.toString().substring(0, 10) ===
+                        selectedDate
+                  )
+                : [])
+            : slotsResponse.data || [];
+
+        for (const slot of slotsForStats) {
           try {
             const apptRes = await axios.get(
               `${process.env.REACT_APP_API_BASE_URL}/Appointment/appointments/${slot.MT_SLOT_ID}`
@@ -381,7 +412,7 @@ export default function DailyAppointment() {
       }
     };
     if (selectedDate) run();
-  }, [selectedDate, Name]);
+  }, [selectedDate, Name, role]);
 
   /* ── fetch date stats for calendar view ── */
   useEffect(() => {
@@ -390,37 +421,83 @@ export default function DailyAppointment() {
       const month = currentDate.getMonth();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       const stats = {};
-      
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+      // Admin: base stats on all timeslots across doctors
+      if (role === "Admin") {
         try {
-          const res = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/Timeslot/timeslotcard/${dateStr}/${Name}`
+          const allSlotsResponse = await axios.get(
+            `${process.env.REACT_APP_API_BASE_URL}/Timeslot`
           );
-          let totalBookings = 0;
-          for (const slot of res.data) {
-            try {
-              const apptRes = await axios.get(
-                `${process.env.REACT_APP_API_BASE_URL}/Appointment/appointments/${slot.MT_SLOT_ID}`
-              );
-              totalBookings += apptRes.data.length;
-            } catch {
-              // No appointments
+          const allSlots = allSlotsResponse.data || [];
+
+          for (let day = 1; day <= daysInMonth; day++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day)
+              .padStart(2, "0")}`;
+
+            const slotsForDate = allSlots.filter(
+              (slot) =>
+                slot.MT_SLOT_DATE &&
+                slot.MT_SLOT_DATE.toString().substring(0, 10) === dateStr
+            );
+
+            let totalBookings = 0;
+            for (const slot of slotsForDate) {
+              try {
+                const apptRes = await axios.get(
+                  `${process.env.REACT_APP_API_BASE_URL}/Appointment/appointments/${slot.MT_SLOT_ID}`
+                );
+                totalBookings += apptRes.data.length;
+              } catch {
+                // ignore errors per slot
+              }
             }
+
+            stats[dateStr] = {
+              slots: slotsForDate.length,
+              bookings: totalBookings,
+            };
           }
-          stats[dateStr] = {
-            slots: res.data.length,
-            bookings: totalBookings,
-          };
         } catch {
-          stats[dateStr] = { slots: 0, bookings: 0 };
+          for (let day = 1; day <= daysInMonth; day++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day)
+              .padStart(2, "0")}`;
+            stats[dateStr] = { slots: 0, bookings: 0 };
+          }
+        }
+      } else {
+        // Doctor / Pharmacy user: stats per doctor as before
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day)
+            .padStart(2, "0")}`;
+          try {
+            const res = await axios.get(
+              `${process.env.REACT_APP_API_BASE_URL}/Timeslot/timeslotcard/${dateStr}/${Name}`
+            );
+            let totalBookings = 0;
+            for (const slot of res.data) {
+              try {
+                const apptRes = await axios.get(
+                  `${process.env.REACT_APP_API_BASE_URL}/Appointment/appointments/${slot.MT_SLOT_ID}`
+                );
+                totalBookings += apptRes.data.length;
+              } catch {
+                // No appointments
+              }
+            }
+            stats[dateStr] = {
+              slots: res.data.length,
+              bookings: totalBookings,
+            };
+          } catch {
+            stats[dateStr] = { slots: 0, bookings: 0 };
+          }
         }
       }
       setDateStats(stats);
     };
     
     fetchDateStats();
-  }, [currentDate, Name]);
+  }, [currentDate, Name, role]);
 
   /* ── fetch appointments for selected slot ── */
   const handleViewSlot = async (slot) => {
