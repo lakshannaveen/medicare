@@ -253,6 +253,8 @@ export default function Doctordashboard() {
   };
 
   const handleLogout = () => {
+    const confirmed = window.confirm("Are you sure you want to logout?");
+    if (!confirmed) return;
     localStorage.removeItem('Token');
     localStorage.removeItem('Role');
     navigate('/admin');
