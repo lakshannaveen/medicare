@@ -182,6 +182,20 @@ const RoleRedirect = () => {
   return <Navigate to="/welcome" replace />;
 };
 
+const DashboardDefaultRedirect = () => {
+  const role = localStorage.getItem("Role");
+
+  if (role === "Lab") {
+    return <Navigate to="laboratoryDashboard" replace />;
+  }
+
+  if (role === "Doc" || role === "Admin" || role === "Phuser") {
+    return <Navigate to="daily-appointments" replace />;
+  }
+
+  return <Navigate to="/welcome" replace />;
+};
+
 function App() {
   // const role = localStorage.getItem("Role");
 
@@ -249,7 +263,7 @@ function App() {
             }
           >
             {/* Default route for dashboard - now redirects to daily-appointments for Doc/Admin */}
-            <Route path="" element={<Navigate to="daily-appointments" />} />
+            <Route path="" element={<DashboardDefaultRedirect />} />
             <Route
               path="medical-history"
               element={
