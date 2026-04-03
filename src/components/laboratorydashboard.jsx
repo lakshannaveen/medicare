@@ -20,6 +20,7 @@ import {
   Paper,
   Breadcrumbs,
   Link,
+  Badge,
   useTheme,
   alpha,
 } from "@mui/material";
@@ -61,6 +62,7 @@ export default function LaboratoryDashboard() {
   const theme = useTheme();
   const [labs, setLabs] = useState([]);
   const [filteredLabs, setFilteredLabs] = useState([]);
+  const [labTransactions, setLabTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [favorites, setFavorites] = useState([]);
@@ -80,13 +82,24 @@ export default function LaboratoryDashboard() {
   const fetchLabs = useCallback(async (retryCount = 0) => {
     setLoading(true);
     try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/LabMaster`,
-        { timeout: 10000 },
-      );
-      const labData = res.data || [];
+      const [labRes, transactionRes] = await Promise.all([
+        axios.get(`${process.env.REACT_APP_API_BASE_URL}/LabMaster`, {
+          timeout: 10000,
+        }),
+        axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}/LabTransaction/search`,
+          {
+            timeout: 10000,
+          },
+        ),
+      ]);
+
+      const labData = labRes.data || [];
+      const transactionData = transactionRes.data || [];
+
       setLabs(labData);
       setFilteredLabs(labData);
+      setLabTransactions(transactionData);
 
       // Calculate statistics
       const locations = new Set(
@@ -109,6 +122,7 @@ export default function LaboratoryDashboard() {
         });
         setLabs([]);
         setFilteredLabs([]);
+        setLabTransactions([]);
       }
     } finally {
       setLoading(false);
@@ -117,11 +131,18 @@ export default function LaboratoryDashboard() {
 
   useEffect(() => {
     fetchLabs();
+
+    const interval = setInterval(() => {
+      fetchLabs();
+    }, 10000);
+
     // Load favorites from localStorage
     const savedFavorites = localStorage.getItem("labFavorites");
     if (savedFavorites) {
       setFavorites(JSON.parse(savedFavorites));
     }
+
+    return () => clearInterval(interval);
   }, [fetchLabs]);
 
   // Filter labs based on search term
@@ -161,6 +182,18 @@ export default function LaboratoryDashboard() {
   };
 
   // Handle lab click - navigate to lab details
+  const getPendingRequestCount = (labId) => {
+    return labTransactions.filter((t) => {
+      return (
+        t.MLT_LAB_ID === labId &&
+        !t.ReportDownloadUrl &&
+        t.MLT_STATUS === "Requested" &&
+        t.MLT_REPORT_RESULT !== "Completed"
+      );
+    }).length;
+  };
+
+  // Handle lab click - navigate to lab details
   const handleLabClick = (lab) => {
     setSelectedLab(lab);
   };
@@ -168,6 +201,7 @@ export default function LaboratoryDashboard() {
   // Handle back from lab details
   const handleBack = () => {
     setSelectedLab(null);
+    fetchLabs(); // Refresh data when coming back from details
   };
 
   // Handle refresh
@@ -397,29 +431,43 @@ export default function LaboratoryDashboard() {
                           )}
                         </Box>
                       </Box>
-                      <Tooltip
-                        title={
-                          favorites.includes(lab.MLM_LAB_ID)
-                            ? "Remove from favorites"
-                            : "Add to favorites"
-                        }
-                      >
-                        <IconButton
-                          size="small"
-                          onClick={(e) => toggleFavorite(lab.MLM_LAB_ID, e)}
-                          sx={{
-                            color: favorites.includes(lab.MLM_LAB_ID)
-                              ? theme.palette.warning.main
-                              : "inherit",
-                          }}
+                      <Box display="flex" alignItems="center" gap={1}>
+                        {getPendingRequestCount(lab.MLM_LAB_ID) > 0 && (
+                          <Chip
+                            label={`${getPendingRequestCount(lab.MLM_LAB_ID)} Requested`}
+                            size="small"
+                            sx={{
+                              bgcolor: theme.palette.error.main,
+                              color: theme.palette.common.white,
+                              fontWeight: 600,
+                            }}
+                          />
+                        )}
+
+                        <Tooltip
+                          title={
+                            favorites.includes(lab.MLM_LAB_ID)
+                              ? "Remove from favorites"
+                              : "Add to favorites"
+                          }
                         >
-                          {favorites.includes(lab.MLM_LAB_ID) ? (
-                            <StarIcon />
-                          ) : (
-                            <StarBorderIcon />
-                          )}
-                        </IconButton>
-                      </Tooltip>
+                          <IconButton
+                            size="small"
+                            onClick={(e) => toggleFavorite(lab.MLM_LAB_ID, e)}
+                            sx={{
+                              color: favorites.includes(lab.MLM_LAB_ID)
+                                ? theme.palette.warning.main
+                                : "inherit",
+                            }}
+                          >
+                            {favorites.includes(lab.MLM_LAB_ID) ? (
+                              <StarIcon />
+                            ) : (
+                              <StarBorderIcon />
+                            )}
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
                     </Box>
 
                     <Box mt={2}>
@@ -468,15 +516,22 @@ export default function LaboratoryDashboard() {
                   </CardContent>
 
                   <CardActions sx={{ p: 2, pt: 0 }}>
-                    <Button
-                      size="small"
-                      fullWidth
-                      variant="outlined"
-                      onClick={() => handleLabClick(lab)}
-                      sx={{ borderRadius: 2 }}
+                    <Badge
+                      color="error"
+                      badgeContent={getPendingRequestCount(lab.MLM_LAB_ID)}
+                      invisible={getPendingRequestCount(lab.MLM_LAB_ID) === 0}
+                      sx={{ width: "100%" }}
                     >
-                      View Details
-                    </Button>
+                      <Button
+                        size="small"
+                        fullWidth
+                        variant="outlined"
+                        onClick={() => handleLabClick(lab)}
+                        sx={{ borderRadius: 2 }}
+                      >
+                        View Details
+                      </Button>
+                    </Badge>
                   </CardActions>
                 </StyledCard>
               </Grid>

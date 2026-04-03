@@ -392,10 +392,12 @@ const LabDetails = ({ lab, onBack }) => {
   const theme = useTheme();
   const [transactions, setTransactions] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [patients, setPatients] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("Requested");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedReport, setSelectedReport] = useState(null);
@@ -419,11 +421,26 @@ const LabDetails = ({ lab, onBack }) => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/LabTransaction/search`,
-        { timeout: 10000 },
-      );
-      const labTransactions = res.data
+      const [transactionRes, patientRes, userRes] = await Promise.all([
+        axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}/LabTransaction/search`,
+          {
+            timeout: 10000,
+          },
+        ),
+        axios.get(`${process.env.REACT_APP_API_BASE_URL}/Patient`, {
+          timeout: 10000,
+        }),
+        axios.get(`${process.env.REACT_APP_API_BASE_URL}/User`, {
+          timeout: 10000,
+        }),
+      ]);
+
+      const allTransactions = transactionRes.data || [];
+      const allPatients = patientRes.data || [];
+      const allUsers = userRes.data || [];
+
+      const labTransactions = allTransactions
         .filter((t) => t.MLT_LAB_ID === lab.MLM_LAB_ID)
         .sort(
           (a, b) =>
@@ -431,6 +448,8 @@ const LabDetails = ({ lab, onBack }) => {
             new Date(a.MLT_CREATED_DATE || a.MLT_DATE || 0),
         );
 
+      setPatients(allPatients);
+      setUsers(allUsers);
       setTransactions(labTransactions);
       setFilteredTransactions(labTransactions);
 
@@ -484,14 +503,24 @@ const LabDetails = ({ lab, onBack }) => {
     let filtered = [...transactions];
 
     if (searchTerm.trim() !== "") {
-      filtered = filtered.filter(
-        (t) =>
-          t.MLT_PATIENT_CODE?.toLowerCase().includes(
-            searchTerm.toLowerCase(),
-          ) ||
-          t.MLT_TEST_NAME?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          t.MLT_DOCTOR_ID?.toLowerCase().includes(searchTerm.toLowerCase()),
-      );
+      const search = searchTerm.toLowerCase();
+
+      filtered = filtered.filter((t) => {
+        const patientName =
+          getPatientName(t.MLT_PATIENT_CODE)?.toLowerCase() || "";
+        const doctorName = getDoctorName(t.MLT_DOCTOR_ID)?.toLowerCase() || "";
+        const patientCode = t.MLT_PATIENT_CODE?.toLowerCase() || "";
+        const doctorId = t.MLT_DOCTOR_ID?.toLowerCase() || "";
+        const testName = t.MLT_TEST_NAME?.toLowerCase() || "";
+
+        return (
+          patientName.includes(search) ||
+          doctorName.includes(search) ||
+          patientCode.includes(search) ||
+          doctorId.includes(search) ||
+          testName.includes(search)
+        );
+      });
     }
 
     if (statusFilter !== "all") {
@@ -643,6 +672,23 @@ const LabDetails = ({ lab, onBack }) => {
           />
         );
     }
+  };
+
+  const getPatientName = (patientCode) => {
+    const patient = patients.find(
+      (p) =>
+        p.MPD_PATIENT_CODE === patientCode ||
+        p.MPD_PATIENT_ID === patientCode ||
+        p.MPD_CODE === patientCode,
+    );
+    return patient?.MPD_PATIENT_NAME || patientCode;
+  };
+
+  const getDoctorName = (doctorId) => {
+    const doctor = users.find(
+      (u) => String(u.MUD_USER_ID).trim() === String(doctorId).trim(),
+    );
+    return doctor?.MUD_FULL_NAME || doctorId;
   };
 
   const paginatedTransactions = filteredTransactions.slice(
@@ -815,9 +861,9 @@ const LabDetails = ({ lab, onBack }) => {
         <Table size="small" stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell>Patient Code</TableCell>
+              <TableCell>Patient Name</TableCell>
               <TableCell>Test Name</TableCell>
-              <TableCell>Doctor ID</TableCell>
+              <TableCell>Doctor Name</TableCell>
               <TableCell>Status</TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
@@ -838,9 +884,9 @@ const LabDetails = ({ lab, onBack }) => {
             ) : (
               paginatedTransactions.map((t) => (
                 <TableRow key={t.MLT_LAB_TRANS_ID} hover>
-                  <TableCell>{t.MLT_PATIENT_CODE}</TableCell>
+                  <TableCell>{getPatientName(t.MLT_PATIENT_CODE)}</TableCell>
                   <TableCell>{t.MLT_TEST_NAME}</TableCell>
-                  <TableCell>{t.MLT_DOCTOR_ID}</TableCell>
+                  <TableCell>{getDoctorName(t.MLT_DOCTOR_ID)}</TableCell>
                   {/* <TableCell>
                     {getStatusChip(t.MLT_STATUS, t.MLT_REPORT_RESULT)}
                   </TableCell> */}
