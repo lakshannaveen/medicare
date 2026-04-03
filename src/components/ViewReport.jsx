@@ -31,7 +31,7 @@ export default function ViewReport({ open, onClose, patientCode }) {
       setLoading(true);
       try {
         const res = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/LabTransaction/search?patientCode=${patientCode}`
+          `${process.env.REACT_APP_API_BASE_URL}/LabTransaction/search?patientCode=${patientCode}`,
         );
         setReportData(res.data || []);
         setFilteredReports(res.data || []);
@@ -48,10 +48,10 @@ export default function ViewReport({ open, onClose, patientCode }) {
   }, [open, patientCode]);
 
   useEffect(() => {
-  if (!open) {
-    setSearchTerm(""); // reset search when dialog closes
-  }
-}, [open]);
+    if (!open) {
+      setSearchTerm(""); // reset search when dialog closes
+    }
+  }, [open]);
 
   // Filter reports when searchTerm changes
   useEffect(() => {
@@ -61,7 +61,7 @@ export default function ViewReport({ open, onClose, patientCode }) {
       const filtered = reportData.filter(
         (lab) =>
           lab.MLT_TEST_NAME?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          lab.MLT_STATUS?.toLowerCase().includes(searchTerm.toLowerCase())
+          lab.MLT_STATUS?.toLowerCase().includes(searchTerm.toLowerCase()),
       );
       setFilteredReports(filtered);
     }
@@ -71,7 +71,12 @@ export default function ViewReport({ open, onClose, patientCode }) {
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Lab Reports - {patientCode}</DialogTitle>
       <DialogContent>
-        <Box mb={2} display="flex" justifyContent="space-between" alignItems="center">
+        <Box
+          mb={2}
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <TextField
             size="small"
             placeholder="Search by Test Name or Status"
@@ -103,10 +108,28 @@ export default function ViewReport({ open, onClose, patientCode }) {
               </TableHead>
               <TableBody>
                 {filteredReports.map((lab) => (
+                  // <TableRow key={lab.MLT_LAB_TRANS_ID}>
+                  //   <TableCell>{lab.MLT_TEST_NAME || "-"}</TableCell>
+                  //   <TableCell>{lab.MLT_STATUS || "-"}</TableCell>
+                  //   <TableCell>{lab.MLT_REPORT_RESULT || "-"}</TableCell>
+                  //   <TableCell>
+                  //     {lab.MLT_COMPLETED_DATE
+                  //       ? new Date(lab.MLT_COMPLETED_DATE).toLocaleString()
+                  //       : "-"}
+                  //   </TableCell>
+                  //   <TableCell>
                   <TableRow key={lab.MLT_LAB_TRANS_ID}>
                     <TableCell>{lab.MLT_TEST_NAME || "-"}</TableCell>
-                    <TableCell>{lab.MLT_STATUS || "-"}</TableCell>
-                    <TableCell>{lab.MLT_REPORT_RESULT || "-"}</TableCell>
+                    <TableCell>
+                      {lab.ReportDownloadUrl
+                        ? "Completed"
+                        : lab.MLT_STATUS || "-"}
+                    </TableCell>
+                    <TableCell>
+                      {lab.ReportDownloadUrl
+                        ? "Completed"
+                        : lab.MLT_REPORT_RESULT || "-"}
+                    </TableCell>
                     <TableCell>
                       {lab.MLT_COMPLETED_DATE
                         ? new Date(lab.MLT_COMPLETED_DATE).toLocaleString()

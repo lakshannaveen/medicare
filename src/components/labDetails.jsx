@@ -17,6 +17,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -394,6 +395,9 @@ const LabDetails = ({ lab, onBack }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedReport, setSelectedReport] = useState(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
@@ -419,24 +423,47 @@ const LabDetails = ({ lab, onBack }) => {
         `${process.env.REACT_APP_API_BASE_URL}/LabTransaction/search`,
         { timeout: 10000 },
       );
-      const labTransactions = res.data.filter(
-        (t) => t.MLT_LAB_ID === lab.MLM_LAB_ID,
-      );
+      const labTransactions = res.data
+        .filter((t) => t.MLT_LAB_ID === lab.MLM_LAB_ID)
+        .sort(
+          (a, b) =>
+            new Date(b.MLT_CREATED_DATE || b.MLT_DATE || 0) -
+            new Date(a.MLT_CREATED_DATE || a.MLT_DATE || 0),
+        );
+
       setTransactions(labTransactions);
       setFilteredTransactions(labTransactions);
 
+      // setStats({
+      //   total: labTransactions.length,
+      //   completed: labTransactions.filter(
+      //     (t) => t.MLT_REPORT_RESULT === "Completed",
+      //   ).length,
+      //   pending: labTransactions.filter(
+      //     (t) =>
+      //       t.MLT_REPORT_RESULT === "Requested" || t.MLT_STATUS === "Requested",
+      //   ).length,
+      //   requested: labTransactions.filter(
+      //     (t) =>
+      //       t.MLT_STATUS === "Requested" && t.MLT_REPORT_RESULT !== "Completed",
+      //   ).length,
+      // });
       setStats({
         total: labTransactions.length,
         completed: labTransactions.filter(
-          (t) => t.MLT_REPORT_RESULT === "Completed",
+          (t) => t.MLT_REPORT_RESULT === "Completed" || t.ReportDownloadUrl,
         ).length,
         pending: labTransactions.filter(
           (t) =>
-            t.MLT_REPORT_RESULT === "Requested" || t.MLT_STATUS === "Requested",
+            !t.ReportDownloadUrl &&
+            (t.MLT_REPORT_RESULT === "Requested" ||
+              t.MLT_STATUS === "Requested"),
         ).length,
         requested: labTransactions.filter(
           (t) =>
-            t.MLT_STATUS === "Requested" && t.MLT_REPORT_RESULT !== "Completed",
+            !t.ReportDownloadUrl &&
+            t.MLT_STATUS === "Requested" &&
+            t.MLT_REPORT_RESULT !== "Completed",
         ).length,
       });
     } catch (err) {
@@ -454,9 +481,10 @@ const LabDetails = ({ lab, onBack }) => {
   }, [lab.MLM_LAB_ID]);
 
   useEffect(() => {
-    if (searchTerm.trim() === "") setFilteredTransactions(transactions);
-    else {
-      const filtered = transactions.filter(
+    let filtered = [...transactions];
+
+    if (searchTerm.trim() !== "") {
+      filtered = filtered.filter(
         (t) =>
           t.MLT_PATIENT_CODE?.toLowerCase().includes(
             searchTerm.toLowerCase(),
@@ -464,9 +492,22 @@ const LabDetails = ({ lab, onBack }) => {
           t.MLT_TEST_NAME?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           t.MLT_DOCTOR_ID?.toLowerCase().includes(searchTerm.toLowerCase()),
       );
-      setFilteredTransactions(filtered);
     }
-  }, [searchTerm, transactions]);
+
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((t) => {
+        const currentStatus =
+          t.MLT_REPORT_RESULT === "Completed" || t.ReportDownloadUrl
+            ? "Completed"
+            : t.MLT_STATUS || "Requested";
+
+        return currentStatus === statusFilter;
+      });
+    }
+
+    setFilteredTransactions(filtered);
+    setPage(0);
+  }, [searchTerm, statusFilter, transactions]);
 
   const handleDownload = async (reportUrl, testName) => {
     if (!reportUrl) return;
@@ -517,8 +558,57 @@ const LabDetails = ({ lab, onBack }) => {
     setSearchTerm("");
   };
 
-  const getStatusChip = (status, result) => {
-    const finalStatus = result === "Completed" ? "Completed" : status;
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // const getStatusChip = (status, result) => {
+  //   const finalStatus = result === "Completed" ? "Completed" : status;
+  //   switch (finalStatus) {
+  //     case "Completed":
+  //       return (
+  //         <Chip
+  //           icon={<CompletedIcon />}
+  //           label="Completed"
+  //           size="small"
+  //           sx={{
+  //             bgcolor: alpha(theme.palette.success.main, 0.1),
+  //             color: theme.palette.success.dark,
+  //           }}
+  //         />
+  //       );
+  //     case "Requested":
+  //       return (
+  //         <Chip
+  //           icon={<PendingIcon />}
+  //           label="Requested"
+  //           size="small"
+  //           sx={{
+  //             bgcolor: alpha(theme.palette.warning.main, 0.1),
+  //             color: theme.palette.warning.dark,
+  //           }}
+  //         />
+  //       );
+  //     default:
+  //       return (
+  //         <Chip
+  //           label={finalStatus || "Pending"}
+  //           size="small"
+  //           variant="outlined"
+  //         />
+  //       );
+  //   }
+  // };
+
+  const getStatusChip = (status, result, reportUrl) => {
+    const finalStatus =
+      result === "Completed" || reportUrl ? "Completed" : status;
+
     switch (finalStatus) {
       case "Completed":
         return (
@@ -555,6 +645,10 @@ const LabDetails = ({ lab, onBack }) => {
     }
   };
 
+  const paginatedTransactions = filteredTransactions.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage,
+  );
   const StatCard = ({ icon, title, value, color }) => (
     <Card sx={{ p: 2, borderRadius: 2, height: "100%" }}>
       <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -643,7 +737,7 @@ const LabDetails = ({ lab, onBack }) => {
         </Grid>
       </Grid>
 
-      {/* Search Bar */}
+      {/* Search Bar
       <Card sx={{ mb: 3, p: 2, borderRadius: 2 }}>
         <TextField
           fullWidth
@@ -667,11 +761,58 @@ const LabDetails = ({ lab, onBack }) => {
             ),
           }}
         />
+      </Card> */}
+      {/* Search + Filter */}
+      <Card sx={{ mb: 3, p: 2, borderRadius: 2 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={8}>
+            <TextField
+              fullWidth
+              size="small"
+              variant="outlined"
+              placeholder="Search by Patient, Test, Doctor..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+                endAdornment: searchTerm && (
+                  <InputAdornment position="end">
+                    <IconButton onClick={clearSearch}>
+                      <ClearIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={statusFilter}
+                label="Status"
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <MenuItem value="all">All</MenuItem>
+                <MenuItem value="Requested">Requested</MenuItem>
+                <MenuItem value="Completed">Completed</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
       </Card>
 
       {/* Transactions Table */}
-      <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
-        <Table size="small">
+      <TableContainer
+        component={Paper}
+        sx={{ borderRadius: 2, maxHeight: 500 }}
+      >
+        <Table size="small" stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell>Patient Code</TableCell>
@@ -695,13 +836,20 @@ const LabDetails = ({ lab, onBack }) => {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredTransactions.map((t) => (
+              paginatedTransactions.map((t) => (
                 <TableRow key={t.MLT_LAB_TRANS_ID} hover>
                   <TableCell>{t.MLT_PATIENT_CODE}</TableCell>
                   <TableCell>{t.MLT_TEST_NAME}</TableCell>
                   <TableCell>{t.MLT_DOCTOR_ID}</TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     {getStatusChip(t.MLT_STATUS, t.MLT_REPORT_RESULT)}
+                  </TableCell> */}
+                  <TableCell>
+                    {getStatusChip(
+                      t.MLT_STATUS,
+                      t.MLT_REPORT_RESULT,
+                      t.ReportDownloadUrl,
+                    )}
                   </TableCell>
                   <TableCell align="center">
                     {t.ReportDownloadUrl && (
@@ -732,6 +880,16 @@ const LabDetails = ({ lab, onBack }) => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <TablePagination
+        component="div"
+        count={filteredTransactions.length}
+        page={page}
+        onPageChange={handleChangePage}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        rowsPerPageOptions={[5, 10, 25, 50]}
+      />
 
       {/* Upload Dialog */}
       {selectedTransaction && (

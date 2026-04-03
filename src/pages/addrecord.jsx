@@ -2191,10 +2191,24 @@ const AddRecord = () => {
 
       // Filter results for services if needed (you can add logic here based on your data structure)
       // For now, we'll show all results for both
-      setSearchResults(resultsList);
+      let filteredResults = resultsList;
+
+      if (type === "drug") {
+        filteredResults = resultsList.filter(
+          (item) => item.MMC_TYPE?.toUpperCase() === "DRUG",
+        );
+      } else if (type === "service") {
+        filteredResults = resultsList.filter(
+          (item) => item.MMC_TYPE?.toUpperCase() === "SERVICE",
+        );
+      }
+      setSearchResults(filteredResults);
 
       if (resultsList.length === 0) {
         console.log(`No ${type} found for query:`, query);
+        setSnackbarMessage(`No ${type} found.`);
+        setSnackbarSeverity("info");
+        setSnackbarOpen(true);
       }
       // } catch (error) {
       //   console.error(`Error fetching data:`, error);
@@ -3353,7 +3367,15 @@ const AddRecord = () => {
                     </Box>
 
                     {/* Add Button */}
-                    <Box sx={{ display: "flex", gap: 1, alignItems: "center", justifySelf: { xs: 'stretch', sm: 'end' }, minWidth: 0 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                        alignItems: "center",
+                        justifySelf: { xs: "stretch", sm: "end" },
+                        minWidth: 0,
+                      }}
+                    >
                       <Button
                         variant="contained"
                         color="primary"
@@ -3686,7 +3708,7 @@ const AddRecord = () => {
                                     "&:hover": { bgcolor: "action.hover" },
                                   }}
                                 >
-                                  <ListItemText
+                                  {/* <ListItemText
                                     primary={item.MMC_DESCRIPTION}
                                     secondary={
                                       <>
@@ -3723,6 +3745,28 @@ const AddRecord = () => {
                                             </Typography>
                                           </>
                                         )}
+                                      </>
+                                    }
+                                  /> */}
+                                  <ListItemText
+                                    primary={item.MMC_DESCRIPTION}
+                                    secondary={
+                                      <>
+                                        <Typography
+                                          component="span"
+                                          variant="body2"
+                                          color="text.primary"
+                                        >
+                                          Code: {item.MMC_MATERIAL_CODE}
+                                        </Typography>
+                                        <br />
+                                        <Typography
+                                          component="span"
+                                          variant="body2"
+                                          color="success.main"
+                                        >
+                                          Rate: Rs.{item.MMC_RATE}
+                                        </Typography>
                                       </>
                                     }
                                   />
@@ -3768,7 +3812,7 @@ const AddRecord = () => {
                     </Box>
 
                     {/* Quantity */}
-                    <Box>
+                    {/* <Box>
                       <TextField
                         fullWidth
                         size="small"
@@ -3781,10 +3825,18 @@ const AddRecord = () => {
                         }
                         inputProps={{ min: "1" }}
                       />
-                    </Box>
+                    </Box> */}
 
                     {/* Add Button */}
-                    <Box sx={{ display: "flex", gap: 1, alignItems: "center", justifySelf: { xs: 'stretch', sm: 'end' }, minWidth: 0 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                        alignItems: "center",
+                        justifySelf: { xs: "stretch", sm: "end" },
+                        minWidth: 0,
+                      }}
+                    >
                       <Button
                         variant="contained"
                         color="info"

@@ -21,12 +21,12 @@
 //             setLoading(true);
 //             // You can add logic here to pre-fetch appointments data
 //             // For example: dispatch(fetchTodayAppointments());
-            
+
 //             // Simulate pre-loading completion
 //             const timer = setTimeout(() => {
 //                 setLoading(false);
 //             }, 1000);
-            
+
 //             return () => clearTimeout(timer);
 //         }
 //     }, [role]);
@@ -74,7 +74,7 @@
 //                             </NavLink>
 //                         </li>
 //                     )}
-                   
+
 //                     <li>
 //                         <NavLink
 //                             to="/dashboard/medical-history"
@@ -86,7 +86,7 @@
 //                             <FontAwesomeIcon icon={faHistory} /> {isOpen && 'Patient Details'}
 //                         </NavLink>
 //                     </li>
-                   
+
 //                     <li>
 //                         <NavLink
 //                             to="register-medicines"
@@ -125,7 +125,7 @@
 //                             <FontAwesomeIcon icon={faClinicMedical} /> {isOpen && 'Pharmacy'}
 //                         </NavLink>
 //                     </li>
-                    
+
 //                     <li>
 //                         <NavLink
 //                             to="doctor-profile"
@@ -138,7 +138,6 @@
 //                         </NavLink>
 //                     </li>
 
-                    
 //                     {/* Admin-specific routes */}
 //                     {role === 'Admin' && (
 //                         <>
@@ -198,7 +197,7 @@
 //                     className="menu-icon"
 //                     onClick={() => setShowMobileMenu(!showMobileMenu)}
 //                 />
-                
+
 //                 {/* Loading indicator for appointments pre-loading */}
 //                 {role === 'Doc' && loading && (
 //                     <div className="preload-indicator">
@@ -206,19 +205,18 @@
 //                         <p>Loading appointments...</p>
 //                     </div>
 //                 )}
-                
+
 //                 <Outlet />
 //             </div>
 //         </div>
 //     );
 // }
 
-
-import React, { useState, useEffect } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import '../styles/doctorDashboard.css';
-import logo from '../assets/medicare_logo.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useState, useEffect } from "react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import "../styles/doctorDashboard.css";
+import logo from "../assets/medicare_logo.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
   faSignOutAlt,
@@ -229,23 +227,36 @@ import {
   faUserMd,
   faClinicMedical,
   faTimes,
-  faFlask
-} from '@fortawesome/free-solid-svg-icons';
+  faFlask,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function Doctordashboard() {
   const [isOpen, setIsOpen] = useState(true);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const role = localStorage.getItem('Role');
+  const role = localStorage.getItem("Role");
+
+  // useEffect(() => {
+  //   if (role === "Doc") {
+  //     setLoading(true);
+  //     const timer = setTimeout(() => setLoading(false), 1000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [role]);
 
   useEffect(() => {
-    if (role === 'Doc') {
+    if (role === "Doc") {
       setLoading(true);
       const timer = setTimeout(() => setLoading(false), 1000);
       return () => clearTimeout(timer);
     }
   }, [role]);
+
+  // const toggleNavbar = () => {
+  //   setIsOpen(!isOpen);
+  //   setShowMobileMenu(!showMobileMenu);
+  // };
 
   const toggleNavbar = () => {
     setIsOpen(!isOpen);
@@ -255,9 +266,9 @@ export default function Doctordashboard() {
   const handleLogout = () => {
     const confirmed = window.confirm("Are you sure you want to logout?");
     if (!confirmed) return;
-    localStorage.removeItem('Token');
-    localStorage.removeItem('Role');
-    navigate('/admin');
+    localStorage.removeItem("Token");
+    localStorage.removeItem("Role");
+    navigate("/admin");
   };
 
   const closeSidebar = () => {
@@ -265,32 +276,37 @@ export default function Doctordashboard() {
   };
 
   return (
-    <div className={`doctorDashboard ${isOpen ? 'open' : 'closed'}`}>
-
+    <div className={`doctorDashboard ${isOpen ? "open" : "closed"}`}>
       {/* Sidebar */}
-      <div className={`sidebar ${isOpen ? 'open' : 'closed'} ${showMobileMenu ? 'show-mobile' : ''}`}>
+      <div
+        className={`sidebar ${isOpen ? "open" : "closed"} ${showMobileMenu ? "show-mobile" : ""}`}
+      >
         <div className="logo">
           <img src={logo} alt="Logo" />
-          <FontAwesomeIcon icon={faTimes} className="close-icon" onClick={closeSidebar} />
+          <FontAwesomeIcon
+            icon={faTimes}
+            className="close-icon"
+            onClick={closeSidebar}
+          />
         </div>
 
         <ul className="menu">
-
           {/* ================= LAB USER ================= */}
-          {role === 'Lab' && (
+          {role === "Lab" && (
             <li>
               <NavLink
                 to="laboratoryDashboard"
                 className={({ isActive }) => (isActive ? "active-tab" : "")}
                 onClick={closeSidebar}
               >
-                <FontAwesomeIcon icon={faFlask} /> {isOpen && 'Laboratory Dashboard'}
+                <FontAwesomeIcon icon={faFlask} />{" "}
+                {isOpen && "Laboratory Dashboard"}
               </NavLink>
             </li>
           )}
 
           {/* ================= DOCTOR / ADMIN / PHUSER ================= */}
-          {['Doc', 'Admin', 'Phuser'].includes(role) && (
+          {["Doc", "Admin", "Phuser"].includes(role) && (
             <>
               <li>
                 <NavLink
@@ -298,8 +314,11 @@ export default function Doctordashboard() {
                   className={({ isActive }) => (isActive ? "active-tab" : "")}
                   onClick={closeSidebar}
                 >
-                  <FontAwesomeIcon icon={faCalendarAlt} /> {isOpen && 'Appointments'}
-                  {role === 'Doc' && loading && <span className="loading-indicator">Loading...</span>}
+                  <FontAwesomeIcon icon={faCalendarAlt} />{" "}
+                  {isOpen && "Appointments"}
+                  {role === "Doc" && loading && (
+                    <span className="loading-indicator">Loading...</span>
+                  )}
                 </NavLink>
               </li>
 
@@ -309,7 +328,8 @@ export default function Doctordashboard() {
                   className={({ isActive }) => (isActive ? "active-tab" : "")}
                   onClick={closeSidebar}
                 >
-                  <FontAwesomeIcon icon={faHistory} /> {isOpen && 'Patient Details'}
+                  <FontAwesomeIcon icon={faHistory} />{" "}
+                  {isOpen && "Patient Details"}
                 </NavLink>
               </li>
 
@@ -319,7 +339,7 @@ export default function Doctordashboard() {
                   className={({ isActive }) => (isActive ? "active-tab" : "")}
                   onClick={closeSidebar}
                 >
-                  <FontAwesomeIcon icon={faPills} /> {isOpen && 'Drug Details'}
+                  <FontAwesomeIcon icon={faPills} /> {isOpen && "Drug Details"}
                 </NavLink>
               </li>
 
@@ -329,7 +349,7 @@ export default function Doctordashboard() {
                   className={({ isActive }) => (isActive ? "active-tab" : "")}
                   onClick={closeSidebar}
                 >
-                  <FontAwesomeIcon icon={faFlask} /> {isOpen && 'Laboratory'}
+                  <FontAwesomeIcon icon={faFlask} /> {isOpen && "Laboratory"}
                 </NavLink>
               </li>
 
@@ -339,7 +359,8 @@ export default function Doctordashboard() {
                   className={({ isActive }) => (isActive ? "active-tab" : "")}
                   onClick={closeSidebar}
                 >
-                  <FontAwesomeIcon icon={faClinicMedical} /> {isOpen && 'Pharmacy'}
+                  <FontAwesomeIcon icon={faClinicMedical} />{" "}
+                  {isOpen && "Pharmacy"}
                 </NavLink>
               </li>
 
@@ -349,14 +370,14 @@ export default function Doctordashboard() {
                   className={({ isActive }) => (isActive ? "active-tab" : "")}
                   onClick={closeSidebar}
                 >
-                  <FontAwesomeIcon icon={faUserMd} /> {isOpen && 'User Profile'}
+                  <FontAwesomeIcon icon={faUserMd} /> {isOpen && "User Profile"}
                 </NavLink>
               </li>
             </>
           )}
 
           {/* ================= ADMIN ONLY ================= */}
-          {role === 'Admin' && (
+          {role === "Admin" && (
             <>
               <li>
                 <NavLink
@@ -364,7 +385,7 @@ export default function Doctordashboard() {
                   className={({ isActive }) => (isActive ? "active-tab" : "")}
                   onClick={closeSidebar}
                 >
-                  <FontAwesomeIcon icon={faClock} /> {isOpen && 'Add Timeslots'}
+                  <FontAwesomeIcon icon={faClock} /> {isOpen && "Add Timeslots"}
                 </NavLink>
               </li>
 
@@ -374,12 +395,11 @@ export default function Doctordashboard() {
                   className={({ isActive }) => (isActive ? "active-tab" : "")}
                   onClick={closeSidebar}
                 >
-                  <FontAwesomeIcon icon={faUserMd} /> {isOpen && 'Add Users'}
+                  <FontAwesomeIcon icon={faUserMd} /> {isOpen && "Add Users"}
                 </NavLink>
               </li>
             </>
           )}
-
         </ul>
 
         {/* Logout */}
@@ -391,14 +411,22 @@ export default function Doctordashboard() {
       </div>
 
       {/* Main Content */}
-      <div className={`main-content1 ${isOpen && window.innerWidth <= 600 ? 'hide-content' : ''}`}>
+      <div
+        className={`main-content1 ${isOpen && window.innerWidth <= 600 ? "hide-content" : ""}`}
+      >
+        {/* <FontAwesomeIcon
+          icon={faBars}
+          className="menu-icon"
+          onClick={() => setShowMobileMenu(!showMobileMenu)}
+        /> */}
+
         <FontAwesomeIcon
           icon={faBars}
           className="menu-icon"
           onClick={() => setShowMobileMenu(!showMobileMenu)}
         />
 
-        {role === 'Doc' && loading && (
+        {role === "Doc" && loading && (
           <div className="preload-indicator">
             <div className="spinner"></div>
             <p>Loading appointments...</p>
