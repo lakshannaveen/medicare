@@ -119,7 +119,7 @@ General Styles General Styles body {
 }
 
 .logout-btn {
-  width: 100%;
+  width: 200%;
   background: transparent;
   border: none;
   color: #007bff;
