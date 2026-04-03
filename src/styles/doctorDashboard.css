@@ -109,27 +109,37 @@ General Styles General Styles body {
 .below {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 0 20px; /* aligns with sidebar padding */
   position: absolute;
   bottom: 50px;
-  width: 100%;
 }
 
 .below li {
-  margin: 10px 0;
-  padding: 10px;
-  color: #007bff;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
+  margin: 20px 0;
 }
 
-.below li:hover {
+.logout-btn {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #007bff;
+  text-decoration: none;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  font-family: "Roboto", sans-serif;
+}
+
+.logout-btn:hover {
   background-color: #007bff;
   color: white;
 }
 
-.below li svg {
+.logout-btn svg {
   margin-right: 10px;
 }
 

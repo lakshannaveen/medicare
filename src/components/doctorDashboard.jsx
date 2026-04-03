@@ -404,8 +404,10 @@ export default function Doctordashboard() {
 
         {/* Logout */}
         <ul className="below">
-          <li onClick={handleLogout}>
-            <FontAwesomeIcon icon={faSignOutAlt} /> Logout
+          <li>
+            <button type="button" className="logout-btn" onClick={handleLogout}>
+              <FontAwesomeIcon icon={faSignOutAlt} /> Logout
+            </button>
           </li>
         </ul>
       </div>
