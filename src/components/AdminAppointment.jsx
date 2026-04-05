@@ -143,7 +143,7 @@ export default function AdminAppointment({ onClose, patient }) {
     if (searchValue.length > 2) {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/User/suggest/doctor?query=${searchValue}`
+          `${process.env.REACT_APP_API_BASE_URL}/User/suggest/doctor?query=${searchValue}`,
         );
         setSuggestions(response.data);
       } catch (error) {
@@ -160,7 +160,7 @@ export default function AdminAppointment({ onClose, patient }) {
       if (userid) {
         try {
           const response = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/Timeslot/Doctorid/${userid}`
+            `${process.env.REACT_APP_API_BASE_URL}/Timeslot/Doctorid/${userid}`,
           );
           setAppointmentDetails(response.data);
         } catch (error) {
@@ -184,7 +184,7 @@ export default function AdminAppointment({ onClose, patient }) {
     try {
       if (query && selecteduserid) {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/Timeslot/Doctorid/${selecteduserid}`
+          `${process.env.REACT_APP_API_BASE_URL}/Timeslot/Doctorid/${selecteduserid}`,
         );
         setAppointmentDetails(response.data);
         setCurrentScreen(3);
@@ -196,13 +196,13 @@ export default function AdminAppointment({ onClose, patient }) {
             params: {
               specialization: specialization,
             },
-          }
+          },
         );
 
         const filteredDoctors = (response.data || []).filter((doc) =>
           (doc.MUD_SPECIALIZATION || "")
             .toLowerCase()
-            .includes(specialization.toLowerCase())
+            .includes(specialization.toLowerCase()),
         );
 
         if (filteredDoctors.length > 0) {
@@ -257,13 +257,13 @@ export default function AdminAppointment({ onClose, patient }) {
     try {
       if (selectedAppointment) {
         await axios.patch(
-          `${process.env.REACT_APP_API_BASE_URL}/Timeslot/${selectedAppointment.MT_SLOT_ID}/incrementSeat`
+          `${process.env.REACT_APP_API_BASE_URL}/Timeslot/${selectedAppointment.MT_SLOT_ID}/incrementSeat`,
         );
       }
     } catch (error) {
       console.error(
         "Failed to update time slot",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
     }
   };
@@ -293,7 +293,7 @@ export default function AdminAppointment({ onClose, patient }) {
       setLoading(true);
       await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}/Appointment`,
-        appointmentData
+        appointmentData,
       );
 
       setCurrentScreen(5);
@@ -368,7 +368,7 @@ export default function AdminAppointment({ onClose, patient }) {
                           onClick={() =>
                             handleSuggestionClick(
                               doctor.UserName,
-                              doctor.UserId
+                              doctor.UserId,
                             )
                           }
                           sx={{
@@ -555,15 +555,18 @@ export default function AdminAppointment({ onClose, patient }) {
   );
 
   const renderScreen3 = () => {
-    const groupedAppointments = appointmentDetails.reduce((groups, appointment) => {
-      const date = appointment.MT_SLOT_DATE;
-      if (!groups[date]) groups[date] = [];
-      groups[date].push(appointment);
-      return groups;
-    }, {});
+    const groupedAppointments = appointmentDetails.reduce(
+      (groups, appointment) => {
+        const date = appointment.MT_SLOT_DATE;
+        if (!groups[date]) groups[date] = [];
+        groups[date].push(appointment);
+        return groups;
+      },
+      {},
+    );
 
     const sortedDates = Object.keys(groupedAppointments).sort(
-      (a, b) => new Date(a) - new Date(b)
+      (a, b) => new Date(a) - new Date(b),
     );
 
     return (
@@ -596,7 +599,9 @@ export default function AdminAppointment({ onClose, patient }) {
                 <Grid container spacing={2}>
                   {sortedDates.flatMap((date) =>
                     groupedAppointments[date].map((appointment, index) => {
-                      const appointmentDate = new Date(appointment.MT_SLOT_DATE);
+                      const appointmentDate = new Date(
+                        appointment.MT_SLOT_DATE,
+                      );
                       const formattedDate = appointmentDate.toLocaleDateString(
                         "en-US",
                         {
@@ -604,17 +609,17 @@ export default function AdminAppointment({ onClose, patient }) {
                           year: "numeric",
                           month: "long",
                           day: "numeric",
-                        }
+                        },
                       );
                       const startTime = new Date(
-                        `1970-01-01T${appointment.MT_START_TIME}`
+                        `1970-01-01T${appointment.MT_START_TIME}`,
                       ).toLocaleTimeString("en-US", {
                         hour: "numeric",
                         minute: "numeric",
                         hour12: true,
                       });
                       const endTime = new Date(
-                        `1970-01-01T${appointment.MT_END_TIME}`
+                        `1970-01-01T${appointment.MT_END_TIME}`,
                       ).toLocaleTimeString("en-US", {
                         hour: "numeric",
                         minute: "numeric",
@@ -645,7 +650,11 @@ export default function AdminAppointment({ onClose, patient }) {
                             }}
                           >
                             <CardContent>
-                              <Box display="flex" flexDirection="column" height="100%">
+                              <Box
+                                display="flex"
+                                flexDirection="column"
+                                height="100%"
+                              >
                                 <Box mb={1}>
                                   <Box display="flex" alignItems="center">
                                     <FontAwesomeIcon
@@ -675,7 +684,10 @@ export default function AdminAppointment({ onClose, patient }) {
                                   </Box>
                                 </Box>
                                 <Box mt="auto">
-                                  <Box display="flex" justifyContent="flex-start">
+                                  <Box
+                                    display="flex"
+                                    justifyContent="flex-start"
+                                  >
                                     {isPastDate ? (
                                       <Chip
                                         label="Expired"
@@ -701,7 +713,9 @@ export default function AdminAppointment({ onClose, patient }) {
                                       <BookButton
                                         variant="contained"
                                         size="small"
-                                        onClick={() => handleBookNowClick(appointment)}
+                                        onClick={() =>
+                                          handleBookNowClick(appointment)
+                                        }
                                       >
                                         Book Now
                                       </BookButton>
@@ -727,7 +741,7 @@ export default function AdminAppointment({ onClose, patient }) {
                           </Card>
                         </Grid>
                       );
-                    })
+                    }),
                   )}
                 </Grid>
               ) : (
@@ -757,7 +771,7 @@ export default function AdminAppointment({ onClose, patient }) {
     if (!selectedAppointment) return null;
 
     const startTime = new Date(
-      `1970-01-01T${selectedAppointment.MT_START_TIME}`
+      `1970-01-01T${selectedAppointment.MT_START_TIME}`,
     ).toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "numeric",
@@ -765,7 +779,7 @@ export default function AdminAppointment({ onClose, patient }) {
     });
 
     const endTime = new Date(
-      `1970-01-01T${selectedAppointment.MT_END_TIME}`
+      `1970-01-01T${selectedAppointment.MT_END_TIME}`,
     ).toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "numeric",
@@ -773,7 +787,7 @@ export default function AdminAppointment({ onClose, patient }) {
     });
 
     const allocatedTime = new Date(
-      `1970-01-01T${selectedAppointment.MT_ALLOCATED_TIME}`
+      `1970-01-01T${selectedAppointment.MT_ALLOCATED_TIME}`,
     ).toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "numeric",
@@ -896,7 +910,11 @@ export default function AdminAppointment({ onClose, patient }) {
             sx={{ borderRadius: 1 }}
             disabled={loading}
           >
-            {loading ? <CircularProgress size={20} color="inherit" /> : "Confirm Booking"}
+            {loading ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              "Confirm Booking"
+            )}
           </Button>
         </DialogActions>
       </Dialog>
@@ -1012,14 +1030,31 @@ export default function AdminAppointment({ onClose, patient }) {
         open={openSuccess}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
         TransitionComponent={Fade}
       >
         <Alert
           onClose={handleCloseSnackbar}
           severity="success"
           variant="filled"
-          sx={{ width: "100%" }}
+          sx={{
+            width: "100%",
+            minWidth: "460px",
+            fontSize: "1.18rem",
+            fontWeight: 600,
+            py: 1.7,
+            px: 2.4,
+            borderRadius: "14px",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+            "& .MuiAlert-icon": {
+              fontSize: "36px",
+              alignItems: "center",
+            },
+            "& .MuiAlert-message": {
+              fontSize: "1.12rem",
+              fontWeight: 600,
+            },
+          }}
         >
           Appointment booked successfully.
         </Alert>
@@ -1029,14 +1064,31 @@ export default function AdminAppointment({ onClose, patient }) {
         open={!!errorMessage}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
         TransitionComponent={Fade}
       >
         <Alert
           onClose={handleCloseSnackbar}
           severity="error"
           variant="filled"
-          sx={{ width: "100%" }}
+          sx={{
+            width: "100%",
+            minWidth: "460px",
+            fontSize: "1.18rem",
+            fontWeight: 600,
+            py: 1.7,
+            px: 2.4,
+            borderRadius: "14px",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+            "& .MuiAlert-icon": {
+              fontSize: "36px",
+              alignItems: "center",
+            },
+            "& .MuiAlert-message": {
+              fontSize: "1.12rem",
+              fontWeight: 600,
+            },
+          }}
         >
           {errorMessage}
         </Alert>
@@ -1044,4 +1096,3 @@ export default function AdminAppointment({ onClose, patient }) {
     </Box>
   );
 }
-

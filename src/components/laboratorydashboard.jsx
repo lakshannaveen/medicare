@@ -558,7 +558,7 @@ export default function LaboratoryDashboard() {
         open={snackbar.open}
         autoHideDuration={4000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
         {/* <Alert
           onClose={() => setSnackbar({ ...snackbar, open: false })}
@@ -573,19 +573,19 @@ export default function LaboratoryDashboard() {
           variant="filled"
           sx={{
             width: "100%",
-            minWidth: "420px",
-            fontSize: "1.1rem",
+            minWidth: "460px",
+            fontSize: "1.18rem",
             fontWeight: 600,
-            py: 1.5,
-            px: 2,
+            py: 1.7,
+            px: 2.4,
             borderRadius: "14px",
             boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
             "& .MuiAlert-icon": {
-              fontSize: "32px",
+              fontSize: "36px",
               alignItems: "center",
             },
             "& .MuiAlert-message": {
-              fontSize: "1.05rem",
+              fontSize: "1.12rem",
               fontWeight: 600,
             },
           }}

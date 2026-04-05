@@ -613,6 +613,7 @@ export default function Laboratory() {
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={4000}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
         onClose={() => setSnackbarOpen(false)}
       >
         {/* <Alert severity={snackbarSeverity}>{snackbarMessage}</Alert> */}
@@ -621,19 +622,19 @@ export default function Laboratory() {
           variant="filled"
           sx={{
             width: "100%",
-            minWidth: "420px",
-            fontSize: "1.1rem",
+            minWidth: "460px",
+            fontSize: "1.18rem",
             fontWeight: 600,
-            py: 1.5,
-            px: 2,
+            py: 1.7,
+            px: 2.4,
             borderRadius: "14px",
             boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
             "& .MuiAlert-icon": {
-              fontSize: "32px",
+              fontSize: "36px",
               alignItems: "center",
             },
             "& .MuiAlert-message": {
-              fontSize: "1.05rem",
+              fontSize: "1.12rem",
               fontWeight: 600,
             },
           }}

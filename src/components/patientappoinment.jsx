@@ -832,7 +832,7 @@ export default function PatientAppointment({ onClose, patient }) {
         const filteredDoctors = (response.data || []).filter((doc) =>
           (doc.MUD_SPECIALIZATION || "")
             .toLowerCase()
-            .includes(specialization.toLowerCase())
+            .includes(specialization.toLowerCase()),
         );
 
         if (filteredDoctors.length > 0) {
@@ -1937,7 +1937,7 @@ export default function PatientAppointment({ onClose, patient }) {
         open={openSuccess}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
         TransitionComponent={Fade}
       >
         {/* <Alert
@@ -1949,29 +1949,28 @@ export default function PatientAppointment({ onClose, patient }) {
           Login successful! You can now book appointments.
         </Alert> */}
         <Alert
-          onClose={handleCloseSnackbar}
           severity="success"
           variant="filled"
           sx={{
             width: "100%",
-            minWidth: "420px",
-            fontSize: "1.1rem",
+            minWidth: "460px",
+            fontSize: "1.18rem",
             fontWeight: 600,
-            py: 1.5,
-            px: 2,
+            py: 1.7,
+            px: 2.4,
             borderRadius: "14px",
             boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
             "& .MuiAlert-icon": {
-              fontSize: "32px",
+              fontSize: "36px",
               alignItems: "center",
             },
             "& .MuiAlert-message": {
-              fontSize: "1.05rem",
+              fontSize: "1.12rem",
               fontWeight: 600,
             },
           }}
         >
-          Login successful! You can now book appointments.
+          Login successful
         </Alert>
       </Snackbar>
 
@@ -1979,7 +1978,7 @@ export default function PatientAppointment({ onClose, patient }) {
         open={!!errormeassage}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
         TransitionComponent={Fade}
       >
         {/* <Alert

@@ -567,7 +567,7 @@ const Addtimeslot = () => {
     target.setHours(0, 0, 0, 0);
 
     const diffDays = Math.round(
-      (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+      (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
     );
 
     if (diffDays === 0) return "Today";
@@ -977,36 +977,29 @@ const Addtimeslot = () => {
 
         <Snackbar
           open={snackbarOpen}
-          autoHideDuration={6000}
+          autoHideDuration={4000}
           onClose={handleSnackbarClose}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          {/* <Alert
-            onClose={handleSnackbarClose}
-            severity={snackbarSeverity}
-            sx={{ width: "100%" }}
-          >
-            {snackbarMessage}
-          </Alert> */}
           <Alert
             onClose={handleSnackbarClose}
             severity={snackbarSeverity}
             variant="filled"
             sx={{
               width: "100%",
-              minWidth: "420px",
-              fontSize: "1.1rem",
+              minWidth: "460px",
+              fontSize: "1.18rem",
               fontWeight: 600,
-              py: 1.5,
-              px: 2,
+              py: 1.7,
+              px: 2.4,
               borderRadius: "14px",
               boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
               "& .MuiAlert-icon": {
-                fontSize: "32px",
+                fontSize: "36px",
                 alignItems: "center",
               },
               "& .MuiAlert-message": {
-                fontSize: "1.05rem",
+                fontSize: "1.12rem",
                 fontWeight: 600,
               },
             }}

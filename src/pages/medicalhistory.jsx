@@ -1604,11 +1604,15 @@ export default function MedicalHistory() {
         maxWidth="lg"
       >
         <DialogTitle>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Typography variant="h6">
               Book Appointment for {selectedPatient?.MPD_PATIENT_NAME}
             </Typography>
-            <IconButton 
+            <IconButton
               onClick={() => {
                 setOpenAppointmentDialog(false);
                 setSelectedPatient(null);
@@ -1631,36 +1635,28 @@ export default function MedicalHistory() {
 
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={6000}
+        autoHideDuration={3000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        {/* <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbarSeverity}
-          sx={{ width: "100%" }}
-        >
-          {snackbarMessage}
-        </Alert> */}
         <Alert
           onClose={handleCloseSnackbar}
           severity={snackbarSeverity}
           variant="filled"
           sx={{
             width: "100%",
-            minWidth: "420px",
-            fontSize: "1.1rem",
+            minWidth: "460px",
+            fontSize: "1.18rem",
             fontWeight: 600,
-            py: 1.5,
-            px: 2,
+            py: 1.7,
+            px: 2.4,
             borderRadius: "14px",
             boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
             "& .MuiAlert-icon": {
-              fontSize: "32px",
-              alignItems: "center",
+              fontSize: "36px",
             },
             "& .MuiAlert-message": {
-              fontSize: "1.05rem",
+              fontSize: "1.12rem",
               fontWeight: 600,
             },
           }}
