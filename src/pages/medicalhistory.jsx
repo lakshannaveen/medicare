@@ -384,6 +384,7 @@ import {
   CardContent,
   Divider,
   Chip,
+  Badge,
 } from "@mui/material";
 import {
   Search as SearchIcon,
@@ -405,6 +406,7 @@ import {
   LineWeight as LineWeightIcon,
   Timeline as TimelineIcon,
   Event as EventIcon,
+  Download as DownloadIcon,
 } from "@mui/icons-material";
 import Addpatient from "../components/addPatients";
 import AddVitalSigns from "../components/AddVitalSigns";
@@ -424,14 +426,23 @@ export default function MedicalHistory() {
   const [openVitalSignsDialog, setOpenVitalSignsDialog] = useState(false);
   const [openAddVitalSignsDialog, setOpenAddVitalSignsDialog] = useState(false);
   const [openAppointmentDialog, setOpenAppointmentDialog] = useState(false);
+  const [openLabReportsDialog, setOpenLabReportsDialog] = useState(false);
   const [treatments, setTreatments] = useState([]);
   const [vitalSigns, setVitalSigns] = useState([]);
+  const [labReports, setLabReports] = useState([]);
+  const [labReportsLoading, setLabReportsLoading] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const navigate = useNavigate();
   const role = localStorage.getItem("Role");
+  const currentUserId = localStorage.getItem("id");
+  const seenLabReportsStorageKey = `seenCompletedLabReports_${currentUserId || "default"}`;
+  const [seenLabReports, setSeenLabReports] = useState(() => {
+    const saved = localStorage.getItem(seenLabReportsStorageKey);
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const fetchAllPatients = async () => {
     setIsLoading(true);
@@ -451,6 +462,13 @@ export default function MedicalHistory() {
 
   useEffect(() => {
     fetchAllPatients();
+    fetchCompletedLabReports();
+
+    const interval = setInterval(() => {
+      fetchCompletedLabReports();
+    }, 10000);
+
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -626,6 +644,107 @@ export default function MedicalHistory() {
 
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
+  };
+
+  const fetchCompletedLabReports = async () => {
+    if (!currentUserId) {
+      setLabReports([]);
+      return;
+    }
+
+    try {
+      const response = await axios.get(`${API_BASE_URL}/LabTransaction/search`);
+
+      const filteredReports = (response.data || []).filter(
+        (report) =>
+          String(report.MLT_DOCTOR_ID).trim() ===
+            String(currentUserId).trim() &&
+          report.ReportDownloadUrl &&
+          (report.MLT_REPORT_RESULT === "Completed" ||
+            report.ReportDownloadUrl),
+      );
+
+      setLabReports(filteredReports);
+    } catch (error) {
+      console.error("Error fetching completed lab reports:", error);
+      setLabReports([]);
+    }
+  };
+
+  const getPatientCompletedLabReports = (patientCode) => {
+    return labReports.filter(
+      (report) => report.MLT_PATIENT_CODE === patientCode,
+    );
+  };
+
+  const getPatientNewLabReportCount = (patientCode) => {
+    return getPatientCompletedLabReports(patientCode).filter(
+      (report) => !seenLabReports.includes(report.MLT_LAB_TRANS_ID),
+    ).length;
+  };
+
+  const markPatientLabReportsAsSeen = (patientCode) => {
+    const patientReportIds = getPatientCompletedLabReports(patientCode).map(
+      (report) => report.MLT_LAB_TRANS_ID,
+    );
+
+    const updatedSeenReports = Array.from(
+      new Set([...seenLabReports, ...patientReportIds]),
+    );
+
+    setSeenLabReports(updatedSeenReports);
+    localStorage.setItem(
+      seenLabReportsStorageKey,
+      JSON.stringify(updatedSeenReports),
+    );
+  };
+
+  const handleViewLabReports = async (patient) => {
+    setSelectedPatient(patient);
+    setLabReportsLoading(true);
+
+    try {
+      await fetchCompletedLabReports();
+      markPatientLabReportsAsSeen(patient.MPD_PATIENT_CODE);
+      setOpenLabReportsDialog(true);
+    } catch (error) {
+      console.error("Error opening lab reports dialog:", error);
+      setSnackbarMessage("Failed to load lab reports");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    } finally {
+      setLabReportsLoading(false);
+    }
+  };
+
+  const handleDownloadLabReport = async (reportUrl, testName) => {
+    if (!reportUrl) {
+      setSnackbarMessage("No report file available");
+      setSnackbarSeverity("warning");
+      setSnackbarOpen(true);
+      return;
+    }
+
+    try {
+      const response = await axios.get(reportUrl, {
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data]);
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = reportUrl.split("/").pop() || `${testName || "report"}`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error("Error downloading report:", error);
+      setSnackbarMessage("Failed to download report");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
   };
 
   // Format vital signs for display
@@ -895,6 +1014,25 @@ export default function MedicalHistory() {
                           </IconButton>
                         </Tooltip>
 
+                        <Tooltip title="View Completed Lab Reports">
+                          <Badge
+                            color="error"
+                            variant="dot"
+                            invisible={
+                              getPatientNewLabReportCount(
+                                patient.MPD_PATIENT_CODE,
+                              ) === 0
+                            }
+                          >
+                            <IconButton
+                              color="primary"
+                              onClick={() => handleViewLabReports(patient)}
+                            >
+                              <BiotechIcon />
+                            </IconButton>
+                          </Badge>
+                        </Tooltip>
+
                         {/* Book Appointment Button */}
                         <Tooltip title="Book Appointment">
                           <IconButton
@@ -1091,6 +1229,112 @@ export default function MedicalHistory() {
         </DialogActions>
       </Dialog>
 
+      {/* Completed Lab Reports Dialog */}
+      <Dialog
+        open={openLabReportsDialog}
+        onClose={() => setOpenLabReportsDialog(false)}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Typography variant="h6">
+              Completed Lab Reports - {selectedPatient?.MPD_PATIENT_NAME}
+            </Typography>
+            <IconButton onClick={() => setOpenLabReportsDialog(false)}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+
+        <DialogContent dividers>
+          <Box sx={{ maxHeight: "60vh", overflow: "auto" }}>
+            {labReportsLoading ? (
+              <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+                <CircularProgress />
+              </Box>
+            ) : getPatientCompletedLabReports(selectedPatient?.MPD_PATIENT_CODE)
+                .length > 0 ? (
+              [
+                ...getPatientCompletedLabReports(
+                  selectedPatient?.MPD_PATIENT_CODE,
+                ),
+              ]
+                .sort(
+                  (a, b) =>
+                    new Date(b.MLT_CREATED_DATE || b.MLT_DATE) -
+                    new Date(a.MLT_CREATED_DATE || a.MLT_DATE),
+                )
+                .map((report, index) => (
+                  <Paper
+                    key={report.MLT_LAB_TRANS_ID || index}
+                    sx={{ p: 2, mb: 2 }}
+                  >
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {report.MLT_TEST_NAME || "Lab Report"}
+                      </Typography>
+                      <Chip
+                        label="Completed"
+                        color="success"
+                        size="small"
+                        variant="outlined"
+                      />
+                    </Box>
+
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      <strong>Date:</strong>{" "}
+                      {new Date(
+                        report.MLT_CREATED_DATE || report.MLT_DATE,
+                      ).toLocaleDateString()}
+                    </Typography>
+
+                    <Typography variant="body2" sx={{ mt: 1, mb: 2 }}>
+                      <strong>Patient Code:</strong> {report.MLT_PATIENT_CODE}
+                    </Typography>
+
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      startIcon={<DownloadIcon />}
+                      onClick={() =>
+                        handleDownloadLabReport(
+                          report.ReportDownloadUrl,
+                          report.MLT_TEST_NAME,
+                        )
+                      }
+                    >
+                      Download Report
+                    </Button>
+                  </Paper>
+                ))
+            ) : (
+              <Typography variant="body1" align="center" color="text.secondary">
+                No completed lab reports available for this patient
+              </Typography>
+            )}
+          </Box>
+        </DialogContent>
+
+        <DialogActions>
+          <Button
+            onClick={() => setOpenLabReportsDialog(false)}
+            variant="outlined"
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* View Vital Signs Dialog */}
       {/* View Vital Signs Dialog */}
       <Dialog
         open={openVitalSignsDialog}
